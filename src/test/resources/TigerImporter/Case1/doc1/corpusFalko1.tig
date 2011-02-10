@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<corpus xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.ims.uni-stuttgart.de/projekte/TIGER/TIGERSearch/public/TigerXML.xsd" id="corpus_id">
+
+<body>
+<s id="s0" >
+<graph root="s0_1" discontinuous="true">
+<terminals>
+	<t id="s0_6" word="Pragmatische" pos="ADJA" />
+	<t id="s0_8" word="Erwerbsprinzipien" pos="NN" />
+	<t id="s0_11" word="Ein" pos="ART" />
+	<t id="s0_13" word="Hinweis" pos="NN" />
+	<t id="s0_16" word="für" pos="APPR" />
+	<t id="s0_18" word="eine" pos="ART" />
+	<t id="s0_20" word="wichtige" pos="ADJA" />
+	<t id="s0_22" word="Phase" pos="NN" />
+	<t id="s0_25" word="des" pos="ART" />
+	<t id="s0_27" word="Spracherwerbs" pos="NN" />
+	<t id="s0_30" word="bei" pos="APPR" />
+	<t id="s0_32" word="den" pos="ART" />
+	<t id="s0_34" word="Kindern" pos="NN" />
+	<t id="s0_36" word="ist" pos="VAFIN" />
+	<t id="s0_39" word="der" pos="ART" />
+	<t id="s0_41" word="Eintritt" pos="NN" />
+	<t id="s0_44" word="in" pos="APPR" />
+	<t id="s0_46" word="den" pos="ART" />
+	<t id="s0_48" word="Wortschatzspurt" pos="NN" />
+	<t id="s0_50" word="." pos="$." />
+</terminals>
+<nonterminals>
+</nonterminals>
+</graph>
+</s>
+</body>
+
+</corpus>
