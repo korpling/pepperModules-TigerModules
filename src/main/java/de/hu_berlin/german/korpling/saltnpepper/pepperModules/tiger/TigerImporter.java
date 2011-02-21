@@ -52,7 +52,7 @@ public class TigerImporter extends PepperImporterImpl implements PepperImporter
 		this.name= "TigerImporter";
 		if (	(this.getSymbolicName()==  null) ||
 				(this.getSymbolicName().equalsIgnoreCase("")))
-			this.setSymbolicName("de.hub.corpling.pepper.modules.TigerModules");
+			this.setSymbolicName("de.hu_berlin.german.korpling.saltnpepper.pepperModules.TigerModules");
 		this.init();
 	}	
 
