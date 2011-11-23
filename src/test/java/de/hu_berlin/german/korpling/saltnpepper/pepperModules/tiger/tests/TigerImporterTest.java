@@ -21,8 +21,8 @@ import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructu
 
 public class TigerImporterTest extends PepperImporterTest
 {	
-	URI resourceURI= URI.createFileURI("./src/main/resources/de.hub.corpling.pepper.modules.TigerModules/");
-	URI temproraryURI= URI.createFileURI("_TMP/de.hub.corpling.pepper.modules.tiger/TigerImporter");
+	URI resourceURI= URI.createFileURI("./src/main/resources/de.hu_berlin.german.korpling.pepper.modules.TigerModules/");
+	URI temproraryURI= URI.createFileURI("_TMP/de.hu_berlin.german.korpling.pepper.modules.tiger/TigerImporter");
 	URI specialParamsURI= URI.createFileURI("./src/test/resources/TigerImporter/specialParams/specialParams1.prop");
 	
 	protected void setUp() throws Exception 
