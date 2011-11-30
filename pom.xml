@@ -9,6 +9,10 @@
       <id>SaltNPepper Repository</id>
       <url>https://korpling.german.hu-berlin.de/~annis/maven2/saltnpepper/</url>
     </repository>
+    <repository>
+      <id>SaltNPepper Repository 2</id>
+      <url>https://korpling.german.hu-berlin.de/maven2</url>
+    </repository>
   </repositories>
   <parent>
     <groupId>de.hu_berlin.german.korpling.saltnpepper</groupId>
@@ -19,14 +23,23 @@
     <developerConnection>scm:svn:https://korpling.german.hu-berlin.de/svn/saltnpepper/PepperModules/TigerModules/trunk</developerConnection>
   </scm>
   <dependencies>
-  	 <!-- mvn install:install-file -Dfile=lib/tigerAPI.jar -DgroupId=tiger -DartifactId=tigerAPI -Dversion=1.0.0 -Dpackaging=jar -->
-    <dependency>
+  	 <!-- this must be processed to aquire tiger api into the maven repo -->
+  	 <!-- mvn install:install-file -Dfile=lib/tigerAPI1.8.2.jar -DgroupId=tiger -DartifactId=tigerAPI -Dversion=1.8.2 -Dpackaging=jar -->
+     <!-- <dependency>
     	<groupId>tiger</groupId>
     	<artifactId>tigerAPI</artifactId>
     	<version>1.0.0</version>
     	<type>jar</type>
     	<scope>compile</scope>
-    </dependency>
+    </dependency>-->
+    
+  	<dependency>
+  		<groupId>tiger</groupId>
+  		<artifactId>tigerAPI</artifactId>
+  		<version>1.8.2</version>
+  		<type>jar</type>
+    	<scope>compile</scope>
+  	</dependency>
   </dependencies>
   <build>
     <plugins>
@@ -65,9 +78,9 @@
             <Bundle-SymbolicName>${project.groupId}.${project.artifactId};singleton:=true</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.6</Bundle-RequiredExecutionEnvironment>
-            <Bundle-ClassPath>.,{maven-dependencies}, lib/tigerAPI.jar</Bundle-ClassPath>
             <Service-Component>OSGI-INF/${component.descriptor.name}</Service-Component>
-            <Include-Resource>{maven-resources}, LICENSE, NOTICE, lib/tigerAPI.jar=lib/tigerAPI.jar</Include-Resource>
+            <Bundle-ClassPath>.,{maven-dependencies}, lib/tigerAPI-1.8.2.jar</Bundle-ClassPath>
+            <Include-Resource>{maven-resources}, LICENSE, NOTICE, lib/tigerAPI-1.8.2.jar=tigerAPI-1.8.2.jar</Include-Resource>
           </instructions>
         </configuration>
       </plugin>
