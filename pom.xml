@@ -25,15 +25,7 @@
   <dependencies>
   	 <!-- this must be processed to aquire tiger api into the maven repo -->
   	 <!-- mvn install:install-file -Dfile=lib/tigerAPI1.8.2.jar -DgroupId=tiger -DartifactId=tigerAPI -Dversion=1.8.2 -Dpackaging=jar -->
-     <!-- <dependency>
-    	<groupId>tiger</groupId>
-    	<artifactId>tigerAPI</artifactId>
-    	<version>1.0.0</version>
-    	<type>jar</type>
-    	<scope>compile</scope>
-    </dependency>-->
-    
-  	<dependency>
+     	<dependency>
   		<groupId>tiger</groupId>
   		<artifactId>tigerAPI</artifactId>
   		<version>1.8.2</version>
