@@ -140,7 +140,7 @@ public class Tiger2SaltMapper
 	{
 		//map Pos anno if exists
 		if (	(terminal.getPos()!= null)&&
-				(!terminal.getPos().equalsIgnoreCase("")))
+				(!terminal.getPos().isEmpty()))
 		{
 			SAnnotation sAnno= SaltSemanticsFactory.eINSTANCE.createSPOSAnnotation();
 			sAnno.setSValue(terminal.getPos());
@@ -148,7 +148,7 @@ public class Tiger2SaltMapper
 		}
 		//map Morph anno if exists
 		if (	(terminal.getMorph()!= null)&&
-				(!terminal.getMorph().equalsIgnoreCase("")))
+				(!terminal.getMorph().isEmpty()))
 		{
 			SAnnotation sAnno= SaltSemanticsFactory.eINSTANCE.createSLemmaAnnotation();
 			sAnno.setSValue(terminal.getMorph());
@@ -216,7 +216,7 @@ public class Tiger2SaltMapper
 				sDomRel.setSTarget(currSStructure);
 				this.getsDocument().getSDocumentGraph().addSRelation(sDomRel);
 				if (	(nt.getEdge2Mother()!= null)&&
-						(!nt.getEdge2Mother().equalsIgnoreCase("")))
+						(!nt.getEdge2Mother().isEmpty()))
 					this.mapLabel2SDominanceRelation(nt.getEdge2Mother(), sDomRel);
 			}
 		}
@@ -233,7 +233,7 @@ public class Tiger2SaltMapper
 					sDomRel.setSTarget(currSToken);
 					this.getsDocument().getSDocumentGraph().addSRelation(sDomRel);
 					if (	(t.getEdge2Mother()!= null)&&
-							(!t.getEdge2Mother().equalsIgnoreCase("")))
+							(!t.getEdge2Mother().isEmpty()))
 						this.mapLabel2SDominanceRelation(t.getEdge2Mother(), sDomRel);
 				}
 			}
@@ -263,7 +263,7 @@ public class Tiger2SaltMapper
 	{
 		//map Cat anno if exists
 		if (	(nt.getCat()!= null)&&
-				(!nt.getCat().equalsIgnoreCase("")))
+				(!nt.getCat().isEmpty()))
 		{
 			SAnnotation sAnno= SaltSemanticsFactory.eINSTANCE.createSCatAnnotation();
 			sAnno.setSValue(nt.getCat());
@@ -291,7 +291,7 @@ public class Tiger2SaltMapper
 			
 			if (	(this.getProps()!= null)&&
 					(this.getProps().getProperty(KW_TOKENSEP)!= null) &&
-					(!this.getProps().getProperty(KW_TOKENSEP).equalsIgnoreCase("")))
+					(!this.getProps().getProperty(KW_TOKENSEP).isEmpty()))
 			{
 				String preSep= this.getProps().getProperty(KW_TOKENSEP);
 				
