@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="ASCII"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <sDocumentStructure:SDocumentGraph xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:graph="graph" xmlns:sDocumentStructure="sDocumentStructure" xmlns:saltCore="saltCore" xmlns:saltSemantics="SaltSemantics" sName="corpusFalko1">
   <labels xsi:type="graph:Identifier" namespace="graph" name="id" valueString="/Case1/doc1/corpusFalko1"/>
   <nodes xsi:type="sDocumentStructure:STextualDS" sName="sText1">
     <labels xsi:type="saltCore:SElementId" namespace="graph" name="id" valueString="/Case1/doc1/corpusFalko1#sText1"/>
-    <labels xsi:type="saltCore:SFeature" namespace="saltCommon" name="SDATA" valueString=" Pragmatische Erwerbsprinzipien Ein Hinweis f&#xfc;r eine wichtige Phase des Spracherwerbs bei den Kindern ist der Eintritt in den Wortschatzspurt .">
+    <labels xsi:type="saltCore:SFeature" namespace="saltCommon" name="SDATA" valueString=" Pragmatische Erwerbsprinzipien Ein Hinweis fur eine wichtige Phase des Spracherwerbs bei den Kindern ist der Eintritt in den Wortschatzspurt .">
       <labels name="SVAL_TYPE" valueString="STEXT"/>
     </labels>
   </nodes>
