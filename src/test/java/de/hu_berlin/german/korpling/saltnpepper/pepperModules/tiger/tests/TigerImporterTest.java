@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.emf.common.util.BasicEList;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -18,12 +20,16 @@ import de.hu_berlin.german.korpling.saltnpepper.pepper.pepperModules.PepperInter
 import de.hu_berlin.german.korpling.saltnpepper.pepper.testSuite.moduleTests.PepperImporterTest;
 import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tiger.TigerImporter;
 import de.hu_berlin.german.korpling.saltnpepper.salt.SaltFactory;
+import de.hu_berlin.german.korpling.saltnpepper.salt.graph.Edge;
+import de.hu_berlin.german.korpling.saltnpepper.salt.graph.Label;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.SaltCommonFactory;
+import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.SaltProject;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.modules.SDocumentStructureAccessor;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.resources.dot.Salt2DOT;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sCorpusStructure.SCorpus;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sCorpusStructure.SCorpusDocumentRelation;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sCorpusStructure.SCorpusGraph;
+import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sCorpusStructure.SCorpusRelation;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sCorpusStructure.SDocument;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.SDocumentGraph;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.STextualDS;
@@ -32,6 +38,7 @@ import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructu
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SDATATYPE;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SElementId;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SLayer;
+import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SRelation;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltSemantics.SLemmaAnnotation;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltSemantics.SPOSAnnotation;
 
@@ -91,16 +98,20 @@ public class TigerImporterTest extends PepperImporterTest
 			corpDef.setCorpusPath(corpusPath);
 			this.getFixture().setCorpusDefinition(corpDef);
 		}
-		
+		SElementId sElementId= SaltFactory.eINSTANCE.createSElementId();
+		sElementId.setId("corpusGraph1");
 		SCorpusGraph corpGraph= SaltCommonFactory.eINSTANCE.createSCorpusGraph();
-		corpGraph.setSId("corpusGraph1");
+//		corpGraph.setSId("corpusGraph1");
+//		corpGraph.setId("corpusGraph1");
+		corpGraph.setSElementId(sElementId);
 		corpGraph.setSName("/Case1/doc1");
 		SDocument sampleSDocument = this.createCorpusStructure(corpGraph);
 		
 		STextualDS sTextualDS = null;
 		{//creating the primary text
 			sTextualDS= SaltFactory.eINSTANCE.createSTextualDS();
-			sTextualDS.setSText("Pragmatische Erwerbsprinzipien Ein Hinweis fur eine wichtige Phase des Spracherwerbs bei den Kindern ist der Eintritt in den Wortschatzspurt .");
+			sTextualDS.setSText(" Pragmatische Erwerbsprinzipien Ein Hinweis fur eine wichtige Phase des Spracherwerbs bei den Kindern ist der Eintritt in den Wortschatzspurt .");
+			sTextualDS.setSId("/Case1/doc1/corpusFalko1#sText1");
 			sTextualDS.setSName("sText1");
 			//adding the text to the document-graph
 			sampleSDocument.getSDocumentGraph().addSNode(sTextualDS);
@@ -231,68 +242,109 @@ public class TigerImporterTest extends PepperImporterTest
 		SDocument importedSDocument= this.getFixture().getSaltProject().getSCorpusGraphs().get(0).getSDocuments().get(0);
 
 		
-		System.out.println("Imported Corpus: "+importedCorpusGraph);
-		System.out.println("Sample Corpus: "+sampleCorpusGraph);
-		System.out.println("Imported Document: "+importedSDocument);
-		System.out.println("Sample Document: "+sampleCorpusGraph.getSDocuments().get(0));
-		System.out.println("Imported Corpus Label count: "+importedCorpusGraph.getLabels().size());
-		System.out.println("Sample Corpus Label count: "+sampleCorpusGraph.getLabels().size());
-		System.out.println("Imported Textual DS: "+importedSDocument.getSDocumentGraph().getSTextualDSs().get(0));
-		System.out.println("Sample   Textual DS: "+sampleCorpusGraph.getSDocuments().get(0).getSDocumentGraph().getSTextualDSs().get(0));
-//		for (SToken tok : importedSDocument.getSDocumentGraph().getSTokens()){
-//			System.out.println("Token "+tok.getSName()+" with id "+tok.getSId());
+//		System.out.println("Imported Corpus: "+importedCorpusGraph);
+//		System.out.println("Sample Corpus: "+sampleCorpusGraph);
+//		System.out.println("Imported Document: "+importedSDocument);
+//		System.out.println("Sample Document: "+sampleCorpusGraph.getSDocuments().get(0));
+//		System.out.println("Imported Corpus Label count: "+importedCorpusGraph.getLabels().size());
+//		System.out.println("Sample Corpus Label count: "+sampleCorpusGraph.getLabels().size());
+//		System.out.println("Imported Textual DS: "+importedSDocument.getSDocumentGraph().getSTextualDSs().get(0));
+//		System.out.println("Sample   Textual DS: "+sampleCorpusGraph.getSDocuments().get(0).getSDocumentGraph().getSTextualDSs().get(0));
+//		
+//		for (SRelation edge : importedCorpusGraph.getSRelations()){
+//			System.out.println("Imported Edge "+edge.getSName()+
+//					" with id "+edge.getSId()+
+//					" has source "+ edge.getSSource().getSId()+
+//					" and target "+ edge.getSTarget().getSId());
 //		}
-//		for (SToken tok : sampleCorpusGraph.getSDocuments().get(0).getSDocumentGraph().getSTokens()){
-//			System.out.println("Sample Token "+tok.getSName()+" with id "+tok.getSId());
+//		for (SRelation edge : sampleCorpusGraph.getSRelations()){
+//			System.out.println("Sample   Edge "+edge.getSName()+
+//					" with id "+edge.getSId()+
+//					" has source "+ edge.getSSource().getSId()+
+//					" and target "+ edge.getSTarget().getSId());
 //		}
+//		for (Label label : importedCorpusGraph.getLabels()){
+//			System.out.println("Label of imported corpus Graph: "
+//					+label +" \n has following properties: "
+//					+label.getQName());
+//		}
+//		for (Label label : sampleCorpusGraph.getLabels()){
+//			System.out.println("Label of sample   corpus Graph: "
+//					+label+" \n has following properties: "
+//					+label.getQName());
+//		}
+//		System.out.println("Diffs of labels id: \n"
+//				+ importedCorpusGraph.getLabels().get(0).differences(
+//						sampleCorpusGraph.getLabels().get(0)));
+		
+//		
+		
+
+		
 		//		{//print saltGraph to dot (just for testing)
 //			Salt2DOT salt2Dot= new Salt2DOT();
 //			salt2Dot.salt2Dot(importedSDocument.getSElementId(), URI.createFileURI("_TMP/sampleCorpus1/doc1.dot"));
 //		}
 		
-		//assertTrue("The documents are not equal", importedSDocument.equals(sampleCorpusGraph.getSDocuments().get(0)));
+		assertTrue("The documents are not equal", importedSDocument.equals(sampleCorpusGraph.getSDocuments().get(0)));
 		assertTrue("The document graphs are not equal. Differences: "+ importedSDocument.getSDocumentGraph().differences(sampleCorpusGraph.getSDocuments().get(0).getSDocumentGraph()), importedSDocument.getSDocumentGraph().equals(sampleCorpusGraph.getSDocuments().get(0).getSDocumentGraph()));
-		assertTrue("The corpus graphs are not equal. Differences: "+importedCorpusGraph.differences(sampleCorpusGraph), sampleCorpusGraph.equals(importedCorpusGraph));
+		assertTrue("The root corpora are not equal. Differences:"+ importedCorpusGraph.getSRootCorpus().get(0).differences(sampleCorpusGraph.getSRootCorpus().get(0)),importedCorpusGraph.getSRootCorpus().get(0).equals(sampleCorpusGraph.getSRootCorpus().get(0)));
+		assertTrue("The sub corpora are not equal. Differences:"+ importedCorpusGraph.getSCorpusRelations().get(0).getSTarget().differences(sampleCorpusGraph.getSCorpusRelations().get(0).getSTarget()),importedCorpusGraph.getSCorpusRelations().get(0).getSTarget().equals(sampleCorpusGraph.getSCorpusRelations().get(0).getSTarget()));
+		assertTrue("The corpus graphs are not equal. Differences: "+importedCorpusGraph.differences(sampleCorpusGraph), importedCorpusGraph.equals(sampleCorpusGraph));
 		
 	}
 	
 	
 	private SDocument createCorpusStructure(SCorpusGraph corpGraph)
 	{
+		
 		{//creating corpus structure
 			//corpGraph= SaltFactory.eINSTANCE.createSCorpusGraph();
 			//this.getFixture().getSaltProject().getSCorpusGraphs().add(corpGraph);
+			//		rootCorp
+			//		|
 			//		corp1
 			//		|
 			//		doc1
 			
 			//corp1
 			SElementId sElementId= SaltFactory.eINSTANCE.createSElementId();
-			sElementId.setSId("corpusFalko1");
+			
+			// Create root corpus (/Case1)
+			SCorpus rootCorp = SaltFactory.eINSTANCE.createSCorpus();
+			rootCorp.setSName("corpusFalko1");
+			rootCorp.setSId("/Case1");
+			corpGraph.addSNode(rootCorp);
+			
+			// Create sub corpus (/Case1/doc1)
+			sElementId= SaltFactory.eINSTANCE.createSElementId();
 			SCorpus corp1= SaltFactory.eINSTANCE.createSCorpus();
-			corp1.setSName("corpusFalko1");
-			corp1.setId("/Case1/doc1");
-			corp1.setSElementId(sElementId);
+			//corp1.setSName("corpusFalko1");
+			corp1.setSId("/Case1/doc1");
 			corpGraph.addSNode(corp1);
 			
+			// Create Corpus relation
+			SCorpusRelation corpRel1 = SaltFactory.eINSTANCE.createSCorpusRelation();
+			corpRel1.setSName("corpRel1");
+			corpRel1.setSId("salt:/corpRel1");
+			corpRel1.setSTarget(corp1);
+			corpRel1.setSSource(rootCorp);
+			corpGraph.addSRelation(corpRel1);
 			
-			//doc1
+			// Create Document
 			SDocument doc1= SaltFactory.eINSTANCE.createSDocument();
-			sElementId= SaltFactory.eINSTANCE.createSElementId();
-			sElementId.setSId("/Case1/doc1");
-			doc1.setSElementId(sElementId);
 			doc1.setSName("corpusFalko1");
-			corpGraph.addSNode(doc1);
+			doc1.setSId("/Case1/doc1/corpusFalko1");
 			doc1.setSDocumentGraph(SaltFactory.eINSTANCE.createSDocumentGraph());
 			doc1.getSDocumentGraph().setSId("/Case1/doc1/corpusFalko1");
-			//CorpDocRel
+			corpGraph.addSNode(doc1);
+			
+			// Create Corpus-Document Relation
 			SCorpusDocumentRelation corpDocRel1= SaltFactory.eINSTANCE.createSCorpusDocumentRelation();
-			sElementId= SaltFactory.eINSTANCE.createSElementId();
-			sElementId.setSId("rel1");
-			corpDocRel1.setSElementId(sElementId);
-			corpDocRel1.setSName("rel1");
-			corpDocRel1.setSCorpus(corp1);
-			corpDocRel1.setSDocument(doc1);
+			corpDocRel1.setSId("salt:/corpDocRel1");
+			corpDocRel1.setSName("corpDocRel1");
+			corpDocRel1.setSSource(corp1);
+			corpDocRel1.setSTarget(doc1);
 			corpGraph.addSRelation(corpDocRel1);
 			return(doc1);
 		}
@@ -302,49 +354,49 @@ public class TigerImporterTest extends PepperImporterTest
 		STextualDS sTextualDS = sDocument.getSDocumentGraph().getSTextualDSs().get(0);
 		//as a means to group elements, layers (SLayer) can be used. here, a layer
 		//named "morphology" is created and the tokens will be added to it
-		SLayer morphLayer = SaltFactory.eINSTANCE.createSLayer();
-		morphLayer.setSName("morphology");
+		//SLayer morphLayer = SaltFactory.eINSTANCE.createSLayer();
+		//morphLayer.setSName("morphology");
 		//sDocument.getSDocumentGraph().addSLayer(morphLayer);
 
-		createToken(1,13,"sTok1", sTextualDS,sDocument,morphLayer);	
+		createToken(1,13,"sTok1", sTextualDS,sDocument,null);	
 		//creating tokenization for the token 'Pragmatische' and adding it to the morphology layer
-		createToken(14,31,"sTok2",sTextualDS,sDocument,morphLayer);	
+		createToken(14,31,"sTok2",sTextualDS,sDocument,null);	
 		//creating tokenization for the token 'Erwerbsprinzipien' and adding it to the morphology layer
-		createToken(32,35,"sTok3",sTextualDS,sDocument,morphLayer);		
+		createToken(32,35,"sTok3",sTextualDS,sDocument,null);		
 		//creating tokenization for the token 'ein' and adding it to the morphology layer
-		createToken(36,43,"sTok4",sTextualDS,sDocument,morphLayer);		
+		createToken(36,43,"sTok4",sTextualDS,sDocument,null);		
 		//creating tokenization for the token 'Hinweisd' and adding it to the morphology layer
-		createToken(44,47,"sTok5",sTextualDS,sDocument,morphLayer);
+		createToken(44,47,"sTok5",sTextualDS,sDocument,null);
 		//creating tokenization for the token 'für' and adding it to the morphology layer
-		createToken(48,52,"sTok6",sTextualDS,sDocument,morphLayer);		
+		createToken(48,52,"sTok6",sTextualDS,sDocument,null);		
 		//creating tokenization for the token 'eine' and adding it to the morphology layer
-		createToken(53,61,"sTok7",sTextualDS,sDocument,morphLayer);	
+		createToken(53,61,"sTok7",sTextualDS,sDocument,null);	
 		//creating tokenization for the token 'wichtige' and adding it to the morphology layer
-		createToken(62,67,"sTok8",sTextualDS,sDocument,morphLayer);
+		createToken(62,67,"sTok8",sTextualDS,sDocument,null);
 		//creating tokenization for the token 'Phase' and adding it to the morphology layer
-		createToken(68,71,"sTok9",sTextualDS,sDocument,morphLayer);
+		createToken(68,71,"sTok9",sTextualDS,sDocument,null);
 		//creating tokenization for the token 'des' and adding it to the morphology layer
-		createToken(72,85,"sTok10",sTextualDS,sDocument,morphLayer);
+		createToken(72,85,"sTok10",sTextualDS,sDocument,null);
 		//creating tokenization for the token 'Spracherwerbs' and adding it to the morphology layer
-		createToken(86,89,"sTok11",sTextualDS,sDocument,morphLayer);
+		createToken(86,89,"sTok11",sTextualDS,sDocument,null);
 		//creating tokenization for the token 'bei' and adding it to the morphology layer
-		createToken(90,93,"sTok12",sTextualDS,sDocument,morphLayer);
+		createToken(90,93,"sTok12",sTextualDS,sDocument,null);
 		//creating tokenization for the token 'den' and adding it to the morphology layer
-		createToken(94,101,"sTok13",sTextualDS,sDocument,morphLayer);
+		createToken(94,101,"sTok13",sTextualDS,sDocument,null);
 		//creating tenenization for the token 'Kindern' and adding it to the morphology layer
-		createToken(102,105,"sTok14",sTextualDS,sDocument,morphLayer);
+		createToken(102,105,"sTok14",sTextualDS,sDocument,null);
 		//creating tokenization for the token 'ist' and adding it to the morphology layer
-		createToken(106,109,"sTok15",sTextualDS,sDocument,morphLayer);
+		createToken(106,109,"sTok15",sTextualDS,sDocument,null);
 		//creating tokenization for the token 'der' and adding it to the morphology layer
-		createToken(110,118,"sTok16",sTextualDS,sDocument,morphLayer);
+		createToken(110,118,"sTok16",sTextualDS,sDocument,null);
 		//creating tokenization for the token 'Eintritt' and adding it to the morphology layer
-		createToken(119,121,"sTok17",sTextualDS,sDocument,morphLayer);
+		createToken(119,121,"sTok17",sTextualDS,sDocument,null);
 		//creating tokenization for the token 'in' and adding it to the morphology layer
-		createToken(122,125,"sTok18",sTextualDS,sDocument,morphLayer);
+		createToken(122,125,"sTok18",sTextualDS,sDocument,null);
 		//creating tokenization for the token 'den' and adding it to the morphology layer
-		createToken(126,141,"sTok19",sTextualDS,sDocument,morphLayer);
+		createToken(126,141,"sTok19",sTextualDS,sDocument,null);
 		//creating tokenization for the token 'Wortschatzspurt' and adding it to the morphology layer
-		createToken(142,143,"sTok20",sTextualDS,sDocument,morphLayer);
+		createToken(142,143,"sTok20",sTextualDS,sDocument,null);
 		//creating tokenization for the token '.' and adding it to the morphology layer
 		
 	}
@@ -352,6 +404,8 @@ public class TigerImporterTest extends PepperImporterTest
 	private void createToken(int start, int end, String sName , STextualDS sTextualDS, SDocument sDocument, SLayer layer){
 		SToken sToken= SaltFactory.eINSTANCE.createSToken();
 		sToken.setSName(sName);
+		sToken.setSId("/Case1/doc1/corpusFalko1#"+sName);
+		sToken.setId("/Case1/doc1/corpusFalko1#"+sName);
 		sDocument.getSDocumentGraph().addSNode(sToken);
 		//layer.getSNodes().add(sToken);
 		STextualRelation sTextRel= SaltFactory.eINSTANCE.createSTextualRelation();
@@ -359,6 +413,7 @@ public class TigerImporterTest extends PepperImporterTest
 		sTextRel.setSTextualDS(sTextualDS);
 		sTextRel.setSName(sName.replace("sTok", "sTextRel"));
 		sTextRel.setSId(sName.replace("sTok", "edge"));
+		sTextRel.setId(sName.replace("sTok", "edge"));
 		sTextRel.setSStart(start);
 		sTextRel.setSEnd(end);
 		sTextRel.setSSource(sToken);
@@ -378,8 +433,9 @@ public class TigerImporterTest extends PepperImporterTest
 			{
 				sPOSAnno= SaltFactory.eINSTANCE.createSPOSAnnotation();
 				sPOSAnno.setSValue(posAnnotations[i]);
-				sPOSAnno.setSValueType(SDATATYPE.STEXT);
+				//sPOSAnno.setSValueType(SDATATYPE.STEXT);
 				sTokens.get(i).addSAnnotation(sPOSAnno);
+				
 			}
 		}//adding part-of speech annotations
 			
