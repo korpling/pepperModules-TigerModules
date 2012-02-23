@@ -336,7 +336,7 @@ public class TigerImporterTest extends PepperImporterTest
 			// Create sub corpus (/Case1/doc1)
 			sElementId= SaltFactory.eINSTANCE.createSElementId();
 			SCorpus corp1= SaltFactory.eINSTANCE.createSCorpus();
-			//corp1.setSName("corpusFalko1");
+			corp1.setSName("doc1");
 			corp1.setSId("/Case1/doc1");
 			corpGraph.addSNode(corp1);
 			
