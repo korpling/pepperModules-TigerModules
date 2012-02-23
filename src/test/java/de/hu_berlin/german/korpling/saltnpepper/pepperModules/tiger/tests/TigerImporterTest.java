@@ -329,7 +329,7 @@ public class TigerImporterTest extends PepperImporterTest
 			
 			// Create root corpus (/Case1)
 			SCorpus rootCorp = SaltFactory.eINSTANCE.createSCorpus();
-			rootCorp.setSName("corpusFalko1");
+			rootCorp.setSName("Case1");
 			rootCorp.setSId("/Case1");
 			corpGraph.addSNode(rootCorp);
 			
