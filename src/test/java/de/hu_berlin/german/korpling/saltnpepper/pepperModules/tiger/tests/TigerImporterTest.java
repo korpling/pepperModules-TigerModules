@@ -259,15 +259,15 @@ public class TigerImporterTest extends PepperImporterTest
 		SDocument importedSDocument= this.getFixture().getSaltProject().getSCorpusGraphs().get(0).getSDocuments().get(0);
 
 		
-//		System.out.println("Imported Corpus: "+importedCorpusGraph);
-//		System.out.println("Sample Corpus: "+sampleCorpusGraph);
-//		System.out.println("Imported Document: "+importedSDocument);
-//		System.out.println("Sample Document: "+sampleCorpusGraph.getSDocuments().get(0));
-//		System.out.println("Imported Corpus Label count: "+importedCorpusGraph.getLabels().size());
-//		System.out.println("Sample Corpus Label count: "+sampleCorpusGraph.getLabels().size());
-//		System.out.println("Imported Textual DS: "+importedSDocument.getSDocumentGraph().getSTextualDSs().get(0));
-//		System.out.println("Sample   Textual DS: "+sampleCorpusGraph.getSDocuments().get(0).getSDocumentGraph().getSTextualDSs().get(0));
-//		
+		System.out.println("Imported Corpus: "+importedCorpusGraph);
+		System.out.println("Sample Corpus: "+sampleCorpusGraph);
+		System.out.println("Imported Document: "+importedSDocument);
+		System.out.println("Sample Document: "+sampleCorpusGraph.getSDocuments().get(0));
+		System.out.println("Imported Corpus Label count: "+importedCorpusGraph.getLabels().size());
+		System.out.println("Sample Corpus Label count: "+sampleCorpusGraph.getLabels().size());
+		System.out.println("Imported Textual DS: "+importedSDocument.getSDocumentGraph().getSTextualDSs().get(0));
+		System.out.println("Sample   Textual DS: "+sampleCorpusGraph.getSDocuments().get(0).getSDocumentGraph().getSTextualDSs().get(0));
+		
 //		for (SRelation edge : importedCorpusGraph.getSRelations()){
 //			System.out.println("Imported Edge "+edge.getSName()+
 //					" with id "+edge.getSId()+
