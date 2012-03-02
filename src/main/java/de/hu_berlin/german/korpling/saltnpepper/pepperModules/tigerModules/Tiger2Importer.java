@@ -17,7 +17,6 @@
  */
 package de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Map;
@@ -38,6 +37,7 @@ import de.hu_berlin.german.korpling.saltnpepper.pepper.pepperModules.FormatDefin
 import de.hu_berlin.german.korpling.saltnpepper.pepper.pepperModules.PepperImporter;
 import de.hu_berlin.german.korpling.saltnpepper.pepper.pepperModules.PepperInterfaceFactory;
 import de.hu_berlin.german.korpling.saltnpepper.pepper.pepperModules.impl.PepperImporterImpl;
+import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.exceptions.TigerImportInternalException;
 import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.exceptions.TigerImporterException;
 import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.mappers.Tiger22SaltMapper;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sCorpusStructure.SCorpus;
@@ -46,6 +46,7 @@ import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sCorpusStructure
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SElementId;
 import de.hu_berlin.german.korpling.tiger2.Corpus;
 import de.hu_berlin.german.korpling.tiger2.resources.TigerResourceFactory;
+import de.hu_berlin.german.korpling.tiger2.resources.TigerResourceFactory.TIGER2_FILE_TYPES;
 
 /**
  * This is a sample PepperImporter, which can be used for creating individual Importers for the 
@@ -62,7 +63,7 @@ import de.hu_berlin.german.korpling.tiger2.resources.TigerResourceFactory;
  * @version 1.0
  *
  */
-@Component(name="Tiger2ImporterComponent", factory="TigerImporterComponentFactory")
+@Component(name="Tiger2ImporterComponent", factory="PepperImporterComponentFactory")
 @Service(value=PepperImporter.class)
 public class Tiger2Importer extends PepperImporterImpl implements PepperImporter
 {
@@ -80,7 +81,7 @@ public class Tiger2Importer extends PepperImporterImpl implements PepperImporter
 				this.setSymbolicName("de.hu_berlin.german.korpling.saltnpepper.pepperModules-TigerModules");
 		//end: for testing the symbolic name has to be set without osgi
 		
-		{//set list of formats supported by this module
+		//start: set list of formats supported by this module
 			this.supportedFormats= new BasicEList<FormatDefinition>();
 //			FormatDefinition formatDef1= PepperInterfaceFactory.eINSTANCE.createFormatDefinition();
 //			formatDef1.setFormatName("tiger");
@@ -91,7 +92,7 @@ public class Tiger2Importer extends PepperImporterImpl implements PepperImporter
 			formatDef2.setFormatName("tiger2");
 			formatDef2.setFormatVersion("2.0.5");
 			this.supportedFormats.add(formatDef2);
-		}
+		//end: set list of formats supported by this module
 		
 		resourceSet= new ResourceSetImpl();
 		resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put(TigerResourceFactory.FILE_ENDING_TIGER2,new TigerResourceFactory());
@@ -115,11 +116,6 @@ public class Tiger2Importer extends PepperImporterImpl implements PepperImporter
 	private Map<SElementId, URI> sDocumentResourceTable= null;
 	
 	/**
-	 * Stores the current {@link SCorpusGraph} object to be used to import {@link SCorpus} and {@link SDocument} objects.
-	 */
-	private SCorpusGraph sCorpusGraph= null;
-	
-	/**
 	 * This method is called by Pepper at the start of conversion process. 
 	 * It shall create the structure the corpus to import. That means creating all necessary SCorpus, 
 	 * SDocument and all Relation-objects between them. The path tp the corpus to import is given by
@@ -135,16 +131,29 @@ public class Tiger2Importer extends PepperImporterImpl implements PepperImporter
 		
 		this.sDocumentResourceTable= new Hashtable<SElementId, URI>();	
 		this.sCorpusGraph= sCorpusGraph;
-		File corpusPath= new File(this.getCorpusDefinition().getCorpusPath().toFileString());
 		try {
 			EList<String> endings= new BasicEList<String>();
-			endings.add("tiger2");
-			endings.add("xml");
-			endings.add("tig2");
+			endings.add(TigerResourceFactory.FILE_ENDING_TIGERXML);
+			endings.add(TigerResourceFactory.FILE_ENDING_TIGER2);
+			endings.add(TigerResourceFactory.FILE_ENDING_TIGER2_2);
 			this.sDocumentResourceTable= this.createCorpusStructure(this.getCorpusDefinition().getCorpusPath(), null, endings);
 		} catch (IOException e) {
 			throw new TigerImporterException(this.name+": Cannot start with importing corpus, because saome exception occurs: ",e);
 		}
+	}
+	
+	/**
+	 * {@inheritdoc PepperImporterImpl#isFileToImport}
+	 */
+	@Override
+	public boolean isFileToImport(URI checkUri)
+	{
+		boolean retVal= true;
+		if (TIGER2_FILE_TYPES.TIGER2.equals(TigerResourceFactory.checkFileType(checkUri)))
+			retVal= true;
+		else retVal= false;
+		System.out.println("file "+ checkUri+ ":    "+ retVal);
+		return(retVal);
 	}
 	
 	/**
@@ -176,7 +185,7 @@ public class Tiger2Importer extends PepperImporterImpl implements PepperImporter
 	 *			this.getPepperModuleController().finish(sElementId);
 	 *		}
 	 *		else 
-	 *			throw new PepperModuleException("An error occurs in this module (name: "+this.getName()+"). The returningMode isn�t correctly set (it�s "+this.getReturningMode()+"). Please contact module supplier.");
+	 *			throw new PepperModuleException("An error occurs in this module (name: "+this.getName()+"). The returningMode isn't correctly set (it�s "+this.getReturningMode()+"). Please contact module supplier.");
 	 *		this.end();
 	 *	}
 	 * After all documents were processed this method of super class will call the method end().
@@ -201,14 +210,15 @@ public class Tiger2Importer extends PepperImporterImpl implements PepperImporter
 				((sElementId.getSIdentifiableElement() instanceof SDocument) ||
 				((sElementId.getSIdentifiableElement() instanceof SCorpus))))
 		{//only if given sElementId belongs to an object of type SDocument or SCorpus	
-			if (sElementId.getSIdentifiableElement() instanceof SCorpus)
-			{//mapping SCorpus	
-			}//mapping SCorpus
 			if (sElementId.getSIdentifiableElement() instanceof SDocument)
 			{//mapping SDocument
 				SDocument sDocument= (SDocument) sElementId.getSIdentifiableElement();
 				
-				URI inputUri= this.sDocumentResourceTable.get(sDocument.getId());
+				URI inputUri= this.sDocumentResourceTable.get(sDocument.getSElementId());
+				
+				if (inputUri== null)
+					throw new TigerImportInternalException("There was no matching uri found corresponding to document '"+sDocument.getSElementId()+"'.");
+				
 				//load resource 
 				Resource resourceLoad = resourceSet.createResource(inputUri);
 				
@@ -265,10 +275,9 @@ public class Tiger2Importer extends PepperImporterImpl implements PepperImporter
 	 */
 	protected void deactivate(ComponentContext componentContext) 
 	{
-		{//just for logging: to say, that the current module has been deactivated
+		//just for logging: to say, that the current module has been deactivated
 			if (this.getLogService()!= null)
-				this.getLogService().log(LogService.LOG_DEBUG,this.getName()+" is deactivated...");
-		}	
+				this.getLogService().log(LogService.LOG_DEBUG,this.getName()+" is deactivated...");	
 	}
 //================================ start: methods used by OSGi
 }

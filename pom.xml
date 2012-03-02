@@ -23,7 +23,7 @@
    <parent>
     <groupId>de.hu_berlin.german.korpling.saltnpepper</groupId>
     <artifactId>pepper-parentModule</artifactId>
-    <version>1.1.2</version>
+    <version>1.1.3-SNAPSHOT</version>
   </parent>
   <description>This version is a completly new begining and does not continue the biuld of older versions. In this version, the tiger-api was replaced by a new one, which is able to read and write TiGer xml and &lt;tiger2/&gt; data as well.</description>
   <url>https://korpling.german.hu-berlin.de/p/projects/peppermodules-samplemodules</url>
@@ -92,8 +92,10 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.6</Bundle-RequiredExecutionEnvironment>
             <Service-Component>OSGI-INF/${component.descriptor.name}</Service-Component>
             <Include-Resource>{maven-resources}, LICENSE, NOTICE</Include-Resource>
+            <!-- 
             <Bundle-ClassPath>.,{maven-dependencies}, tiger-api-0.0.1-SNAPSHOT.jar</Bundle-ClassPath> 
 	        <Include-Resource>{maven-resources}, LICENSE, NOTICE, lib/tiger-api-0.0.1-SNAPSHOT.jar</Include-Resource>
+	         -->
           </instructions>
         </configuration>
       </plugin>

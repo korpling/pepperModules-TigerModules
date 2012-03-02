@@ -23,6 +23,9 @@ import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructu
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.SToken;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SAnnotatableElement;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SAnnotation;
+import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SMetaAnnotatableElement;
+import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SMetaAnnotation;
+import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SNamedElement;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SNode;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SRelation;
 import de.hu_berlin.german.korpling.tiger2.AnnotatableElement;
@@ -135,9 +138,15 @@ public class Tiger22SaltMapper
 		synNode2sNode= Collections.synchronizedMap(new HashMap<SyntacticNode, SNode>());
 		edge2sRelation= Collections.synchronizedMap(new HashMap<Edge, SRelation>());
 		
+		//start: map document meta data
+			this.mapMetaAnnotations(corpus, this.getsDocument());
+		//end: map document meta data
 		
+		//init internal string buffer to store entire text
+		entireTextBuffer= new StringBuffer();
 		STextualDS sTextualDs= SaltFactory.eINSTANCE.createSTextualDS();
 		this.getsDocument().getSDocumentGraph().addSNode(sTextualDs);
+		
 		if (this.getCorpus().getSegments()!= null)
 		{
 			for (Segment segment: this.getCorpus().getSegments())
@@ -173,6 +182,9 @@ public class Tiger22SaltMapper
 				}// map segments
 			}// walk through all segments
 		}
+		//set SText to value of internal string buffer
+		sTextualDs.setSText(entireTextBuffer.toString());
+		
 	}
 	
 	/**
@@ -198,7 +210,10 @@ public class Tiger22SaltMapper
 		return(sTokens);
 	}
 	
-	
+	/**
+	 * Contains the entire text of one {@link SDocument} object over all graphs.
+	 */
+	private StringBuffer entireTextBuffer= new StringBuffer();
 	
 	/**
 	 * Creates an {@link SToken} object and the corresponding {@link STextualDS} object and adds it to the globel {@link SDocumentGraph} object.
@@ -214,14 +229,25 @@ public class Tiger22SaltMapper
 			throw new TigerImportMappingException("Cannot map the terminal '"+terminal+"' to salt, because the given sTextualDs is empty.");
 		
 		//start: adding the overlapped text to the data source 
-			int startPos= sTextualDs.getSText().length()-1;
-			sTextualDs.setSText(sTextualDs.getSText()+terminal.getWord());
-			int endPos= sTextualDs.getSText().length()-1;
+			int startPos= 0;
+			int endPos= 0;
+			if (entireTextBuffer.length()!= 0)
+				entireTextBuffer.append(getSeparator());
+			if (	(entireTextBuffer!= null)&&
+					(entireTextBuffer.length()!= 0))
+				startPos= entireTextBuffer.length();
+			//sTextualDs.setSText(sTextualDs.getSText()+getSeparator()+terminal.getWord());
+			
+			entireTextBuffer.append(terminal.getWord());
+			if (	(entireTextBuffer!= null)&&
+					(entireTextBuffer.length()!= 0))
+				endPos= entireTextBuffer.length();
 		//end: adding the overlapped text to the data source
 		SToken sToken=	this.getsDocument().getSDocumentGraph().createSToken(sTextualDs, startPos, endPos);
 		this.synNode2sNode.put(terminal, sToken);
 		//maps all annotations
 		this.mapAnnotations(terminal, sToken);
+				
 		return(sToken);
 	}
 	
@@ -277,8 +303,10 @@ public class Tiger22SaltMapper
 					//end: mapping rules
 					
 					if (	(edge.getType()!= null)&&
-							(edge.getType().isEmpty()))
+							(!edge.getType().isEmpty()))
 						sRelation.addSType(edge.getType());
+					sRelation.setSSource(sourceSNode);
+					sRelation.setSTarget(targetSNode);
 					this.mapAnnotations(edge, sRelation);
 					this.getsDocument().getSDocumentGraph().addSRelation(sRelation);
 					this.edge2sRelation.put(edge, sRelation);
@@ -325,6 +353,30 @@ public class Tiger22SaltMapper
 		{
 			sAnnotatableElement.createSAnnotation(null, annotation.getName(), annotation.getValue());
 		}
+	}
+	
+	/**
+	 * Maps all annotations of the given object to {@link SMetaAnnotation} objects and adds them to the corresponding object.
+	 */
+	protected void mapMetaAnnotations(Corpus corpus, SMetaAnnotatableElement sMetaAnnotatableElement)
+	{
+		if (corpus== null)
+			throw new TigerImportInternalException("Cannot map annotations, because the source element is empty.");
+		if (sMetaAnnotatableElement== null)
+			throw new TigerImportInternalException("Cannot map annotations, because the target element is empty.");
+		
+		if (corpus.getMeta().getAuthor()!= null)
+			sMetaAnnotatableElement.createSMetaAnnotation(null, "author", corpus.getMeta().getAuthor());
+		if (corpus.getMeta().getDate()!= null)
+			sMetaAnnotatableElement.createSMetaAnnotation(null, "date", corpus.getMeta().getDate());
+		if (corpus.getMeta().getDescription()!= null)
+			sMetaAnnotatableElement.createSMetaAnnotation(null, "description", corpus.getMeta().getDescription());
+		if (corpus.getMeta().getFormat()!= null)
+			sMetaAnnotatableElement.createSMetaAnnotation(null, "format", corpus.getMeta().getFormat());
+		if (corpus.getMeta().getHistory()!= null)
+			sMetaAnnotatableElement.createSMetaAnnotation(null, "history", corpus.getMeta().getHistory());
+		if (sMetaAnnotatableElement instanceof SNamedElement)
+			((SNamedElement) sMetaAnnotatableElement).setSName(corpus.getMeta().getName());
 	}
 	
 }
