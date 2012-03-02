@@ -67,6 +67,14 @@ import de.hu_berlin.german.korpling.tiger2.resources.TigerResourceFactory.TIGER2
 @Service(value=PepperImporter.class)
 public class Tiger2Importer extends PepperImporterImpl implements PepperImporter
 {
+	/**
+	 * Properties to customize a mapping from a <tiger2/> model to a Salt model
+	 */
+	public Tiger2Properties tiger2Properties= null;
+	
+	/**
+	 * Initializes an importer, importing data from a <tiger2/> model.
+	 */
 	public Tiger2Importer()
 	{
 		super();
@@ -126,6 +134,12 @@ public class Tiger2Importer extends PepperImporterImpl implements PepperImporter
 	public void importCorpusStructure(SCorpusGraph sCorpusGraph)
 			throws PepperModuleException
 	{
+		//init properties
+		if (this.getSpecialParams()!= null)
+		{
+			this.tiger2Properties= Tiger2Properties.createTiger2Properties(this.getSpecialParams());
+		}
+		
 		if (this.getCorpusDefinition().getCorpusPath()== null)
 			throw new TigerImporterException("Cannot import corpus-structure, because no corpus-path is given.");
 		
@@ -152,7 +166,6 @@ public class Tiger2Importer extends PepperImporterImpl implements PepperImporter
 		if (TIGER2_FILE_TYPES.TIGER2.equals(TigerResourceFactory.checkFileType(checkUri)))
 			retVal= true;
 		else retVal= false;
-		System.out.println("file "+ checkUri+ ":    "+ retVal);
 		return(retVal);
 	}
 	
@@ -235,6 +248,7 @@ public class Tiger2Importer extends PepperImporterImpl implements PepperImporter
 				Corpus corpus= (Corpus) resourceLoad.getContents().get(0);
 				
 				Tiger22SaltMapper mapper= new Tiger22SaltMapper();
+				mapper.setMappingProperties(tiger2Properties);
 				mapper.setCorpus(corpus);
 				mapper.setsDocument(sDocument);
 				mapper.map();

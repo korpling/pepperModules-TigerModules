@@ -3,10 +3,12 @@ package de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.mapp
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
 
+import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.Tiger2Properties;
 import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.TigerProperties;
 import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.exceptions.TigerImportInternalException;
 import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.exceptions.TigerImportMappingException;
@@ -19,6 +21,7 @@ import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructu
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.SSpan;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.SSpanningRelation;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.SStructure;
+import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.STYPE_NAME;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.STextualDS;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.SToken;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SAnnotatableElement;
@@ -106,6 +109,30 @@ public class Tiger22SaltMapper
 	}
 	
 	/**
+	 * {@link Tiger2Properties} object containing properties to customize the mapping from data coming from a tiger2 model to a 
+	 * Salt model.
+	 */
+	private Tiger2Properties mappingProperties= null;
+	
+	/**
+	 * Sets the {@link Tiger2Properties} object containing properties to customize the mapping from data coming from a tiger2 model to a 
+	 * Salt model.
+	 * @param mappingProperties the mappingProperties to set
+	 */
+	public void setMappingProperties(Tiger2Properties mappingProperties) {
+		this.mappingProperties = mappingProperties;
+	}
+
+	/**
+	 * Returns the {@link Tiger2Properties} object containing properties to customize the mapping from data coming from a tiger2 model to a 
+	 * Salt model.
+	 * @return the mappingProperties
+	 */
+	public Tiger2Properties getMappingProperties() {
+		return mappingProperties;
+	}
+	
+	/**
 	 * Maps the data contained in the given {@link Corpus} object to the given {@link SDocument} object.
 	 * @param corpus {@link Corpus} object to be mapped
 	 * @param sDocument {@link SDocument} object to be filled
@@ -176,9 +203,11 @@ public class Tiger22SaltMapper
 							}
 						}
 					}// walk through all graphs
-					//start: create span for segment
+					if (	(this.getMappingProperties()!= null)&&
+							(this.getMappingProperties().propCreateSSpan4Segment()))
+					{//start: create span for segment
 						this.getsDocument().getSDocumentGraph().createSSpan(sTokens);
-					//end: create span for segment
+					}//end: create span for segment
 				}// map segments
 			}// walk through all segments
 		}
@@ -284,6 +313,14 @@ public class Tiger22SaltMapper
 					SNode targetSNode= this.synNode2sNode.get(edge.getTarget());
 					if (targetSNode== null)
 						throw new TigerImporterException("Cannot map the edge '"+edge+"', because its source '"+edge.getTarget()+"' has no corresponding SNode object.");
+					STYPE_NAME saltType= null;
+					if (	(this.getMappingProperties()!= null)&&
+							(edge.getType()!= null))
+					{
+						Map<String, STYPE_NAME> saltTypes= this.getMappingProperties().propEdge2SRelation();
+						saltType= saltTypes.get(edge.getType());
+					}
+					
 					
 					//start: mapping rules
 						if (sourceSNode instanceof SToken)
@@ -291,13 +328,21 @@ public class Tiger22SaltMapper
 						else if (	(sourceSNode instanceof SSpan) &&
 									(targetSNode instanceof SToken))
 						{
-							//TODO also SPointingRelation is possible, when using customization
-							sRelation= SaltFactory.eINSTANCE.createSSpanningRelation();
+							if (	(saltType!= null)&&
+									(STYPE_NAME.SPOINTING_RELATION.equals(saltType)))
+							{//also SPointingRelation is possible, when using customization
+								sRelation= SaltFactory.eINSTANCE.createSPointingRelation();
+							}//also SPointingRelation is possible, when using customization
+							else sRelation= SaltFactory.eINSTANCE.createSSpanningRelation();
 						}
 						else if (sourceSNode instanceof SStructure)
 						{
-							//TODO also SPointingRelation is possible, when using customization
-							sRelation= SaltFactory.eINSTANCE.createSDominanceRelation();
+							if (	(saltType!= null)&&
+									(STYPE_NAME.SPOINTING_RELATION.equals(saltType)))
+							{//also SPointingRelation is possible, when using customization
+								sRelation= SaltFactory.eINSTANCE.createSPointingRelation();
+							}//also SPointingRelation is possible, when using customization
+							else sRelation= SaltFactory.eINSTANCE.createSDominanceRelation();
 						}
 						else sRelation= SaltFactory.eINSTANCE.createSPointingRelation();
 					//end: mapping rules
@@ -378,5 +423,4 @@ public class Tiger22SaltMapper
 		if (sMetaAnnotatableElement instanceof SNamedElement)
 			((SNamedElement) sMetaAnnotatableElement).setSName(corpus.getMeta().getName());
 	}
-	
 }
