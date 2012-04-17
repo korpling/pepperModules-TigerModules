@@ -4,16 +4,32 @@
   <artifactId>pepperModules-TigerModules</artifactId>
   <version>1.1.77-SNAPSHOT</version>
   <packaging>bundle</packaging>
+  <distributionManagement>
+    <repository>
+      <id>korpling</id>
+      <name>korpling maven repo</name>
+      <url>file:///srv/www/maven2/</url>
+      <!-- <url>scpexe://korpling.german.hu-berlin.de/srv/www/maven2/</url>-->
+    </repository>
+  </distributionManagement>
   <repositories>
     <repository>
-      <id>SaltNPepper Repository</id>
-      <url>https://korpling.german.hu-berlin.de/~annis/maven2/saltnpepper/</url>
-    </repository>
-    <repository>
-      <id>SaltNPepper Repository 2</id>
-      <url>https://korpling.german.hu-berlin.de/maven2</url>
+      <id>korpling</id>
+      <name>korpling maven repo</name>
+      <url>http://korpling.german.hu-berlin.de/maven2</url>
     </repository>
   </repositories>
+  <description>This project provides a Pepper importer for Tiger data.</description>
+  <url>https://korpling.german.hu-berlin.de/p/projects/peppermodules-tigermodules</url>
+  <issueManagement>
+  	<system>Redmine</system>
+  	<url>https://korpling.german.hu-berlin.de/p/projects/peppermodules-tigermodules/issues</url>
+  </issueManagement>
+  <ciManagement>
+  	<system>Jenkins</system>
+  	<url>https://korpling.german.hu-berlin.de/jenkins/</url>
+  </ciManagement>
+  <inceptionYear>2011</inceptionYear>
   <parent>
     <groupId>de.hu_berlin.german.korpling.saltnpepper</groupId>
     <artifactId>pepper-parentModule</artifactId>
