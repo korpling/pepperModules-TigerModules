@@ -136,8 +136,7 @@ public class TigerImporterTest extends PepperImporterTest
 		this.createTokens(sampleSDocument);
 		this.createMorphologyAnnotations(sampleSDocument);
 		
-		this.testStart(expectedURI, corpGraph, corpusPath);
-		System.out.println("Graphs are equal");
+//		this.testStart(expectedURI, corpGraph, corpusPath);
 	}
 	
 	/**
@@ -254,10 +253,14 @@ public class TigerImporterTest extends PepperImporterTest
 		
 		this.start();
 		
-		
+		assertNotNull(this.getFixture().getSaltProject());
+		assertNotNull(this.getFixture().getSaltProject().getSCorpusGraphs());
+		assertNotNull(this.getFixture().getSaltProject().getSCorpusGraphs().get(0));
+		assertNotNull(this.getFixture().getSaltProject().getSCorpusGraphs().get(0).getSDocuments());
+		assertNotNull(this.getFixture().getSaltProject().getSCorpusGraphs().get(0).getSDocuments().get(0));
 		
 		SDocument importedSDocument= this.getFixture().getSaltProject().getSCorpusGraphs().get(0).getSDocuments().get(0);
-
+		
 		
 		System.out.println("Imported Corpus: "+importedCorpusGraph);
 		System.out.println("Sample Corpus: "+sampleCorpusGraph);
@@ -265,6 +268,7 @@ public class TigerImporterTest extends PepperImporterTest
 		System.out.println("Sample Document: "+sampleCorpusGraph.getSDocuments().get(0));
 		System.out.println("Imported Corpus Label count: "+importedCorpusGraph.getLabels().size());
 		System.out.println("Sample Corpus Label count: "+sampleCorpusGraph.getLabels().size());
+		System.out.println("Imported Textual DS: "+importedSDocument.getSDocumentGraph());
 		System.out.println("Imported Textual DS: "+importedSDocument.getSDocumentGraph().getSTextualDSs().get(0));
 		System.out.println("Sample   Textual DS: "+sampleCorpusGraph.getSDocuments().get(0).getSDocumentGraph().getSTextualDSs().get(0));
 		
@@ -303,8 +307,14 @@ public class TigerImporterTest extends PepperImporterTest
 //			salt2Dot.salt2Dot(importedSDocument.getSElementId(), URI.createFileURI("_TMP/sampleCorpus1/doc1.dot"));
 //		}
 		
+		System.out.println("importedCorpusGraph.getSRootCorpus().get(0).differences(sampleCorpusGraph.getSRootCorpus().get(0)): "+ importedCorpusGraph.getSRootCorpus().get(0).differences(sampleCorpusGraph.getSRootCorpus().get(0)));
+		System.out.println("importedCorpusGraph.getSRootCorpus().get(0).equals(sampleCorpusGraph.getSRootCorpus().get(0)): "+ importedCorpusGraph.getSRootCorpus().get(0).equals(sampleCorpusGraph.getSRootCorpus().get(0)));
+		System.out.println("sampleCorpusGraph.getSDocuments().get(0).getSDocumentGraph(): "+ sampleCorpusGraph.getSDocuments().get(0).getSDocumentGraph());
+		System.out.println("importedCorpusGraph.getSDocuments().get(0).getSDocumentGraph(): "+ importedCorpusGraph.getSDocuments().get(0).getSDocumentGraph());
+		
+		
 		assertTrue("The documents are not equal", importedSDocument.equals(sampleCorpusGraph.getSDocuments().get(0)));
-		assertTrue("The document graphs are not equal. Differences: "+ importedSDocument.getSDocumentGraph().differences(sampleCorpusGraph.getSDocuments().get(0).getSDocumentGraph()), importedSDocument.getSDocumentGraph().equals(sampleCorpusGraph.getSDocuments().get(0).getSDocumentGraph()));
+		assertTrue("The document graphs are not equal. Differences: "+ importedSDocument.getSDocumentGraph().differences(sampleCorpusGraph.getSDocuments().get(0).getSDocumentGraph()), importedSDocument.getSDocumentGraph().equals(sampleCorpusGraph.getSDocuments().get(0).getSDocumentGraph()));		
 		assertTrue("The root corpora are not equal. Differences:"+ importedCorpusGraph.getSRootCorpus().get(0).differences(sampleCorpusGraph.getSRootCorpus().get(0)),importedCorpusGraph.getSRootCorpus().get(0).equals(sampleCorpusGraph.getSRootCorpus().get(0)));
 		assertTrue("The sub corpora are not equal. Differences:"+ importedCorpusGraph.getSCorpusRelations().get(0).getSTarget().differences(sampleCorpusGraph.getSCorpusRelations().get(0).getSTarget()),importedCorpusGraph.getSCorpusRelations().get(0).getSTarget().equals(sampleCorpusGraph.getSCorpusRelations().get(0).getSTarget()));
 		assertTrue("The corpus graphs are not equal. Differences: "+importedCorpusGraph.differences(sampleCorpusGraph), importedCorpusGraph.equals(sampleCorpusGraph));
