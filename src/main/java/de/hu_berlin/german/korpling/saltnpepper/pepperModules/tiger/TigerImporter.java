@@ -33,9 +33,7 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 
 import tigerAPI.Corpus;
-import de.hu_berlin.german.korpling.saltnpepper.pepper.pepperModules.FormatDefinition;
 import de.hu_berlin.german.korpling.saltnpepper.pepper.pepperModules.PepperImporter;
-import de.hu_berlin.german.korpling.saltnpepper.pepper.pepperModules.PepperInterfaceFactory;
 import de.hu_berlin.german.korpling.saltnpepper.pepper.pepperModules.impl.PepperImporterImpl;
 import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tiger.exceptions.TigerImporterException;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sCorpusStructure.SCorpusGraph;
@@ -49,30 +47,12 @@ public class TigerImporter extends PepperImporterImpl implements PepperImporter
 	public TigerImporter()
 	{
 		super();
+		//setting name of module
 		this.name= "TigerImporter";
-		if (	(this.getSymbolicName()==  null) ||
-				(this.getSymbolicName().equalsIgnoreCase("")))
-			this.setSymbolicName("de.hu_berlin.german.korpling.saltnpepper.pepperModules.TigerModules");
-		this.init();
-	}	
-
-	protected void init()
-	{
-		this.supportedFormats= new BasicEList<FormatDefinition>();
-		FormatDefinition formatDef= PepperInterfaceFactory.eINSTANCE.createFormatDefinition();
-		formatDef.setFormatName("tiger");
-		formatDef.setFormatVersion("1.0");
-		this.supportedFormats.add(formatDef);
+		//set list of formats supported by this module
+		this.addSupportedFormat("UAM", "1.0", null);
 	}
 	
-	private EList<FormatDefinition> supportedFormats= null;
-	
-	@Override
-	public EList<FormatDefinition> getSupportedFormats() 
-	{
-		return(this.supportedFormats);
-	}
-
 	/**
 	 * Stores relation between documents and their resource 
 	 */

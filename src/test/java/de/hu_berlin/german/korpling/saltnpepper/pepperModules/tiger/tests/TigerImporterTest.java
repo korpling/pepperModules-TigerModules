@@ -17,13 +17,10 @@
  */
 package de.hu_berlin.german.korpling.saltnpepper.pepperModules.tiger.tests;
 
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.emf.common.util.BasicEList;
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -33,16 +30,11 @@ import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import de.hu_berlin.german.korpling.saltnpepper.pepper.pepperExceptions.PepperConvertException;
 import de.hu_berlin.german.korpling.saltnpepper.pepper.pepperModules.CorpusDefinition;
 import de.hu_berlin.german.korpling.saltnpepper.pepper.pepperModules.FormatDefinition;
-import de.hu_berlin.german.korpling.saltnpepper.pepper.pepperModules.PepperInterfaceFactory;
+import de.hu_berlin.german.korpling.saltnpepper.pepper.pepperModules.PepperModulesFactory;
 import de.hu_berlin.german.korpling.saltnpepper.pepper.testSuite.moduleTests.PepperImporterTest;
 import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tiger.TigerImporter;
 import de.hu_berlin.german.korpling.saltnpepper.salt.SaltFactory;
-import de.hu_berlin.german.korpling.saltnpepper.salt.graph.Edge;
-import de.hu_berlin.german.korpling.saltnpepper.salt.graph.Label;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.SaltCommonFactory;
-import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.SaltProject;
-import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.modules.SDocumentStructureAccessor;
-import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.resources.dot.Salt2DOT;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sCorpusStructure.SCorpus;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sCorpusStructure.SCorpusDocumentRelation;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sCorpusStructure.SCorpusGraph;
@@ -52,11 +44,8 @@ import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructu
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.STextualDS;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.STextualRelation;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.SToken;
-import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SDATATYPE;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SElementId;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SLayer;
-import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SRelation;
-import de.hu_berlin.german.korpling.saltnpepper.salt.saltSemantics.SLemmaAnnotation;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltSemantics.SPOSAnnotation;
 
 public class TigerImporterTest extends PepperImporterTest
@@ -77,7 +66,7 @@ public class TigerImporterTest extends PepperImporterTest
 		this.getFixture().setResources(resourceURI);
 		
 		//set formats to support
-		FormatDefinition formatDef= PepperInterfaceFactory.eINSTANCE.createFormatDefinition();
+		FormatDefinition formatDef= PepperModulesFactory.eINSTANCE.createFormatDefinition();
 		formatDef.setFormatName("tiger");
 		formatDef.setFormatVersion("1.0");
 		this.supportedFormatsCheck.add(formatDef);
@@ -89,8 +78,8 @@ public class TigerImporterTest extends PepperImporterTest
 	public void SetGetCorpusDefinition()
 	{
 		//TODO somethong to test???
-		CorpusDefinition corpDef= PepperInterfaceFactory.eINSTANCE.createCorpusDefinition();
-		FormatDefinition formatDef= PepperInterfaceFactory.eINSTANCE.createFormatDefinition();
+		CorpusDefinition corpDef= PepperModulesFactory.eINSTANCE.createCorpusDefinition();
+		FormatDefinition formatDef= PepperModulesFactory.eINSTANCE.createFormatDefinition();
 		formatDef.setFormatName("tiger");
 		formatDef.setFormatVersion("1.0");
 		corpDef.setFormatDefinition(formatDef);
@@ -107,8 +96,8 @@ public class TigerImporterTest extends PepperImporterTest
 		URI corpusPath= URI.createFileURI("./src/test/resources/TigerImporter/Case1/");
 		
 		{//creating and setting corpus definition
-			CorpusDefinition corpDef= PepperInterfaceFactory.eINSTANCE.createCorpusDefinition();
-			FormatDefinition formatDef= PepperInterfaceFactory.eINSTANCE.createFormatDefinition();
+			CorpusDefinition corpDef= PepperModulesFactory.eINSTANCE.createCorpusDefinition();
+			FormatDefinition formatDef= PepperModulesFactory.eINSTANCE.createFormatDefinition();
 			formatDef.setFormatName("tiger");
 			formatDef.setFormatVersion("1.0");
 			corpDef.setFormatDefinition(formatDef);
@@ -174,8 +163,8 @@ public class TigerImporterTest extends PepperImporterTest
 	private void testStart(URI expectedURI, URI exportURI, URI corpusPath) throws IOException
 	{
 		{//creating and setting corpus definition
-			CorpusDefinition corpDef= PepperInterfaceFactory.eINSTANCE.createCorpusDefinition();
-			FormatDefinition formatDef= PepperInterfaceFactory.eINSTANCE.createFormatDefinition();
+			CorpusDefinition corpDef= PepperModulesFactory.eINSTANCE.createCorpusDefinition();
+			FormatDefinition formatDef= PepperModulesFactory.eINSTANCE.createFormatDefinition();
 			formatDef.setFormatName("tiger");
 			formatDef.setFormatVersion("1.0");
 			corpDef.setFormatDefinition(formatDef);
@@ -238,8 +227,8 @@ public class TigerImporterTest extends PepperImporterTest
 	private void testStart(URI expectedURI, SCorpusGraph sampleCorpusGraph, URI corpusPath) throws IOException
 	{
 		{//creating and setting corpus definition
-			CorpusDefinition corpDef= PepperInterfaceFactory.eINSTANCE.createCorpusDefinition();
-			FormatDefinition formatDef= PepperInterfaceFactory.eINSTANCE.createFormatDefinition();
+			CorpusDefinition corpDef= PepperModulesFactory.eINSTANCE.createCorpusDefinition();
+			FormatDefinition formatDef= PepperModulesFactory.eINSTANCE.createFormatDefinition();
 			formatDef.setFormatName("tiger");
 			formatDef.setFormatVersion("1.0");
 			corpDef.setFormatDefinition(formatDef);
