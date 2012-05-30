@@ -50,7 +50,7 @@ public class TigerImporter extends PepperImporterImpl implements PepperImporter
 		//setting name of module
 		this.name= "TigerImporter";
 		//set list of formats supported by this module
-		this.addSupportedFormat("UAM", "1.0", null);
+		this.addSupportedFormat("tiger", "1.0", null);
 	}
 	
 	/**
