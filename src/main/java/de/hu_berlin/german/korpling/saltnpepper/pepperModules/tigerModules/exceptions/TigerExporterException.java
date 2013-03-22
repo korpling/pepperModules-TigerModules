@@ -15,25 +15,25 @@
  *
  *
  */
-package de.hu_berlin.german.korpling.saltnpepper.pepperModules.tiger.exceptions;
+package de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.exceptions;
 
 import de.hu_berlin.german.korpling.saltnpepper.pepper.pepperExceptions.PepperModuleException;
 
-public class TigerImporterException extends PepperModuleException
-{
+public class TigerExporterException extends PepperModuleException {
+
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 6942425892766934367L;
 	
-	public TigerImporterException()
+	
+	private static final String STD_MSG= "This exception was thrown by the TigerExporter: "; 
+	public TigerExporterException()
 	{ super(); }
 	
-    public TigerImporterException(String s)
-    { super(s); }
+    public TigerExporterException(String s)
+    { super(STD_MSG+ s); }
     
-	public TigerImporterException(String s, Throwable ex)
-	{
-		super(s + " Nested Exception is: "+ ex.getMessage()+ ".", ex); 
-	}
+	public TigerExporterException(String s, Throwable ex)
+	{super(STD_MSG+s, ex); }
 }
