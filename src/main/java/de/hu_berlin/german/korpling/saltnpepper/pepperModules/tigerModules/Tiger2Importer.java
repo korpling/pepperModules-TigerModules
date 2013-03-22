@@ -81,6 +81,7 @@ public class Tiger2Importer extends PepperImporterImpl implements PepperImporter
 		
 		//set list of formats supported by this module
 		this.addSupportedFormat("tiger2", "2.0.5", null);
+		this.addSupportedFormat("tigerXML", "1.0", null);
 			
 		resourceSet= new ResourceSetImpl();
 		resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put(TigerResourceFactory.FILE_ENDING_TIGER2,new TigerResourceFactory());

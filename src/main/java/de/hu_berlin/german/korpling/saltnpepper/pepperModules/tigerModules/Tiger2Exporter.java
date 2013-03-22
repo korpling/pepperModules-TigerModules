@@ -59,6 +59,7 @@ public class Tiger2Exporter extends PepperExporterImpl implements PepperExporter
 		
 		//set list of formats supported by this module
 		this.addSupportedFormat("tiger2", "2.0.5", null);
+		this.addSupportedFormat("tigerXML", "1.0", null);
 		
 		//start: just for logging: to say, that the current module has been loaded
 			if (this.getLogService()!= null)
