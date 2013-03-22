@@ -40,8 +40,8 @@
   <dependencies>
    <dependency>
   		<groupId>de.hu_berlin.german.korpling</groupId>
-  		<artifactId>tiger-api</artifactId>
-  		<version>0.0.1-SNAPSHOT</version>
+  		<artifactId>tiger2-api</artifactId>
+  		<version>0.0.2-SNAPSHOT</version>
   		<type>jar</type>
   		<scope>compile</scope>
   	</dependency>
