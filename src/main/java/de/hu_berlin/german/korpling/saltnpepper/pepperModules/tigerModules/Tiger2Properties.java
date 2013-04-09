@@ -66,9 +66,9 @@ public class Tiger2Properties
 			props= new Properties();
 			props.load(in);
 		} catch (FileNotFoundException e) {
-			throw new InvalidPropertyException("Cannot create a '"+Tiger2Properties.class.getSimpleName()+"' property object, because the property file '"+file.getAbsolutePath()+"' does not exists.",e);
+			throw new InvalidPropertyException("Cannot create a '"+Tiger2Properties.class.getSimpleName()+"' property object, because the property file '"+file.getAbsolutePath()+"' does not exist.",e);
 		} catch (IOException e) {
-			throw new InvalidPropertyException("Cannot create a '"+Tiger2Properties.class.getSimpleName()+"' property object, because the property file '"+file.getAbsolutePath()+"' does not exists.",e);
+			throw new InvalidPropertyException("Cannot create a '"+Tiger2Properties.class.getSimpleName()+"' property object, because the property file '"+file.getAbsolutePath()+"' does not exist.",e);
 		}
 		finally
 		{
