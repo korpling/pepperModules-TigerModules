@@ -17,19 +17,12 @@
  */
 package de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
 
-import org.eclipse.emf.common.util.URI;
-
-import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.exceptions.InvalidPropertyException;
+import de.hu_berlin.german.korpling.saltnpepper.pepper.pepperModules.PepperModuleProperties;
+import de.hu_berlin.german.korpling.saltnpepper.pepper.pepperModules.PepperModuleProperty;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.SSpan;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.STYPE_NAME;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SRelation;
@@ -43,7 +36,7 @@ import de.hu_berlin.german.korpling.tiger2.Segment;
  * @author Florian Zipser
  *
  */
-public class Tiger2Properties 
+public class Tiger2Properties extends PepperModuleProperties
 {
 	public static final String PREFIX_PROP= "pepperModules.tigerModules.";
 	public static final String PREFIX_IMPORTER_PROP= PREFIX_PROP+ "importer.";
@@ -61,120 +54,18 @@ public class Tiger2Properties
 	 */
 	public static final String PROP_EDGE_2_SRELATION= PREFIX_IMPORTER_PROP+"map";
 	
+	/** The default separator to separate to tokens, when no default separator is given.*/
+	public static final String DEFAULT_SEPARATOR=" ";
 	/**
-	 * Creates a {@link Tiger2Properties} object and initializes it with the given {@link Properties} object. All properties
-	 * contained in the given {@link Properties} object will be loaded and be available via simple accessors.
-	 * All properties will be checked if they are valid.
-	 * 
-	 * @param props
-	 * @return
+	 * Determines the separator between terminal nodes. The default separator is {@value #DEFAULT_SEPARATOR}. 
 	 */
-	public static Tiger2Properties createTiger2Properties(File file)
-	{
-		if (file== null)
-			throw new InvalidPropertyException("Cannot create a '"+Tiger2Properties.class.getSimpleName()+"' property object, because the given filename to load properties from is empty.");
-		if (!file.exists())
-			throw new InvalidPropertyException("Cannot create a '"+Tiger2Properties.class.getSimpleName()+"' property object, because the given file '"+file.getAbsolutePath()+"' to load properties from does not exist.");
-		
-		Properties props= new Properties();
-		FileInputStream in= null;
-		try {
-			in= new FileInputStream(file);
-			props= new Properties();
-			props.load(in);
-		} catch (FileNotFoundException e) {
-			throw new InvalidPropertyException("Cannot create a '"+Tiger2Properties.class.getSimpleName()+"' property object, because the property file '"+file.getAbsolutePath()+"' does not exist.",e);
-		} catch (IOException e) {
-			throw new InvalidPropertyException("Cannot create a '"+Tiger2Properties.class.getSimpleName()+"' property object, because the property file '"+file.getAbsolutePath()+"' does not exist.",e);
-		}
-		finally
-		{
-			if (in!= null)
-			{
-				try {
-					in.close();
-				} catch (IOException e) 
-				{
-					throw new InvalidPropertyException("Cannot close stream to cosmat-properties.", e);
-				}
-			}
-		}
-		return(createTiger2Properties(props));
-	}
+	public static final String PROP_TERMINAL_SEPARATOR= PREFIX_IMPORTER_PROP+"separator";
 	
-	/**
-	 * Creates a {@link Tiger2Properties} object and initializes it with the given {@link Properties} object. All properties
-	 * contained in the given {@link Properties} object will be loaded and be available via simple accessors.
-	 * All properties will be checked if they are valid.
-	 * 
-	 * @param props
-	 * @return
-	 */
-	public static Tiger2Properties createTiger2Properties(URI uri)
+	public Tiger2Properties()
 	{
-		if (uri== null)
-			throw new InvalidPropertyException("Cannot create a '"+Tiger2Properties.class.getSimpleName()+"' property object, because the uri pointing to a file to load properties from is empty.");
-		
-		File file= new File(uri.toFileString());
-		return(createTiger2Properties(file));
-	}
-	
-	/**
-	 * Creates a {@link Tiger2Properties} object and initializes it with the given {@link Properties} object. All properties
-	 * contained in the given {@link Properties} object will be loaded and be available via simple accessors.
-	 * All properties will be checked if they are valid.
-	 * 
-	 * @param props
-	 * @return
-	 */
-	public static Tiger2Properties createTiger2Properties(Properties props)
-	{
-		return(new Tiger2Properties(props));
-	}
-	
-	/**
-	 * The {@link Properties} object where properties are stored.
-	 */
-	private Properties props= null;
-	
-	/**
-	 * Returns the {@link Properties} object where properties are stored.
-	 * @return
-	 */
-	public Properties getProps() {
-		return props;
-	}
-
-	/**
-	 * Sets the {@link Properties} object where properties are stored.
-	 * @param props
-	 */
-	public void setProps(Properties props) {
-		this.props = props;
-	}
-
-	/**
-	 * Creates a {@link Tiger2Properties} object and initializes it with the given {@link Properties} object. All properties
-	 * contained in the given {@link Properties} object will be loaded and be available via simple accessors.
-	 * All properties will be checked if they are valid.
-	 * 
-	 * @param props
-	 * @return
-	 */
-	private Tiger2Properties(Properties props)
-	{
-		this.checkProperties(props);
-		this.setProps(props);
-	}
-	
-	/**
-	 * Checks if all given properties have valid values.
-	 * @param props
-	 * @return true, if all values are valid
-	 */
-	public boolean checkProperties(Properties props)
-	{
-		return(true);
+		this.addProperty(new PepperModuleProperty<Boolean>(PROP_CREATE_SSPAN, Boolean.class, "This flag determines if a SSpan object shall be created for each segment. Must be mappable to a Boolean value.", false, false));
+		this.addProperty(new PepperModuleProperty<String>(PROP_EDGE_2_SRELATION, String.class, "Property to determine, which Egde type shall be mapped to which kind of SRelation.This is just a prefix of the real property, which has a suffix specifying the Edge type. For instance "+PROP_EDGE_2_SRELATION+".dep or "+PROP_EDGE_2_SRELATION+".prim.",false));
+		this.addProperty(new PepperModuleProperty<String>(PROP_TERMINAL_SEPARATOR, String.class, "Determines the separator between terminal nodes. The default separator is '"+DEFAULT_SEPARATOR+"'.",DEFAULT_SEPARATOR, false));
 	}
 	
 	/**
@@ -184,19 +75,7 @@ public class Tiger2Properties
 	 */
 	public boolean propCreateSSpan4Segment()
 	{
-		String valueStr= this.getProps().getProperty(PROP_CREATE_SSPAN);
-		if (valueStr!= null)
-		{
-			if ("true".equalsIgnoreCase(valueStr))
-				return(true);
-			else if ("false".equalsIgnoreCase(valueStr))
-				return(false);
-			else
-			{// an unreadable value, a warning should be thrown
-				return(true);
-			}
-		}
-		else return(true);
+		return((Boolean)this.getProperty(PROP_CREATE_SSPAN).getValue());
 	}
 	
 	/**
@@ -207,23 +86,31 @@ public class Tiger2Properties
 	{
 		Map<String, STYPE_NAME> retVal= Collections.synchronizedMap(new Hashtable<String, STYPE_NAME>());
 		
-		Set<Object> keys= this.getProps().keySet();
-		
-		for (Object key :keys)
+		for (String propName :getPropertyNames())
 		{
-			if (	(key != null)&&
-					(key instanceof String))
+			if (propName instanceof String)
 			{
-				if (key.toString().startsWith(PROP_EDGE_2_SRELATION))
+				if (propName.toString().startsWith(PROP_EDGE_2_SRELATION))
 				{
-					STYPE_NAME saltType = STYPE_NAME.get(this.getProps().getProperty(key.toString()));
-					String edgeType= key.toString().replace(PROP_EDGE_2_SRELATION+".", "");
-					if (	(saltType!= null)&&
-							(edgeType!= null))
-						retVal.put(edgeType, saltType);
+					String value= (String)getProperty(propName).getValue();
+					if (value!= null){
+						STYPE_NAME saltType = STYPE_NAME.get(value);
+						String edgeType= getProperty(propName).getValue().toString().replace(PROP_EDGE_2_SRELATION+".", "");
+						if (	(saltType!= null)&&
+								(edgeType!= null))
+							retVal.put(edgeType, saltType);
+					}
 				}
 			}
 		}
 		return(retVal);
+	}
+	
+	
+	/**
+	 * Returns the used separator to separate to tokens.
+	 */
+	public String getSeparator() {
+		return((String)getProperty(PROP_TERMINAL_SEPARATOR).getValue());
 	}
 }

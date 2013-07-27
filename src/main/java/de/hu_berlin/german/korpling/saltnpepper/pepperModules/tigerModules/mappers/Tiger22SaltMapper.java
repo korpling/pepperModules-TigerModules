@@ -24,6 +24,8 @@ import java.util.Map;
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
 
+import de.hu_berlin.german.korpling.saltnpepper.pepper.pepperModules.MAPPING_RESULT;
+import de.hu_berlin.german.korpling.saltnpepper.pepper.pepperModules.impl.PepperMapperImpl;
 import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.Tiger2Properties;
 import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.TigerProperties;
 import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.exceptions.TigerImportInternalException;
@@ -62,32 +64,8 @@ import de.hu_berlin.german.korpling.tiger2.Terminal;
  * @author Florian Zipser
  *
  */
-public class Tiger22SaltMapper 
-{
-	/**
-	 * The default separator to separate to tokens, when no default separator is given.
-	 */
-	public static final String DEFAULT_SEPARATOR=" ";
-	
-	/**
-	 * The used separator to separate to tokens.
-	 */
-	private static String separator= DEFAULT_SEPARATOR;
-	
-	/**
-	 * Sets the used separator to separate to tokens.
-	 */
-	public static void setSeparator(String separator) {
-		Tiger22SaltMapper.separator = separator;
-	}
-
-	/**
-	 * Returns the used separator to separate to tokens.
-	 */
-	public static String getSeparator() {
-		return separator;
-	}
-	
+public class Tiger22SaltMapper extends PepperMapperImpl
+{	
 	/**
 	 * The main object of the &lt;tiger2/&gt; model.
 	 */
@@ -107,58 +85,16 @@ public class Tiger22SaltMapper
 		this.corpus = corpus;
 	}
 	
-	/**
-	 * The {@link SDocument} object to be filled by the mapping with the data of the &lt;tiger2/&gt; model.
-	 */
-	protected SDocument sDocument= null;
-	/**
-	 * Returns the {@link SDocument} object to be filled by the mapping with the data of the &lt;tiger2/&gt; model.
-	 */
-	public SDocument getsDocument() {
-		return sDocument;
-	}
-	/**
-	 * Sets the {@link SDocument} object to be filled by the mapping with the data of the &lt;tiger2/&gt; model.
-	 */
-	public void setsDocument(SDocument sDocument) {
-		this.sDocument = sDocument;
-	}
-	
-	/**
-	 * {@link Tiger2Properties} object containing properties to customize the mapping from data coming from a tiger2 model to a 
-	 * Salt model.
-	 */
-	private Tiger2Properties mappingProperties= null;
-	
-	/**
-	 * Sets the {@link Tiger2Properties} object containing properties to customize the mapping from data coming from a tiger2 model to a 
-	 * Salt model.
-	 * @param mappingProperties the mappingProperties to set
-	 */
-	public void setMappingProperties(Tiger2Properties mappingProperties) {
-		this.mappingProperties = mappingProperties;
-	}
 
 	/**
 	 * Returns the {@link Tiger2Properties} object containing properties to customize the mapping from data coming from a tiger2 model to a 
 	 * Salt model.
 	 * @return the mappingProperties
 	 */
-	public Tiger2Properties getMappingProperties() {
-		return mappingProperties;
+	public Tiger2Properties getProps() {
+		return (Tiger2Properties) getProperties();
 	}
 	
-	/**
-	 * Maps the data contained in the given {@link Corpus} object to the given {@link SDocument} object.
-	 * @param corpus {@link Corpus} object to be mapped
-	 * @param sDocument {@link SDocument} object to be filled
-	 */
-	public void map(Corpus corpus, SDocument sDocument)
-	{
-		this.setCorpus(corpus);
-		this.setsDocument(sDocument);
-		this.map();
-	}
 	
 	/**
 	 * Maps a {@link SyntacticNode} object to the corresponding mapped {@link SNode} object.
@@ -174,21 +110,22 @@ public class Tiger22SaltMapper
 	 * Maps the data contained in the set {@link Corpus} object ({@link #setCorpus(Corpus)}) to the set {@link SDocument} 
 	 * {@link #setsDocument(SDocument)} object.
 	 */
-	public void map()
+	@Override
+	public MAPPING_RESULT mapSDocument()
 	{
-		if (this.getsDocument().getSDocumentGraph()== null)
-			this.getsDocument().setSDocumentGraph(SaltFactory.eINSTANCE.createSDocumentGraph());
+		if (getSDocument().getSDocumentGraph()== null)
+			getSDocument().setSDocumentGraph(SaltFactory.eINSTANCE.createSDocumentGraph());
 		synNode2sNode= Collections.synchronizedMap(new HashMap<SyntacticNode, SNode>());
 		edge2sRelation= Collections.synchronizedMap(new HashMap<Edge, SRelation>());
 		
 		//start: map document meta data
-			this.mapMetaAnnotations(corpus, this.getsDocument());
+			this.mapMetaAnnotations(corpus, getSDocument());
 		//end: map document meta data
 		
 		//init internal string buffer to store entire text
 		entireTextBuffer= new StringBuffer();
 		STextualDS sTextualDs= SaltFactory.eINSTANCE.createSTextualDS();
-		this.getsDocument().getSDocumentGraph().addSNode(sTextualDs);
+		getSDocument().getSDocumentGraph().addSNode(sTextualDs);
 		
 		if (this.getCorpus().getSegments()!= null)
 		{
@@ -219,17 +156,17 @@ public class Tiger22SaltMapper
 							}
 						}
 					}// walk through all graphs
-					if (	(this.getMappingProperties()!= null)&&
-							(this.getMappingProperties().propCreateSSpan4Segment()))
+					if (	(getProps()!= null)&&
+							(getProps().propCreateSSpan4Segment()))
 					{//start: create span for segment
-						this.getsDocument().getSDocumentGraph().createSSpan(sTokens);
+						getSDocument().getSDocumentGraph().createSSpan(sTokens);
 					}//end: create span for segment
 				}// map segments
 			}// walk through all segments
 		}
 		//set SText to value of internal string buffer
 		sTextualDs.setSText(entireTextBuffer.toString());
-		
+		return(MAPPING_RESULT.FINISHED);
 	}
 	
 	/**
@@ -277,7 +214,7 @@ public class Tiger22SaltMapper
 			int startPos= 0;
 			int endPos= 0;
 			if (entireTextBuffer.length()!= 0)
-				entireTextBuffer.append(getSeparator());
+				entireTextBuffer.append(getProps().getSeparator());
 			if (	(entireTextBuffer!= null)&&
 					(entireTextBuffer.length()!= 0))
 				startPos= entireTextBuffer.length();
@@ -288,7 +225,7 @@ public class Tiger22SaltMapper
 					(entireTextBuffer.length()!= 0))
 				endPos= entireTextBuffer.length();
 		//end: adding the overlapped text to the data source
-		SToken sToken=	this.getsDocument().getSDocumentGraph().createSToken(sTextualDs, startPos, endPos);
+		SToken sToken=	getSDocument().getSDocumentGraph().createSToken(sTextualDs, startPos, endPos);
 		this.synNode2sNode.put(terminal, sToken);
 		//maps all annotations
 		this.mapAnnotations(terminal, sToken);
@@ -330,10 +267,10 @@ public class Tiger22SaltMapper
 					if (targetSNode== null)
 						throw new TigerImporterException("Cannot map the edge '"+edge+"', because its source '"+edge.getTarget()+"' has no corresponding SNode object.");
 					STYPE_NAME saltType= null;
-					if (	(this.getMappingProperties()!= null)&&
+					if (	(getProps()!= null)&&
 							(edge.getType()!= null))
 					{
-						Map<String, STYPE_NAME> saltTypes= this.getMappingProperties().propEdge2SRelation();
+						Map<String, STYPE_NAME> saltTypes= getProps().propEdge2SRelation();
 						saltType= saltTypes.get(edge.getType());
 					}
 					
@@ -369,7 +306,7 @@ public class Tiger22SaltMapper
 					sRelation.setSSource(sourceSNode);
 					sRelation.setSTarget(targetSNode);
 					this.mapAnnotations(edge, sRelation);
-					this.getsDocument().getSDocumentGraph().addSRelation(sRelation);
+					getSDocument().getSDocumentGraph().addSRelation(sRelation);
 					this.edge2sRelation.put(edge, sRelation);
 				}
 			}
@@ -394,7 +331,7 @@ public class Tiger22SaltMapper
 					//TODO read property pepperModules.tigerModules.importer.map.TYPE to differentiate between span and structure
 					SStructure sStructure= SaltFactory.eINSTANCE.createSStructure();
 					this.mapAnnotations(nonTerminal, sStructure);
-					this.getsDocument().getSDocumentGraph().addSNode(sStructure);
+					getSDocument().getSDocumentGraph().addSNode(sStructure);
 					this.synNode2sNode.put(nonTerminal, sStructure);
 				}
 			}
