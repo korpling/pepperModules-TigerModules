@@ -68,8 +68,10 @@ public class Tiger2Importer extends PepperImporterImpl implements PepperImporter
 		//set list of formats supported by this module
 		this.addSupportedFormat("tiger2", "2.0.5", null);
 		this.addSupportedFormat("tigerXML", "1.0", null);
-		getSDocumentEndings().add("tiger2");
-		getSDocumentEndings().add(PepperImporter.ENDING_XML);
+		getSDocumentEndings().add(TigerResourceFactory.FILE_ENDING_TIGER2);
+		getSDocumentEndings().add(TigerResourceFactory.FILE_ENDING_TIGER2_2);
+		getSDocumentEndings().add(TigerResourceFactory.FILE_ENDING_TIGERXML);
+		getSDocumentEndings().add(TigerResourceFactory.FILE_ENDING_TIGERXML_2);
 		setProperties(new Tiger2Properties());
 	}
 	
@@ -89,6 +91,7 @@ public class Tiger2Importer extends PepperImporterImpl implements PepperImporter
 					resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put(TigerResourceFactory.FILE_ENDING_TIGER2,new TigerResourceFactory());
 					resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put(TigerResourceFactory.FILE_ENDING_TIGER2_2,new TigerResourceFactory());
 					resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put(TigerResourceFactory.FILE_ENDING_TIGERXML,new TigerResourceFactory());
+					resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put(TigerResourceFactory.FILE_ENDING_TIGERXML_2,new TigerResourceFactory());
 				}
 			}
 		}
