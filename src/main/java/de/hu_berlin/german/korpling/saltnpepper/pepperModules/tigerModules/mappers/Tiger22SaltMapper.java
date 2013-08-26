@@ -363,17 +363,20 @@ public class Tiger22SaltMapper extends PepperMapperImpl
 		if (sMetaAnnotatableElement== null)
 			throw new TigerImportInternalException("Cannot map annotations, because the target element is empty.");
 		
-		if (corpus.getMeta().getAuthor()!= null)
-			sMetaAnnotatableElement.createSMetaAnnotation(null, "author", corpus.getMeta().getAuthor());
-		if (corpus.getMeta().getDate()!= null)
-			sMetaAnnotatableElement.createSMetaAnnotation(null, "date", corpus.getMeta().getDate());
-		if (corpus.getMeta().getDescription()!= null)
-			sMetaAnnotatableElement.createSMetaAnnotation(null, "description", corpus.getMeta().getDescription());
-		if (corpus.getMeta().getFormat()!= null)
-			sMetaAnnotatableElement.createSMetaAnnotation(null, "format", corpus.getMeta().getFormat());
-		if (corpus.getMeta().getHistory()!= null)
-			sMetaAnnotatableElement.createSMetaAnnotation(null, "history", corpus.getMeta().getHistory());
-		if (sMetaAnnotatableElement instanceof SNamedElement)
-			((SNamedElement) sMetaAnnotatableElement).setSName(corpus.getMeta().getName());
+		if (corpus.getMeta()!= null)
+		{
+			if (corpus.getMeta().getAuthor()!= null)
+				sMetaAnnotatableElement.createSMetaAnnotation(null, "author", corpus.getMeta().getAuthor());
+			if (corpus.getMeta().getDate()!= null)
+				sMetaAnnotatableElement.createSMetaAnnotation(null, "date", corpus.getMeta().getDate());
+			if (corpus.getMeta().getDescription()!= null)
+				sMetaAnnotatableElement.createSMetaAnnotation(null, "description", corpus.getMeta().getDescription());
+			if (corpus.getMeta().getFormat()!= null)
+				sMetaAnnotatableElement.createSMetaAnnotation(null, "format", corpus.getMeta().getFormat());
+			if (corpus.getMeta().getHistory()!= null)
+				sMetaAnnotatableElement.createSMetaAnnotation(null, "history", corpus.getMeta().getHistory());
+			if (sMetaAnnotatableElement instanceof SNamedElement)
+				((SNamedElement) sMetaAnnotatableElement).setSName(corpus.getMeta().getName());
+		}
 	}
 }
