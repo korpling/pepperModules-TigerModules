@@ -242,9 +242,6 @@ public class Tiger22SaltMapper extends PepperMapperImpl
 	 *  <li>object corresponding to source of {@link Edge} object is a {@link SStructure} object --> {@link SDominanceRelation}</li>
 	 *  <li>otherwise --> {@link SPointingRelation}</li>
 	 * </ol> 
-	 * The user can customize this mapping (only in a valid range that does not violate constraints) by using the flag 
-	 * {@link TigerProperties#PROP_IMPORTER_MAPPING_EDGES}.
-	 * TODO currently, the customization is not supported
 	 * @param edges
 	 */
 	protected void mapEdges(EList<Edge> edges)
@@ -315,9 +312,8 @@ public class Tiger22SaltMapper extends PepperMapperImpl
 	
 	/**
 	 * Maps the given list of {@link NonTerminal} objects to {@link SNode} objects. The default mapping is to map a {@link NonTerminal}
-	 * object to a {@link SStructure} object, but with the flag {@link TigerProperties#PROP_IMPORTER_MAPPING_NODES} the user can customize
+	 * object to a {@link SStructure} object.
 	 * that mapping.
-	 * TODO currently, the customization is not supported 
 	 * @param nonTerminals
 	 */
 	protected void mapNonTerminals(EList<NonTerminal> nonTerminals)
@@ -328,7 +324,6 @@ public class Tiger22SaltMapper extends PepperMapperImpl
 			{
 				if (nonTerminal!= null)
 				{
-					//TODO read property pepperModules.tigerModules.importer.map.TYPE to differentiate between span and structure
 					SStructure sStructure= SaltFactory.eINSTANCE.createSStructure();
 					this.mapAnnotations(nonTerminal, sStructure);
 					getSDocument().getSDocumentGraph().addSNode(sStructure);
