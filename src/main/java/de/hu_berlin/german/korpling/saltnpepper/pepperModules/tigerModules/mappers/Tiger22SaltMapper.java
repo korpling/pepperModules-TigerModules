@@ -27,7 +27,6 @@ import org.eclipse.emf.common.util.EList;
 import de.hu_berlin.german.korpling.saltnpepper.pepper.pepperModules.MAPPING_RESULT;
 import de.hu_berlin.german.korpling.saltnpepper.pepper.pepperModules.impl.PepperMapperImpl;
 import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.Tiger2Properties;
-import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.TigerProperties;
 import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.exceptions.TigerImportInternalException;
 import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.exceptions.TigerImportMappingException;
 import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.exceptions.TigerImporterException;
@@ -299,7 +298,15 @@ public class Tiger22SaltMapper extends PepperMapperImpl
 					
 					if (	(edge.getType()!= null)&&
 							(!edge.getType().isEmpty()))
-						sRelation.addSType(edge.getType());
+					{
+						String newType= null;
+						if (getProps().getRenamingMap_EdgeType()!= null)
+							newType= getProps().getRenamingMap_EdgeType().get(edge.getType());
+						if (newType!= null)
+							sRelation.addSType(newType);
+						else
+							sRelation.addSType(edge.getType());
+					}
 					sRelation.setSSource(sourceSNode);
 					sRelation.setSTarget(targetSNode);
 					this.mapAnnotations(edge, sRelation);
@@ -344,7 +351,16 @@ public class Tiger22SaltMapper extends PepperMapperImpl
 			throw new TigerImportInternalException("Cannot map annotations, because the target element is empty.");
 		for (Annotation annotation: annotatableElement.getAnnotations())
 		{
-			sAnnotatableElement.createSAnnotation(null, annotation.getName(), annotation.getValue());
+			String newName= null;
+			String annoName="";
+			if (getProps().getRenamingMap_AnnotationName()!= null)
+				newName= getProps().getRenamingMap_AnnotationName().get(annotation.getName());
+			if (newName!= null)
+				annoName= newName;
+			else
+				annoName= annotation.getName();
+			
+			sAnnotatableElement.createSAnnotation(null, annoName, annotation.getValue());
 		}
 	}
 	
