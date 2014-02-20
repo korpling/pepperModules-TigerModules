@@ -25,11 +25,10 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.osgi.service.component.annotations.Component;
 
-import de.hu_berlin.german.korpling.saltnpepper.pepper.pepperModules.PepperImporter;
-import de.hu_berlin.german.korpling.saltnpepper.pepper.pepperModules.PepperMapper;
-import de.hu_berlin.german.korpling.saltnpepper.pepper.pepperModules.impl.PepperImporterImpl;
-import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.exceptions.TigerImportInternalException;
-import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.exceptions.TigerImporterException;
+import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.PepperImporter;
+import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.PepperMapper;
+import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.exceptions.PepperModuleException;
+import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.impl.PepperImporterImpl;
 import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.mappers.Tiger22SaltMapper;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sCorpusStructure.SDocument;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SElementId;
@@ -62,7 +61,7 @@ public class Tiger2Importer extends PepperImporterImpl implements PepperImporter
 		super();
 		
 		//start: setting name of module
-			this.name= "Tiger2Importer";
+			setName("Tiger2Importer");
 		//end: setting name of module
 		
 		//set list of formats supported by this module
@@ -112,21 +111,21 @@ public class Tiger2Importer extends PepperImporterImpl implements PepperImporter
 			URI inputUri= this.getSElementId2ResourceTable().get(sElementId);
 			
 			if (inputUri== null)
-				throw new TigerImportInternalException("There was no matching uri found corresponding to document '"+sElementId+"'.");
+				throw new PepperModuleException(this, "There was no matching uri found corresponding to document '"+sElementId+"'.");
 			
 			//load resource 
 			Resource resourceLoad = getResourceSet().createResource(inputUri);
 			
 			if (resourceLoad== null)
-				throw new TigerImporterException("Cannot map the data stored at given uri '"+inputUri+"', because no resource object could have been created to read these data.");
+				throw new PepperModuleException(this, "Cannot map the data stored at given uri '"+inputUri+"', because no resource object could have been created to read these data.");
 			try {
 				resourceLoad.load(null);
 			} catch (IOException e) {
-				throw new TigerImporterException("Cannot load <tiger2/> model from file '"+inputUri+"'.",e);
+				throw new PepperModuleException(this, "Cannot load <tiger2/> model from file '"+inputUri+"'.",e);
 			}
 			Object objCorpus= resourceLoad.getContents().get(0);
 			if (!(objCorpus instanceof Corpus))
-				throw new TigerImporterException("Cannot map the data stored at given uri '"+inputUri+"', because they could not have been mapped to a tiger2 corpus model object.");
+				throw new PepperModuleException(this, "Cannot map the data stored at given uri '"+inputUri+"', because they could not have been mapped to a tiger2 corpus model object.");
 			Corpus corpus= (Corpus) resourceLoad.getContents().get(0);
 			mapper.setCorpus(corpus);
 		}

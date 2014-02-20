@@ -3,7 +3,7 @@ package de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.test
 import java.util.Map;
 
 import junit.framework.TestCase;
-import de.hu_berlin.german.korpling.saltnpepper.pepper.pepperModules.PepperModuleProperty;
+import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.PepperModuleProperty;
 import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.Tiger2Properties;
 
 public class Tiger2PropertiesTest extends TestCase 

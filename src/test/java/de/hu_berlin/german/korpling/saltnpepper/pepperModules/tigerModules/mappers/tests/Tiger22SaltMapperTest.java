@@ -1,9 +1,7 @@
 package de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.mappers.tests;
 
-import java.util.Vector;
-
 import junit.framework.TestCase;
-import de.hu_berlin.german.korpling.saltnpepper.pepper.pepperModules.PepperModuleProperty;
+import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.PepperModuleProperty;
 import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.Tiger2Properties;
 import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.mappers.Tiger22SaltMapper;
 import de.hu_berlin.german.korpling.saltnpepper.salt.SaltFactory;

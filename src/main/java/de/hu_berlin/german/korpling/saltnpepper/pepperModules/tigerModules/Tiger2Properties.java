@@ -21,9 +21,9 @@ import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Map;
 
-import de.hu_berlin.german.korpling.saltnpepper.pepper.pepperModules.PepperModuleProperties;
-import de.hu_berlin.german.korpling.saltnpepper.pepper.pepperModules.PepperModuleProperty;
-import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.exceptions.InvalidPropertyException;
+import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.PepperModuleProperties;
+import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.PepperModuleProperty;
+import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.exceptions.PepperModulePropertyException;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.SSpan;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.STYPE_NAME;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SAnnotation;
@@ -40,6 +40,11 @@ import de.hu_berlin.german.korpling.tiger2.Segment;
  */
 public class Tiger2Properties extends PepperModuleProperties
 {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 142189621809587354l;
 	public static final String PREFIX_PROP= "pepperModules.tigerModules.";
 	public static final String PREFIX_IMPORTER_PROP= PREFIX_PROP+ "importer.";
 	
@@ -163,7 +168,7 @@ public class Tiger2Properties extends PepperModuleProperties
 								{
 									String[] parts= mapping.split("=");
 									if (parts.length!= 2)
-										throw new InvalidPropertyException("Cannot parse the given property value '"+(String)getProperty(PROP_RENAME_EDGE_TYPE).getValue()+"' for property '"+PROP_TERMINAL_SEPARATOR+"', because it does not follow the form OLDNAME=NEWNAME (,OLDNAME=NEWNAME)*. Note, that neither an empty String nor the whitespace is allowed as sType.");
+										throw new PepperModulePropertyException("Cannot parse the given property value '"+(String)getProperty(PROP_RENAME_EDGE_TYPE).getValue()+"' for property '"+PROP_TERMINAL_SEPARATOR+"', because it does not follow the form OLDNAME=NEWNAME (,OLDNAME=NEWNAME)*. Note, that neither an empty String nor the whitespace is allowed as sType.");
 									renamingTable.put(parts[0], parts[1]);
 								}
 							}
@@ -202,7 +207,7 @@ public class Tiger2Properties extends PepperModuleProperties
 								{
 									String[] parts= mapping.split("=");
 									if (parts.length!= 2)
-										throw new InvalidPropertyException("Cannot parse the given property value '"+(String)getProperty(PROP_RENAME_EDGE_TYPE).getValue()+"' for property '"+PROP_TERMINAL_SEPARATOR+"', because it does not follow the form OLDNAME=NEWNAME (,OLDNAME=NEWNAME)*. Note, that neither an empty String nor the whitespace is allowed as sName.");
+										throw new PepperModulePropertyException("Cannot parse the given property value '"+(String)getProperty(PROP_RENAME_EDGE_TYPE).getValue()+"' for property '"+PROP_TERMINAL_SEPARATOR+"', because it does not follow the form OLDNAME=NEWNAME (,OLDNAME=NEWNAME)*. Note, that neither an empty String nor the whitespace is allowed as sName.");
 									renamingTable.put(parts[0], parts[1]);
 								}
 							}

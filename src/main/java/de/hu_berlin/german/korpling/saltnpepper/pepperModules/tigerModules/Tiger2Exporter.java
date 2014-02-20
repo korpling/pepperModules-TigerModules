@@ -19,8 +19,8 @@ package de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules;
 
 import org.osgi.service.component.annotations.Component;
 
-import de.hu_berlin.german.korpling.saltnpepper.pepper.pepperModules.PepperExporter;
-import de.hu_berlin.german.korpling.saltnpepper.pepper.pepperModules.impl.PepperExporterImpl;
+import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.PepperExporter;
+import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.impl.PepperExporterImpl;
 
 /**
  * This is a sample PepperExporter, which can be used for creating individual Exporters for the 
@@ -45,7 +45,7 @@ public class Tiger2Exporter extends PepperExporterImpl implements PepperExporter
 		super();
 		
 		//start: setting name of module
-			this.name= "Tiger2Exporter";
+			setName("Tiger2Exporter");
 		//end: setting name of module
 		
 		
