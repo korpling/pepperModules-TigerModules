@@ -1,12 +1,13 @@
 package de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.tests;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Map;
 
-import junit.framework.TestCase;
-import de.hu_berlin.german.korpling.saltnpepper.pepper.pepperModules.PepperModuleProperty;
+import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.PepperModuleProperty;
 import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.Tiger2Properties;
 
-public class Tiger2PropertiesTest extends TestCase 
+public class Tiger2PropertiesTest 
 {
 	private Tiger2Properties fixture= null;
 

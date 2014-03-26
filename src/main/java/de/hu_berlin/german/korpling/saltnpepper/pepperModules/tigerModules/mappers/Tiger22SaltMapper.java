@@ -24,12 +24,10 @@ import java.util.Map;
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
 
-import de.hu_berlin.german.korpling.saltnpepper.pepper.pepperModules.MAPPING_RESULT;
-import de.hu_berlin.german.korpling.saltnpepper.pepper.pepperModules.impl.PepperMapperImpl;
+import de.hu_berlin.german.korpling.saltnpepper.pepper.common.DOCUMENT_STATUS;
+import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.exceptions.PepperModuleException;
+import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.impl.PepperMapperImpl;
 import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.Tiger2Properties;
-import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.exceptions.TigerImportInternalException;
-import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.exceptions.TigerImportMappingException;
-import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.exceptions.TigerImporterException;
 import de.hu_berlin.german.korpling.saltnpepper.salt.SaltFactory;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sCorpusStructure.SDocument;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.SDocumentGraph;
@@ -110,7 +108,7 @@ public class Tiger22SaltMapper extends PepperMapperImpl
 	 * {@link #setsDocument(SDocument)} object.
 	 */
 	@Override
-	public MAPPING_RESULT mapSDocument()
+	public DOCUMENT_STATUS mapSDocument()
 	{
 		if (getSDocument().getSDocumentGraph()== null)
 			getSDocument().setSDocumentGraph(SaltFactory.eINSTANCE.createSDocumentGraph());
@@ -165,7 +163,7 @@ public class Tiger22SaltMapper extends PepperMapperImpl
 		}
 		//set SText to value of internal string buffer
 		sTextualDs.setSText(entireTextBuffer.toString());
-		return(MAPPING_RESULT.FINISHED);
+		return(DOCUMENT_STATUS.COMPLETED);
 	}
 	
 	/**
@@ -179,7 +177,7 @@ public class Tiger22SaltMapper extends PepperMapperImpl
 	{
 		EList<SToken> sTokens= null;
 		if (terminals== null)
-			throw new TigerImportInternalException("Cannot map terminals, because the given list is empty.");
+			throw new PepperModuleException(this, "Cannot map terminals, because the given list is empty.");
 		if (terminals.size()>0)
 		{
 			sTokens= new BasicEList<SToken>();
@@ -205,9 +203,9 @@ public class Tiger22SaltMapper extends PepperMapperImpl
 	protected SToken mapTerminal(Terminal terminal, STextualDS sTextualDs)
 	{
 		if (terminal== null)
-			throw new TigerImportMappingException("Cannot map a terminal to salt, because the terminal is empty.");
+			throw new PepperModuleException(this, "Cannot map a terminal to salt, because the terminal is empty.");
 		if (sTextualDs== null)
-			throw new TigerImportMappingException("Cannot map the terminal '"+terminal+"' to salt, because the given sTextualDs is empty.");
+			throw new PepperModuleException(this, "Cannot map the terminal '"+terminal+"' to salt, because the given sTextualDs is empty.");
 		
 		//start: adding the overlapped text to the data source 
 			int startPos= 0;
@@ -253,15 +251,15 @@ public class Tiger22SaltMapper extends PepperMapperImpl
 				{
 					SRelation sRelation= null;
 					if (edge.getSource()== null)
-						throw new TigerImporterException("Cannot map the edge '"+edge+"', because its source is empty");
+						throw new PepperModuleException(this, "Cannot map the edge '"+edge+"', because its source is empty");
 					SNode sourceSNode= this.synNode2sNode.get(edge.getSource());
 					if (sourceSNode== null)
-						throw new TigerImporterException("Cannot map the edge '"+edge+"', because its source '"+edge.getSource()+"' has no corresponding SNode object.");
+						throw new PepperModuleException(this, "Cannot map the edge '"+edge+"', because its source '"+edge.getSource()+"' has no corresponding SNode object.");
 					if (edge.getTarget()== null)
-						throw new TigerImporterException("Cannot map the edge '"+edge+"', because its target is empty");
+						throw new PepperModuleException(this, "Cannot map the edge '"+edge+"', because its target is empty");
 					SNode targetSNode= this.synNode2sNode.get(edge.getTarget());
 					if (targetSNode== null)
-						throw new TigerImporterException("Cannot map the edge '"+edge+"', because its source '"+edge.getTarget()+"' has no corresponding SNode object.");
+						throw new PepperModuleException(this, "Cannot map the edge '"+edge+"', because its source '"+edge.getTarget()+"' has no corresponding SNode object.");
 					STYPE_NAME saltType= null;
 					if (	(getProps()!= null)&&
 							(edge.getType()!= null))
@@ -346,9 +344,9 @@ public class Tiger22SaltMapper extends PepperMapperImpl
 	protected void mapAnnotations(AnnotatableElement annotatableElement, SAnnotatableElement sAnnotatableElement)
 	{
 		if (annotatableElement== null)
-			throw new TigerImportInternalException("Cannot map annotations, because the source element is empty.");
+			throw new PepperModuleException(this, "Cannot map annotations, because the source element is empty.");
 		if (sAnnotatableElement== null)
-			throw new TigerImportInternalException("Cannot map annotations, because the target element is empty.");
+			throw new PepperModuleException(this, "Cannot map annotations, because the target element is empty.");
 		for (Annotation annotation: annotatableElement.getAnnotations())
 		{
 			String newName= null;
@@ -370,9 +368,9 @@ public class Tiger22SaltMapper extends PepperMapperImpl
 	protected void mapMetaAnnotations(Corpus corpus, SMetaAnnotatableElement sMetaAnnotatableElement)
 	{
 		if (corpus== null)
-			throw new TigerImportInternalException("Cannot map annotations, because the source element is empty.");
+			throw new PepperModuleException(this, "Cannot map annotations, because the source element is empty.");
 		if (sMetaAnnotatableElement== null)
-			throw new TigerImportInternalException("Cannot map annotations, because the target element is empty.");
+			throw new PepperModuleException(this, "Cannot map annotations, because the target element is empty.");
 		
 		if (corpus.getMeta()!= null)
 		{

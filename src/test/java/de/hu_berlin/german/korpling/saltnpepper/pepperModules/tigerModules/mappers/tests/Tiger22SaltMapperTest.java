@@ -1,17 +1,15 @@
 package de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.mappers.tests;
 
-import java.util.Vector;
-
-import junit.framework.TestCase;
-import de.hu_berlin.german.korpling.saltnpepper.pepper.pepperModules.PepperModuleProperty;
+import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.PepperModuleProperty;
 import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.Tiger2Properties;
 import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.mappers.Tiger22SaltMapper;
 import de.hu_berlin.german.korpling.saltnpepper.salt.SaltFactory;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.SDominanceRelation;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.SToken;
 import de.hu_berlin.german.korpling.tiger2.samples.Tiger2Sample;
+import static org.junit.Assert.*;
 
-public class Tiger22SaltMapperTest extends TestCase {
+public class Tiger22SaltMapperTest{
 
 	private Tiger22SaltMapper fixture= null;
 
