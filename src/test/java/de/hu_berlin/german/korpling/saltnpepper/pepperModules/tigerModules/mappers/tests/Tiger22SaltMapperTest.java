@@ -1,5 +1,12 @@
 package de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.mappers.tests;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
+import org.junit.Before;
+import org.junit.Test;
+
 import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.PepperModuleProperty;
 import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.Tiger2Properties;
 import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.mappers.Tiger22SaltMapper;
@@ -7,7 +14,6 @@ import de.hu_berlin.german.korpling.saltnpepper.salt.SaltFactory;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.SDominanceRelation;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.SToken;
 import de.hu_berlin.german.korpling.tiger2.samples.Tiger2Sample;
-import static org.junit.Assert.*;
 
 public class Tiger22SaltMapperTest{
 
@@ -20,7 +26,7 @@ public class Tiger22SaltMapperTest{
 	public void setFixture(Tiger22SaltMapper fixture) {
 		this.fixture = fixture;
 	}
-	
+	@Before
 	public void setUp()
 	{
 		setFixture(new Tiger22SaltMapper());
@@ -29,6 +35,7 @@ public class Tiger22SaltMapperTest{
 		getFixture().setCorpus(Tiger2Sample.createSampleCorpus1());
 	}
 	
+	@Test
 	public void testRenameEdgeType()
 	{
 		PepperModuleProperty<String> prop= (PepperModuleProperty<String>)getFixture().getProps().getProperty(Tiger2Properties.PROP_RENAME_EDGE_TYPE);
@@ -43,7 +50,7 @@ public class Tiger22SaltMapperTest{
 			assertEquals("edge", sDomRel.getSTypes().get(0));
 		}
 	}
-	
+	@Test
 	public void testRenameAnnotationName()
 	{
 		PepperModuleProperty<String> prop= (PepperModuleProperty<String>)getFixture().getProps().getProperty(Tiger2Properties.PROP_RENAME_ANNOTATION_NAME);

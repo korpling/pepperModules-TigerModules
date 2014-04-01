@@ -4,6 +4,9 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.Test;
+
 import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.PepperModuleProperty;
 import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.Tiger2Properties;
 
@@ -18,12 +21,13 @@ public class Tiger2PropertiesTest
 	public void setFixture(Tiger2Properties fixture) {
 		this.fixture = fixture;
 	}
-	
+	@Before
 	public void setUp()
 	{
 		setFixture(new Tiger2Properties());
 	}
 	
+	@Test
 	public void testSRelationSTypeRenaming()
 	{
 		Map<String, String> renamingMapping;
@@ -55,7 +59,7 @@ public class Tiger2PropertiesTest
 		assertEquals("b", renamingMapping.get("a"));
 		assertEquals("d", renamingMapping.get("c"));
 	}
-	
+	@Test
 	public void testRenameAnnotationName()
 	{
 		Map<String, String> renamingMapping;
