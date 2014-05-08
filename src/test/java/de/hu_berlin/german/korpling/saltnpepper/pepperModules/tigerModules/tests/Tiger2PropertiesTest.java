@@ -34,7 +34,7 @@ public class Tiger2PropertiesTest
 	@Test
 	public void testGetPropEdge2SRelation(){
 		PepperModuleProperty<String> prop= (PepperModuleProperty<String>)this.getFixture().getProperty(Tiger2Properties.PROP_EDGE_2_SRELATION);
-		String edge2relationMapping= "prim="+STYPE_NAME.SDOMINANCE_RELATION+", secedge="+STYPE_NAME.SPOINTING_RELATION;
+		String edge2relationMapping= "prim:"+STYPE_NAME.SDOMINANCE_RELATION+", secedge:"+STYPE_NAME.SPOINTING_RELATION;
 		prop.setValue(edge2relationMapping);
 		
 		Map<String, STYPE_NAME> edge2relation= getFixture().getPropEdge2SRelation();
