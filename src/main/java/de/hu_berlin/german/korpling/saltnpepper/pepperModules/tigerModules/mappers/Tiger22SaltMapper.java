@@ -264,34 +264,35 @@ public class Tiger22SaltMapper extends PepperMapperImpl
 					if (	(getProps()!= null)&&
 							(edge.getType()!= null))
 					{
-						Map<String, STYPE_NAME> saltTypes= getProps().propEdge2SRelation();
+						Map<String, STYPE_NAME> saltTypes= getProps().getPropEdge2SRelation();
 						saltType= saltTypes.get(edge.getType());
 					}
 					
-					
 					//start: mapping rules
-						if (sourceSNode instanceof SToken)
+						if (sourceSNode instanceof SToken){
 							sRelation= SaltFactory.eINSTANCE.createSPointingRelation();
-						else if (	(sourceSNode instanceof SSpan) &&
-									(targetSNode instanceof SToken))
-						{
+						}else if (	(sourceSNode instanceof SSpan) &&
+									(targetSNode instanceof SToken)){
 							if (	(saltType!= null)&&
-									(STYPE_NAME.SPOINTING_RELATION.equals(saltType)))
-							{//also SPointingRelation is possible, when using customization
+									(STYPE_NAME.SPOINTING_RELATION.equals(saltType))){
+								//also SPointingRelation is possible, when using customization
 								sRelation= SaltFactory.eINSTANCE.createSPointingRelation();
-							}//also SPointingRelation is possible, when using customization
-							else sRelation= SaltFactory.eINSTANCE.createSSpanningRelation();
+							}else{
+								sRelation= SaltFactory.eINSTANCE.createSSpanningRelation();
+							}
 						}
 						else if (sourceSNode instanceof SStructure)
 						{
 							if (	(saltType!= null)&&
-									(STYPE_NAME.SPOINTING_RELATION.equals(saltType)))
-							{//also SPointingRelation is possible, when using customization
+									(STYPE_NAME.SPOINTING_RELATION.equals(saltType))){
+								//also SPointingRelation is possible, when using customization
 								sRelation= SaltFactory.eINSTANCE.createSPointingRelation();
-							}//also SPointingRelation is possible, when using customization
-							else sRelation= SaltFactory.eINSTANCE.createSDominanceRelation();
+							}else{
+								sRelation= SaltFactory.eINSTANCE.createSDominanceRelation();
+							}
+						}else{
+							sRelation= SaltFactory.eINSTANCE.createSPointingRelation();
 						}
-						else sRelation= SaltFactory.eINSTANCE.createSPointingRelation();
 					//end: mapping rules
 					
 					if (	(edge.getType()!= null)&&

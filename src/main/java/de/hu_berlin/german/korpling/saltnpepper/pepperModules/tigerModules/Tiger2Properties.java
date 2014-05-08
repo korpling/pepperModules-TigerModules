@@ -24,6 +24,7 @@ import java.util.Map;
 import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.PepperModuleProperties;
 import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.PepperModuleProperty;
 import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.exceptions.PepperModulePropertyException;
+import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.SPointingRelation;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.SSpan;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.STYPE_NAME;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SAnnotation;
@@ -84,7 +85,7 @@ public class Tiger2Properties extends PepperModuleProperties
 	public Tiger2Properties()
 	{
 		this.addProperty(new PepperModuleProperty<Boolean>(PROP_CREATE_SSPAN, Boolean.class, "This flag determines if a SSpan object shall be created for each segment. Must be mappable to a Boolean value.", false, false));
-		this.addProperty(new PepperModuleProperty<String>(PROP_EDGE_2_SRELATION, String.class, "Property to determine, which Egde type shall be mapped to which kind of SRelation.This is just a prefix of the real property, which has a suffix specifying the Edge type. For instance "+PROP_EDGE_2_SRELATION+".dep or "+PROP_EDGE_2_SRELATION+".prim.",false));
+		this.addProperty(new PepperModuleProperty<String>(PROP_EDGE_2_SRELATION, String.class, "Property to determine, which Egde type shall be mapped to which kind of SRelation. A mapping has the syntax type=STYPE_NAME(, type=STYPE_NAME)*. For instance 'dep="+STYPE_NAME.SPOINTING_RELATION_VALUE+", prim="+STYPE_NAME.SDOMINANCE_RELATION_VALUE+"'.",false));
 		this.addProperty(new PepperModuleProperty<String>(PROP_TERMINAL_SEPARATOR, String.class, "Determines the separator between terminal nodes. The default separator is '"+DEFAULT_SEPARATOR+"'.",DEFAULT_SEPARATOR, false));
 		this.addProperty(new PepperModuleProperty<String>(PROP_RENAME_EDGE_TYPE, String.class, "Gives a renaming table for the sType of a SRelation. The syntax of defining such a table is 'OLDNAME=NEWNAME (,OLDNAME=NEWNAME)*', for instance the property value prim=edge, sec=secedge, will rename all sType values from 'prim' to edge and 'sec' to secedge.", false));
 		this.addProperty(new PepperModuleProperty<String>(PROP_RENAME_ANNOTATION_NAME, String.class, "Gives a renaming table for the name of an annotation, or more specific, which value the sName of the SAnnotation object shall get. The syntax of defining such a table is 'OLDNAME=NEWNAME (,OLDNAME=NEWNAME)*', for instance the property value prim=edge, sec=secedge, will rename all sType values from 'prim' to edge and 'sec' to secedge.", false));
@@ -105,33 +106,40 @@ public class Tiger2Properties extends PepperModuleProperties
 	{
 		return((Boolean)this.getProperty(PROP_CREATE_SSPAN).getValue());
 	}
-	
+	/**
+	 * Stores the mapping table for property {@link #PROP_EDGE_2_SRELATION}, storing the result is useful, because
+	 * the extraction will take some time.
+	 */
+	private Map<String, STYPE_NAME> edge2Relation= null;
 	/**
 	 * Returns a list containing all mappings from {@link Edge} types to derivates of {@link SRelation}. 
 	 * @return
 	 */
-	public Map<String, STYPE_NAME> propEdge2SRelation()
+	public synchronized Map<String, STYPE_NAME> getPropEdge2SRelation()
 	{
-		Map<String, STYPE_NAME> retVal= Collections.synchronizedMap(new Hashtable<String, STYPE_NAME>());
-		
-		for (String propName :getPropertyNames())
-		{
-			if (propName instanceof String)
-			{
-				if (propName.toString().startsWith(PROP_EDGE_2_SRELATION))
-				{
-					String value= (String)getProperty(propName).getValue();
-					if (value!= null){
-						STYPE_NAME saltType = STYPE_NAME.get(value);
-						String edgeType= getProperty(propName).getValue().toString().replace(PROP_EDGE_2_SRELATION+".", "");
-						if (	(saltType!= null)&&
-								(edgeType!= null))
-							retVal.put(edgeType, saltType);
+		if (edge2Relation== null){
+			edge2Relation= new Hashtable<String, STYPE_NAME>();
+			if (getProperty(PROP_EDGE_2_SRELATION).getValue()!= null){
+				String edgeTypes= getProperty(PROP_EDGE_2_SRELATION).getValue().toString();
+				if (	(edgeTypes!= null)&&
+						(!edgeTypes.isEmpty())){
+					String[] mappings= edgeTypes.split(",");
+					for (String mapping: mappings){
+						String[] parts= mapping.split("=");
+						if (	(parts[0]!= null)&&
+								(!parts[0].isEmpty())&&
+								(parts[1]!= null)&&
+								(!parts[1].isEmpty())){
+							STYPE_NAME saltType = STYPE_NAME.get(parts[1].trim());
+							if (saltType!= null){
+								edge2Relation.put(parts[0].trim(), saltType);
+							}
+						}
 					}
 				}
 			}
 		}
-		return(retVal);
+		return(edge2Relation);
 	}
 	
 	

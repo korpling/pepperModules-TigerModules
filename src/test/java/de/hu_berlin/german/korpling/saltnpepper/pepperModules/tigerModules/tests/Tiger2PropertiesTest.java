@@ -1,6 +1,6 @@
 package de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.tests;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.Map;
 
@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.PepperModuleProperty;
 import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.Tiger2Properties;
+import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.STYPE_NAME;
 
 public class Tiger2PropertiesTest 
 {
@@ -25,6 +26,25 @@ public class Tiger2PropertiesTest
 	public void setUp()
 	{
 		setFixture(new Tiger2Properties());
+	}
+	
+	/**
+	 * Tests whether the property {@link Tiger2Properties#PROP_EDGE_2_SRELATION} is retrieved as defined.
+	 */
+	@Test
+	public void testGetPropEdge2SRelation(){
+		PepperModuleProperty<String> prop= (PepperModuleProperty<String>)this.getFixture().getProperty(Tiger2Properties.PROP_EDGE_2_SRELATION);
+		String edge2relationMapping= "prim="+STYPE_NAME.SDOMINANCE_RELATION+", secedge="+STYPE_NAME.SPOINTING_RELATION;
+		prop.setValue(edge2relationMapping);
+		
+		Map<String, STYPE_NAME> edge2relation= getFixture().getPropEdge2SRelation();
+		
+		assertNotNull(edge2relation);
+		assertNotNull(edge2relation.get("prim"));
+		assertEquals(STYPE_NAME.SDOMINANCE_RELATION, edge2relation.get("prim"));
+		assertNotNull(edge2relation.get("secedge"));
+		assertEquals(STYPE_NAME.SPOINTING_RELATION, edge2relation.get("secedge"));
+		
 	}
 	
 	@Test
