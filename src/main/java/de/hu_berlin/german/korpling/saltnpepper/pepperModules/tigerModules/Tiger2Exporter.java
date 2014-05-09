@@ -40,8 +40,7 @@ import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.impl.PepperExport
 @Component(name="Tiger2ExporterComponent", factory="PepperExporterComponentFactory")
 public class Tiger2Exporter extends PepperExporterImpl implements PepperExporter
 {
-	public Tiger2Exporter()
-	{
+	public Tiger2Exporter(){
 		super();
 		
 		//start: setting name of module

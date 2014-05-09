@@ -19,6 +19,7 @@ package de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules;
 
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Properties;
 
 import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.PepperModuleProperties;
 import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.PepperModuleProperty;
@@ -78,17 +79,15 @@ public class Tiger2Properties extends PepperModuleProperties
 	 */
 	public static final String PROP_RENAME_ANNOTATION_NAME= PREFIX_IMPORTER_PROP+"annotation.name";
 	
-	public Tiger2Properties()
-	{
+	public Tiger2Properties(){
 		this.addProperty(new PepperModuleProperty<Boolean>(PROP_CREATE_SSPAN, Boolean.class, "This flag determines if a SSpan object shall be created for each segment. Must be mappable to a Boolean value.", false, false));
-		this.addProperty(new PepperModuleProperty<String>(PROP_EDGE_2_SRELATION, String.class, "Property to determine, which Egde type shall be mapped to which kind of SRelation. A mapping has the syntax type=STYPE_NAME(, type=STYPE_NAME)*. For instance 'dep="+STYPE_NAME.SPOINTING_RELATION_VALUE+", prim="+STYPE_NAME.SDOMINANCE_RELATION_VALUE+"'.","secedge:SPointingRelation",false));
+		this.addProperty(new PepperModuleProperty<String>(PROP_EDGE_2_SRELATION, String.class, "Property to determine, which Egde type shall be mapped to which kind of SRelation. A mapping has the syntax type=STYPE_NAME(, type=STYPE_NAME)*. For instance 'dep="+STYPE_NAME.SPOINTING_RELATION_VALUE+", prim="+STYPE_NAME.SDOMINANCE_RELATION_VALUE+"'.",false));
 		this.addProperty(new PepperModuleProperty<String>(PROP_TERMINAL_SEPARATOR, String.class, "Determines the separator between terminal nodes. The default separator is '"+DEFAULT_SEPARATOR+"'.",DEFAULT_SEPARATOR, false));
 		this.addProperty(new PepperModuleProperty<String>(PROP_RENAME_EDGE_TYPE, String.class, "Gives a renaming table for the sType of a SRelation. The syntax of defining such a table is 'OLDNAME=NEWNAME (,OLDNAME=NEWNAME)*', for instance the property value prim=edge, sec=secedge, will rename all sType values from 'prim' to edge and 'sec' to secedge.", false));
 		this.addProperty(new PepperModuleProperty<String>(PROP_RENAME_ANNOTATION_NAME, String.class, "Gives a renaming table for the name of an annotation, or more specific, which value the sName of the SAnnotation object shall get. The syntax of defining such a table is 'OLDNAME=NEWNAME (,OLDNAME=NEWNAME)*', for instance the property value prim=edge, sec=secedge, will rename all sType values from 'prim' to edge and 'sec' to secedge.", false));
 	}
 	
-	public void reset()
-	{
+	public void reset(){
 		renamingEdgeType= null;
 		renamingAnnotationName= null;
 	}
@@ -98,10 +97,16 @@ public class Tiger2Properties extends PepperModuleProperties
 	 * not set, the default is <code>true</code>. 
 	 * @return
 	 */
-	public boolean propCreateSSpan4Segment()
-	{
+	public boolean propCreateSSpan4Segment(){
 		return((Boolean)this.getProperty(PROP_CREATE_SSPAN).getValue());
 	}
+	
+	@Override
+	public void setPropertyValues(Properties properties){
+		super.setPropertyValues(properties);
+	}
+	
+	
 	/**
 	 * Stores the mapping table for property {@link #PROP_EDGE_2_SRELATION}, storing the result is useful, because
 	 * the extraction will take some time.
@@ -134,7 +139,6 @@ public class Tiger2Properties extends PepperModuleProperties
 					}
 				}
 			}
-			System.out.println("edge2Relation: "+ edge2Relation);
 		}
 		return(edge2Relation);
 	}
@@ -154,23 +158,17 @@ public class Tiger2Properties extends PepperModuleProperties
 	 * Returns a map containing all renamings for SType of {@link SRelation}, with key= old value and value= new value.
 	 */
 	public Map<String, String> getRenamingMap_EdgeType() {
-		if (renamingEdgeType== null)
-		{			
+		if (renamingEdgeType== null){			
 			synchronized (this) {
-				if (renamingEdgeType== null)
-				{//double check if STyperenaming isn't set.			
+				if (renamingEdgeType== null){//double check if STyperenaming isn't set.			
 					Map<String, String> renamingTable= new Hashtable<String, String>();
 					String renamingString= (String)getProperty(PROP_RENAME_EDGE_TYPE).getValue();
-					if (renamingString!= null)
-					{
+					if (renamingString!= null){
 						renamingString= renamingString.replace(" ", "");
-						if (!renamingString.isEmpty())
-						{
+						if (!renamingString.isEmpty()){
 							String[] mappings= renamingString.split(",");
-							if (mappings.length> 0)
-							{
-								for (String mapping: mappings)
-								{
+							if (mappings.length> 0){
+								for (String mapping: mappings){
 									String[] parts= mapping.split("=");
 									if (parts.length!= 2)
 										throw new PepperModulePropertyException("Cannot parse the given property value '"+(String)getProperty(PROP_RENAME_EDGE_TYPE).getValue()+"' for property '"+PROP_TERMINAL_SEPARATOR+"', because it does not follow the form OLDNAME=NEWNAME (,OLDNAME=NEWNAME)*. Note, that neither an empty String nor the whitespace is allowed as sType.");
@@ -193,26 +191,21 @@ public class Tiger2Properties extends PepperModuleProperties
 	 * Returns a map containing all renamings for SAnno , with key= old value and value= new value.
 	 */
 	public Map<String, String> getRenamingMap_AnnotationName() {
-		if (renamingAnnotationName== null)
-		{			
+		if (renamingAnnotationName== null){			
 			synchronized (this) {
-				if (renamingAnnotationName== null)
-				{			
+				if (renamingAnnotationName== null){			
 					Map<String, String> renamingTable= new Hashtable<String, String>();
 					String renamingString= (String)getProperty(PROP_RENAME_ANNOTATION_NAME).getValue();
-					if (renamingString!= null)
-					{
+					if (renamingString!= null){
 						renamingString= renamingString.replace(" ", "");
-						if (!renamingString.isEmpty())
-						{
+						if (!renamingString.isEmpty()){
 							String[] mappings= renamingString.split(",");
-							if (mappings.length> 0)
-							{
-								for (String mapping: mappings)
-								{
+							if (mappings.length> 0){
+								for (String mapping: mappings){
 									String[] parts= mapping.split("=");
-									if (parts.length!= 2)
+									if (parts.length!= 2){
 										throw new PepperModulePropertyException("Cannot parse the given property value '"+(String)getProperty(PROP_RENAME_EDGE_TYPE).getValue()+"' for property '"+PROP_TERMINAL_SEPARATOR+"', because it does not follow the form OLDNAME=NEWNAME (,OLDNAME=NEWNAME)*. Note, that neither an empty String nor the whitespace is allowed as sName.");
+									}
 									renamingTable.put(parts[0], parts[1]);
 								}
 							}
