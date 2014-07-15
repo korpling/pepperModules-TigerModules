@@ -41,8 +41,7 @@
    <dependency>
   		<groupId>de.hu_berlin.german.korpling</groupId>
   		<artifactId>tiger2-api</artifactId>
-  		<!-- <version>[0.0.2,)</version>-->
-  		<version>0.0.4-SNAPSHOT</version>
+  		<version>[0.0.2,)</version>
   		<type>jar</type>
   		<scope>compile</scope>
   	</dependency>
