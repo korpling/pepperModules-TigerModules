@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>pepperModules-TigerModules</artifactId>
   <name>${project.groupId}.${project.artifactId}</name>
-  <version>2.0.2-SNAPSHOT</version>
+  <version>2.0.2</version>
   <packaging>bundle</packaging>
   <distributionManagement>
     <repository>
@@ -34,8 +34,8 @@
   </ciManagement>
   <inceptionYear>2010</inceptionYear>
   <scm>
-    <developerConnection>scm:svn:https://korpling.german.hu-berlin.de/svn/saltnpepper/PepperModules/TigerModules/trunk</developerConnection>
-    <url>scm:svn:https://korpling.german.hu-berlin.de/svn/saltnpepper/PepperModules/TigerModules</url>
+    <developerConnection>scm:svn:https://korpling.german.hu-berlin.de/svn/saltnpepper/PepperModules/TigerModules/tags/pepperModules-TigerModules-2.0.2</developerConnection>
+    <url>scm:svn:https://korpling.german.hu-berlin.de/svn/saltnpepper/PepperModules/TigerModules/tags/pepperModules-TigerModules-2.0.2</url>
   </scm>
   <dependencies>
    <dependency>
