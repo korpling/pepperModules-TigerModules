@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>pepperModules-TigerModules</artifactId>
@@ -19,7 +19,7 @@
       <url>http://korpling.german.hu-berlin.de/maven2</url>
     </repository>
   </repositories>
-   <parent>
+  <parent>
     <groupId>de.hu_berlin.german.korpling.saltnpepper</groupId>
     <artifactId>pepper-parentModule</artifactId>
     <version>2.0.0</version>
@@ -27,46 +27,49 @@
   <description>This version is a completly new begining and does not continue the biuld of older versions. In this version, the tiger-api was replaced by a new one, which is able to read and write TiGer xml and &lt;tiger2/&gt; data as well.</description>
   <url>https://korpling.german.hu-berlin.de/p/projects/peppermodules-samplemodules</url>
   <issueManagement>
-  	<system>Redmine</system>
-  	<url>https://korpling.german.hu-berlin.de/p/projects/peppermodules-tigermodules/issues</url>
+    <system>GitHub</system>
+    <url>https://github.com/korpling/pepperModules-TigerModules/issues</url>
   </issueManagement>
-  <ciManagement>
-  </ciManagement>
+  <ciManagement />
   <inceptionYear>2010</inceptionYear>
   <scm>
-    <developerConnection>scm:svn:https://korpling.german.hu-berlin.de/svn/saltnpepper/PepperModules/TigerModules/trunk</developerConnection>
-    <url>scm:svn:https://korpling.german.hu-berlin.de/svn/saltnpepper/PepperModules/TigerModules</url>
+    <connection>scm:git:git://github.com/korpling/pepperModules-TigerModules.git</connection>
+    <developerConnection>scm:git:git@github.com:korpling/pepperModules-TigerModules.git</developerConnection>
+    <url>https://github.com/korpling/pepperModules-TigerModules</url>
   </scm>
   <dependencies>
-   <dependency>
-  		<groupId>de.hu_berlin.german.korpling</groupId>
-  		<artifactId>tiger2-api</artifactId>
-  		<version>[0.0.2,)</version>
-  		<type>jar</type>
-  		<scope>compile</scope>
-  	</dependency>
+    <dependency>
+      <groupId>de.hu_berlin.german.korpling</groupId>
+      <artifactId>tiger2-api</artifactId>
+      <version>[0.0.2,)</version>
+      <type>jar</type>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
   <organization>
-  	<name>Humboldt Univerity of Berlin, INRIA</name>
+    <name>Humboldt Univerity of Berlin, INRIA</name>
   </organization>
   <build>
     <plugins>
-      <!-- start: Plugin for automatic releasing -->
       <plugin>
         <artifactId>maven-release-plugin</artifactId>
         <version>${maven-release-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>default</id>
+            <goals>
+              <goal>perform</goal>
+            </goals>
+            <configuration>
+              <pomFileName>pepperModules-TigerModules/pom.xml</pomFileName>
+            </configuration>
+          </execution>
+        </executions>
         <configuration>
-          <tagBase>
-           https://korpling.german.hu-berlin.de/svn/saltnpepper/PepperModules/TigerModules/tags
-          </tagBase>
           <releaseProfiles>release</releaseProfiles>
           <goals>package assembly:single deploy</goals>
         </configuration>
       </plugin>
-      <!-- 	start: creation of bundle jar
-			This plugIn creates a META-INF folder if not present and adds the entries into the MANIFEST.MF file required for OSGi. It
-			also creates an OSGI-INF folder necessary for using service-components in OSGi.
-	  -->
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
@@ -94,7 +97,6 @@
           </instructions>
         </configuration>
       </plugin>
-      <!-- end: creation of bundle jar -->
     </plugins>
   </build>
 </project>
