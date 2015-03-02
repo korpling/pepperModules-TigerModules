@@ -25,32 +25,32 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.PepperModuleProperty;
-import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.Tiger2Properties;
+import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.Tiger2ImporterProperties;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.STYPE_NAME;
 
 public class Tiger2PropertiesTest {
-	private Tiger2Properties fixture = null;
+	private Tiger2ImporterProperties fixture = null;
 
-	public Tiger2Properties getFixture() {
+	public Tiger2ImporterProperties getFixture() {
 		return fixture;
 	}
 
-	public void setFixture(Tiger2Properties fixture) {
+	public void setFixture(Tiger2ImporterProperties fixture) {
 		this.fixture = fixture;
 	}
 
 	@Before
 	public void setUp() {
-		setFixture(new Tiger2Properties());
+		setFixture(new Tiger2ImporterProperties());
 	}
 
 	/**
-	 * Tests whether the property {@link Tiger2Properties#PROP_EDGE_2_SRELATION}
+	 * Tests whether the property {@link Tiger2ImporterProperties#PROP_EDGE_2_SRELATION}
 	 * is retrieved as defined.
 	 */
 	@Test
 	public void testGetPropEdge2SRelation() {
-		PepperModuleProperty<String> prop = (PepperModuleProperty<String>) this.getFixture().getProperty(Tiger2Properties.PROP_EDGE_2_SRELATION);
+		PepperModuleProperty<String> prop = (PepperModuleProperty<String>) this.getFixture().getProperty(Tiger2ImporterProperties.PROP_EDGE_2_SRELATION);
 		String edge2relationMapping = "prim:" + STYPE_NAME.SDOMINANCE_RELATION + ", secedge:" + STYPE_NAME.SPOINTING_RELATION;
 		prop.setValue(edge2relationMapping);
 
@@ -68,7 +68,7 @@ public class Tiger2PropertiesTest {
 	public void testSRelationSTypeRenaming() {
 		Map<String, String> renamingMapping;
 
-		PepperModuleProperty<String> prop = (PepperModuleProperty<String>) this.getFixture().getProperty(Tiger2Properties.PROP_RENAME_EDGE_TYPE);
+		PepperModuleProperty<String> prop = (PepperModuleProperty<String>) this.getFixture().getProperty(Tiger2ImporterProperties.PROP_RENAME_EDGE_TYPE);
 		renamingMapping = getFixture().getRenamingMap_EdgeType();
 		assertEquals(0, renamingMapping.size());
 
@@ -100,7 +100,7 @@ public class Tiger2PropertiesTest {
 	public void testRenameAnnotationName() {
 		Map<String, String> renamingMapping;
 
-		PepperModuleProperty<String> prop = (PepperModuleProperty<String>) this.getFixture().getProperty(Tiger2Properties.PROP_RENAME_ANNOTATION_NAME);
+		PepperModuleProperty<String> prop = (PepperModuleProperty<String>) this.getFixture().getProperty(Tiger2ImporterProperties.PROP_RENAME_ANNOTATION_NAME);
 		renamingMapping = getFixture().getRenamingMap_AnnotationName();
 		assertEquals(0, renamingMapping.size());
 

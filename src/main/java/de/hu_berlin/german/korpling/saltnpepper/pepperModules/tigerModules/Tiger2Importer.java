@@ -75,7 +75,7 @@ public class Tiger2Importer extends PepperImporterImpl implements PepperImporter
 		getSDocumentEndings().add(TigerResourceFactory.FILE_ENDING_TIGER2_2);
 		getSDocumentEndings().add(TigerResourceFactory.FILE_ENDING_TIGERXML);
 		getSDocumentEndings().add(TigerResourceFactory.FILE_ENDING_TIGERXML_2);
-		setProperties(new Tiger2Properties());
+		setProperties(new Tiger2ImporterProperties());
 	}
 
 	/**

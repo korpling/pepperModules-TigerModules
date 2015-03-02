@@ -25,7 +25,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.PepperModuleProperty;
-import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.Tiger2Properties;
+import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.Tiger2ImporterProperties;
 import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.mappers.Tiger22SaltMapper;
 import de.hu_berlin.german.korpling.saltnpepper.salt.SaltFactory;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.SDominanceRelation;
@@ -48,13 +48,13 @@ public class Tiger22SaltMapperTest {
 	public void setUp() {
 		setFixture(new Tiger22SaltMapper());
 		getFixture().setSDocument(SaltFactory.eINSTANCE.createSDocument());
-		getFixture().setProperties(new Tiger2Properties());
+		getFixture().setProperties(new Tiger2ImporterProperties());
 		getFixture().setCorpus(Tiger2Sample.createSampleCorpus1());
 	}
 
 	@Test
 	public void testRenameEdgeType() {
-		PepperModuleProperty<String> prop = (PepperModuleProperty<String>) getFixture().getProps().getProperty(Tiger2Properties.PROP_RENAME_EDGE_TYPE);
+		PepperModuleProperty<String> prop = (PepperModuleProperty<String>) getFixture().getProps().getProperty(Tiger2ImporterProperties.PROP_RENAME_EDGE_TYPE);
 		prop.setValue("prim=edge");
 
 		getFixture().mapSDocument();
@@ -68,7 +68,7 @@ public class Tiger22SaltMapperTest {
 
 	@Test
 	public void testRenameAnnotationName() {
-		PepperModuleProperty<String> prop = (PepperModuleProperty<String>) getFixture().getProps().getProperty(Tiger2Properties.PROP_RENAME_ANNOTATION_NAME);
+		PepperModuleProperty<String> prop = (PepperModuleProperty<String>) getFixture().getProps().getProperty(Tiger2ImporterProperties.PROP_RENAME_ANNOTATION_NAME);
 		prop.setValue("lemma=A");
 
 		getFixture().mapSDocument();

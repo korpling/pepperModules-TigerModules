@@ -113,30 +113,30 @@ SPointingRelation otherwise
 Annotations in general (represented by a Annotation object in the ISOTiger-api) are mapped to a SAnnotation object, where the SAnnotation.sName is mapped to the Annotation.name and the Annotation.value is mapped to the SAnnotation.sValue field. An Annotation object can belong to either a Terminal, a NonTerminal or an Edge object and therefore is referred to the corresponding SNode or SRelation object in Salt. To adopt the mapping with renaming name of an annotation, you can use the property .
 
 ### segments
-In the default case, Segment objects are ignored and not mapped to Salt. To adopt this behaviour you can use the property .
+In the default case, Segment objects are ignored and not mapped to Salt. To adopt this behavior you can use the property .
 
 ## Properties
- The table  contains an overview of all usable properties to customize the behaviour of this pepper module. The following section contains a brief description to each single property and describes the resulting differences in the mapping to the Salt model.
-properties to customize importer behaviour
-|Name of property										|Type of property 	|optional/ mandatory |	default value |
-|-------------------------------------------------------|-------------------|--------------------|----------------|
-|pepperModules.tigerModules.importer.createSSpan4Segment|	Boolean			|	optional		 |false				|
-|pepperModules.tigerModules.importer.map				|	String			|	optional		 |whitespace		|
-|pepperModules.tigerModules.importer.separator			|	String			|	optional		 |--				|
-|pepperModules.tigerModules.importer.edge.type			|	String			|	optional		 |--				|
-|pepperModules.tigerModules.importer.annotation.name	|	String			|	optional		 |--				|
+ The table  contains an overview of all usable properties to customize the behavior of this pepper module. The following section contains a brief description to each single property and describes the resulting differences in the mapping to the Salt model.
+properties to customize importer behavior
+|Name of property	|Type of property 	|optional/ mandatory |	default value |
+|-------------------|-------------------|--------------------|----------------|
+|createSSpan4Segment|	Boolean			|	optional		 |false				|
+|map				|	String			|	optional		 |whitespace		|
+|separator			|	String			|	optional		 |--				|
+|edge.type			|	String			|	optional		 |--				|
+|annotation.name	|	String			|	optional		 |--				|
 	
-### pepperModules.tigerModules.importer.createSSpan4Segment
+### createSSpan4Segment
 This flag determines if a SSpan object shall be created for each segment. Must be mappable to a Boolean value.
 
-### pepperModules.tigerModules.importer.map
-Property to determine, which Egde type shall be mapped to which kind of SRelation.This is just a prefix of the real property, which has a suffix specifying the Edge type. For instance pepperModules.tigerModules.importer.map.dep or pepperModules.tigerModules.importer.map.prim.
+### map
+Property to determine, which Egde type shall be mapped to which kind of SRelation.This is just a prefix of the real property, which has a suffix specifying the Edge type. For instance map.dep or map.prim.
 
-### pepperModules.tigerModules.importer.separator
+### separator
 Determines the separator between terminal nodes. The default separator is ' '.
 
-### pepperModules.tigerModules.importer.edge.type
+### edge.type
 Gives a renaming table for the sType of a SRelation. The syntax of defining such a table is 'OLDNAME=NEWNAME (,OLDNAME=NEWNAME)*', for instance the property value prim=edge, sec=secedge, will rename all sType values from 'prim' to edge and 'sec' to secedge.
 
-### pepperModules.tigerModules.importer.annotation.name
+### annotation.name
 Gives a renaming table for the name of an annotation, or more specific, which value the sName of the SAnnotation object shall get. The syntax of defining such a table is 'OLDNAME=NEWNAME (,OLDNAME=NEWNAME)*', for instance the property value label=func, will rename all sName values from 'label' to 'func'."

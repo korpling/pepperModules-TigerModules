@@ -27,7 +27,7 @@ import org.eclipse.emf.common.util.EList;
 import de.hu_berlin.german.korpling.saltnpepper.pepper.common.DOCUMENT_STATUS;
 import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.exceptions.PepperModuleException;
 import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.impl.PepperMapperImpl;
-import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.Tiger2Properties;
+import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.Tiger2ImporterProperties;
 import de.hu_berlin.german.korpling.saltnpepper.salt.SaltFactory;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sCorpusStructure.SDocument;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.SDocumentGraph;
@@ -83,14 +83,14 @@ public class Tiger22SaltMapper extends PepperMapperImpl {
 	}
 
 	/**
-	 * Returns the {@link Tiger2Properties} object containing properties to
+	 * Returns the {@link Tiger2ImporterProperties} object containing properties to
 	 * customize the mapping from data coming from a tiger2 model to a Salt
 	 * model.
 	 * 
 	 * @return the mappingProperties
 	 */
-	public Tiger2Properties getProps() {
-		return (Tiger2Properties) getProperties();
+	public Tiger2ImporterProperties getProps() {
+		return (Tiger2ImporterProperties) getProperties();
 	}
 
 	/**
@@ -267,7 +267,14 @@ public class Tiger22SaltMapper extends PepperMapperImpl {
 
 					// start: mapping rules
 					if (sourceSNode instanceof SToken) {
-						sRelation = SaltFactory.eINSTANCE.createSPointingRelation();
+						if ((saltType != null) && (STYPE_NAME.SDOMINANCE_RELATION.equals(saltType))) {
+							sRelation= SaltFactory.eINSTANCE.createSDominanceRelation();
+							SNode tmpNode= sourceSNode;
+							sourceSNode= targetSNode;
+							targetSNode= tmpNode;		
+						}else{
+							sRelation = SaltFactory.eINSTANCE.createSPointingRelation();
+						}
 					} else if ((sourceSNode instanceof SSpan) && (targetSNode instanceof SToken)) {
 						if ((saltType != null) && (STYPE_NAME.SPOINTING_RELATION.equals(saltType))) {
 							// also SPointingRelation is possible, when using
@@ -291,12 +298,14 @@ public class Tiger22SaltMapper extends PepperMapperImpl {
 
 					if ((edge.getType() != null) && (!edge.getType().isEmpty())) {
 						String newType = null;
-						if (getProps().getRenamingMap_EdgeType() != null)
+						if (getProps().getRenamingMap_EdgeType() != null){
 							newType = getProps().getRenamingMap_EdgeType().get(edge.getType());
-						if (newType != null)
+						}
+						if (newType != null){
 							sRelation.addSType(newType);
-						else
+						}else{
 							sRelation.addSType(edge.getType());
+						}
 					}
 					sRelation.setSSource(sourceSNode);
 					sRelation.setSTarget(targetSNode);
