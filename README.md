@@ -60,7 +60,7 @@ or
 ### c) Use properties
 ```xml
 <importer name="Tiger2Importer" path="PATH_TO_CORPUS">
-  <property key="PROPERTY_NAME">PROPERTY_VALUE</key>
+  <property key="PROPERTY_NAME">PROPERTY_VALUE</property>
 </importer>
 ```
 
@@ -118,6 +118,7 @@ In the default case, Segment objects are ignored and not mapped to Salt. To adop
 ## Properties
  The table  contains an overview of all usable properties to customize the behavior of this pepper module. The following section contains a brief description to each single property and describes the resulting differences in the mapping to the Salt model.
 properties to customize importer behavior
+
 |Name of property	|Type of property 	|optional/ mandatory |	default value |
 |-------------------|-------------------|--------------------|----------------|
 |createSSpan4Segment|	Boolean			|	optional		 |false				|
