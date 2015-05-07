@@ -1,102 +1,53 @@
 <?xml version='1.0' encoding='utf-8'?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <artifactId>pepperModules-TigerModules</artifactId>
-  <name>${project.groupId}.${project.artifactId}</name>
-  <version>2.0.3-SNAPSHOT</version>
-  <packaging>bundle</packaging>
-  <distributionManagement>
-    <repository>
-      <id>korpling</id>
-      <name>korpling maven repo</name>
-      <url>file:///srv/www/maven2/</url>
-    </repository>
-  </distributionManagement>
-  <repositories>
-    <repository>
-      <id>korpling</id>
-      <name>korpling maven repo</name>
-      <url>http://korpling.german.hu-berlin.de/maven2</url>
-    </repository>
-  </repositories>
-  <parent>
-    <groupId>de.hu_berlin.german.korpling.saltnpepper</groupId>
-    <artifactId>pepper-parentModule</artifactId>
-    <version>2.0.0</version>
-  </parent>
-  <description>This version is a completly new begining and does not continue the biuld of older versions. In this version, the tiger-api was replaced by a new one, which is able to read and write TiGer xml and &lt;tiger2/&gt; data as well.</description>
-  <url>https://korpling.german.hu-berlin.de/p/projects/peppermodules-samplemodules</url>
-  <issueManagement>
-    <system>GitHub</system>
-    <url>https://github.com/korpling/pepperModules-TigerModules/issues</url>
-  </issueManagement>
-  <ciManagement />
-  <inceptionYear>2010</inceptionYear>
-  <scm>
-    <connection>scm:git:git://github.com/korpling/pepperModules-TigerModules.git</connection>
-    <developerConnection>scm:git:git@github.com:korpling/pepperModules-TigerModules.git</developerConnection>
-    <url>https://github.com/korpling/pepperModules-TigerModules</url>
-  </scm>
-  <dependencies>
-    <dependency>
-      <groupId>de.hu_berlin.german.korpling</groupId>
-      <artifactId>tiger2-api</artifactId>
-      <version>[0.0.2,)</version>
-      <type>jar</type>
-      <scope>compile</scope>
-    </dependency>
-  </dependencies>
-  <organization>
-    <name>Humboldt Univerity of Berlin, INRIA</name>
-  </organization>
-  <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-release-plugin</artifactId>
-        <version>${maven-release-plugin.version}</version>
-        <executions>
-          <execution>
-            <id>default</id>
-            <goals>
-              <goal>perform</goal>
-            </goals>
-            <configuration>
-              <pomFileName>pepperModules-TigerModules/pom.xml</pomFileName>
-            </configuration>
-          </execution>
-        </executions>
-        <configuration>
-          <releaseProfiles>release</releaseProfiles>
-          <goals>package assembly:single deploy</goals>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <version>${maven-bundle-plugin.version}</version>
-        <extensions>true</extensions>
-        <executions>
-          <execution>
-            <phase>process-classes</phase>
-            <goals>
-              <goal>bundle</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <manifestLocation>${META-INF}</manifestLocation>
-          <source>${java.version}</source>
-          <target>${java.version}</target>
-          <instructions>
-            <Bundle-Name>${project.artifactId}</Bundle-Name>
-            <Bundle-SymbolicName>${project.groupId}.${project.artifactId};singleton:=true</Bundle-SymbolicName>
-            <Bundle-Version>${project.version}</Bundle-Version>
-            <Bundle-RequiredExecutionEnvironment>JavaSE-${java.version}</Bundle-RequiredExecutionEnvironment>
-            <Service-Component>${allServiceComponents}</Service-Component>
-            <Include-Resource>{maven-resources}, LICENSE, NOTICE</Include-Resource>
-          </instructions>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>pepperModules-TigerModules</artifactId>
+	<name>${project.groupId}.${project.artifactId}</name>
+	<version>2.0.3-SNAPSHOT</version>
+	<packaging>bundle</packaging>
+	<distributionManagement>
+		<repository>
+			<id>korpling</id>
+			<name>korpling maven repo</name>
+			<url>file:///srv/www/maven2/</url>
+		</repository>
+	</distributionManagement>
+	<repositories>
+		<repository>
+			<id>korpling</id>
+			<name>korpling maven repo</name>
+			<url>http://korpling.german.hu-berlin.de/maven2</url>
+		</repository>
+	</repositories>
+	<parent>
+		<groupId>de.hu_berlin.german.korpling.saltnpepper</groupId>
+		<artifactId>pepper-parentModule</artifactId>
+		<version>2.1.0</version>
+	</parent>
+	<description>This version is a completly new begining and does not continue the build of older versions. In this version, the tiger-api was replaced by a new one, which is able to read and write TiGer xml and &lt;tiger2/&gt; data as well.</description>
+	<url>https://github.com/korpling/pepperModules-TigerModules</url>
+	<issueManagement>
+		<system>GitHub</system>
+		<url>https://github.com/korpling/pepperModules-TigerModules/issues</url>
+	</issueManagement>
+	<ciManagement />
+	<inceptionYear>2010</inceptionYear>
+	<scm>
+		<connection>scm:git:git://github.com/korpling/pepperModules-TigerModules.git</connection>
+		<developerConnection>scm:git:git@github.com:korpling/pepperModules-TigerModules.git</developerConnection>
+		<url>https://github.com/korpling/pepperModules-TigerModules</url>
+	</scm>
+	<dependencies>
+		<dependency>
+			<groupId>de.hu_berlin.german.korpling</groupId>
+			<artifactId>tiger2-api</artifactId>
+			<version>[0.0.2,)</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+	</dependencies>
+	<organization>
+		<name>Humboldt-Universität zu Berlin, INRIA</name>
+	</organization>
 </project>
