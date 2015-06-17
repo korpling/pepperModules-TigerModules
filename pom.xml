@@ -45,6 +45,13 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
+    
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>18.0</version>
+    </dependency>
+    
 	</dependencies>
 	<organization>
 		<name>Humboldt-Universität zu Berlin, INRIA</name>

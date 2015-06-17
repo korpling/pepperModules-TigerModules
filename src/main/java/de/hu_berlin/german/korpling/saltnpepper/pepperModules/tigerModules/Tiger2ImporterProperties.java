@@ -76,6 +76,12 @@ public class Tiger2ImporterProperties extends PepperModuleProperties {
 	 * to secedge.
 	 */
 	public static final String PROP_RENAME_EDGE_TYPE = "edge.type";
+  
+  /**
+   * Name of the property that sets whether segments should be treated
+   * as documents.
+   */
+  public static final String PROP_SEGMENT_AS_DOC = "segmentAsDoc";
 
 	/**
 	 * Name of the property to give a renaming table for the sType of a
@@ -87,11 +93,12 @@ public class Tiger2ImporterProperties extends PepperModuleProperties {
 	public static final String PROP_RENAME_ANNOTATION_NAME = "annotation.name";
 
 	public Tiger2ImporterProperties() {
-		this.addProperty(new PepperModuleProperty<Boolean>(PROP_CREATE_SSPAN, Boolean.class, "This flag determines if a SSpan object shall be created for each segment. Must be mappable to a Boolean value.", false, false));
-		this.addProperty(new PepperModuleProperty<String>(PROP_EDGE_2_SRELATION, String.class, "Property to determine, which Egde type shall be mapped to which kind of SRelation. A mapping has the syntax type=STYPE_NAME(, type=STYPE_NAME)*. For instance 'dep=" + STYPE_NAME.SPOINTING_RELATION + ", prim=" + STYPE_NAME.SDOMINANCE_RELATION + "'.", "secedge:"+STYPE_NAME.SDOMINANCE_RELATION, false));
-		this.addProperty(new PepperModuleProperty<String>(PROP_TERMINAL_SEPARATOR, String.class, "Determines the separator between terminal nodes. The default separator is '" + DEFAULT_SEPARATOR + "'.", DEFAULT_SEPARATOR, false));
-		this.addProperty(new PepperModuleProperty<String>(PROP_RENAME_EDGE_TYPE, String.class, "Gives a renaming table for the sType of a SRelation. The syntax of defining such a table is 'OLDNAME=NEWNAME (,OLDNAME=NEWNAME)*', for instance the property value prim=edge, sec=secedge, will rename all sType values from 'prim' to edge and 'sec' to secedge.", false));
-		this.addProperty(new PepperModuleProperty<String>(PROP_RENAME_ANNOTATION_NAME, String.class, "Gives a renaming table for the name of an annotation, or more specific, which value the sName of the SAnnotation object shall get. The syntax of defining such a table is 'OLDNAME=NEWNAME (,OLDNAME=NEWNAME)*', for instance the property value prim=edge, sec=secedge, will rename all sType values from 'prim' to edge and 'sec' to secedge.", false));
+		this.addProperty(new PepperModuleProperty<>(PROP_CREATE_SSPAN, Boolean.class, "This flag determines if a SSpan object shall be created for each segment. Must be mappable to a Boolean value.", false, false));
+		this.addProperty(new PepperModuleProperty<>(PROP_EDGE_2_SRELATION, String.class, "Property to determine, which Egde type shall be mapped to which kind of SRelation. A mapping has the syntax type=STYPE_NAME(, type=STYPE_NAME)*. For instance 'dep=" + STYPE_NAME.SPOINTING_RELATION + ", prim=" + STYPE_NAME.SDOMINANCE_RELATION + "'.", "secedge:"+STYPE_NAME.SDOMINANCE_RELATION, false));
+		this.addProperty(new PepperModuleProperty<>(PROP_TERMINAL_SEPARATOR, String.class, "Determines the separator between terminal nodes. The default separator is '" + DEFAULT_SEPARATOR + "'.", DEFAULT_SEPARATOR, false));
+		this.addProperty(new PepperModuleProperty<>(PROP_RENAME_EDGE_TYPE, String.class, "Gives a renaming table for the sType of a SRelation. The syntax of defining such a table is 'OLDNAME=NEWNAME (,OLDNAME=NEWNAME)*', for instance the property value prim=edge, sec=secedge, will rename all sType values from 'prim' to edge and 'sec' to secedge.", false));
+		this.addProperty(new PepperModuleProperty<>(PROP_RENAME_ANNOTATION_NAME, String.class, "Gives a renaming table for the name of an annotation, or more specific, which value the sName of the SAnnotation object shall get. The syntax of defining such a table is 'OLDNAME=NEWNAME (,OLDNAME=NEWNAME)*', for instance the property value prim=edge, sec=secedge, will rename all sType values from 'prim' to edge and 'sec' to secedge.", false));
+    this.addProperty(new PepperModuleProperty<>(PROP_SEGMENT_AS_DOC, Boolean.class, "If true treat each segment as separate document.", false, Boolean.FALSE));
 	}
 
 	public void reset() {
