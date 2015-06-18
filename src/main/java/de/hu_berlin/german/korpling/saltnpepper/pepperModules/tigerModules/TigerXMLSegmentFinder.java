@@ -19,11 +19,15 @@ import com.google.common.io.Files;
 import de.hu_berlin.german.korpling.saltnpepper.salt.SaltFactory;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sCorpusStructure.SCorpus;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sCorpusStructure.SCorpusGraph;
+import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sCorpusStructure.SDocument;
+import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SElementId;
 import de.hu_berlin.german.korpling.tiger2.resources.tigerXML.TigerXMLDictionary;
 import java.io.File;
 
 import de.hu_berlin.german.korpling.tiger2.resources.util.XMLHelper;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import org.eclipse.emf.common.util.URI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
@@ -41,24 +45,29 @@ public class TigerXMLSegmentFinder extends DefaultHandler2
 
   private final File file;
   private final SCorpusGraph corpusGraph;
-  private final SCorpus rootCorpus;
+  private final SCorpus parent;
   
-  public TigerXMLSegmentFinder(File file, SCorpusGraph corpusGraph)
+  private final Map<SElementId, URI> resourceMap = new LinkedHashMap<>();
+  
+  public TigerXMLSegmentFinder(File file, SCorpusGraph corpusGraph, SCorpus parent)
   {
     this.file = file;
     this.corpusGraph = corpusGraph;
     
-    // create a root corpus with the file name as name
-    rootCorpus = SaltFactory.eINSTANCE.createSCorpus();
-    rootCorpus.setSName(Files.getNameWithoutExtension(file.getName()));
+    this.parent = parent;    
   }
 
   public void parse()
   {
-    corpusGraph.addSNode(rootCorpus);
     XMLHelper.readXml(file, this);
   }
 
+  public Map<SElementId, URI> getResourceMap()
+  {
+    return resourceMap;
+  }
+  
+  
   @Override
   public void startElement(String uri, String localName, String qName,
     Attributes attributes) throws SAXException
@@ -72,7 +81,8 @@ public class TigerXMLSegmentFinder extends DefaultHandler2
       }
       else
       {
-        corpusGraph.createSDocument(rootCorpus, id);
+        SDocument doc = corpusGraph.createSDocument(parent, id);
+        resourceMap.put(doc.getSElementId(), URI.createFileURI(file.getAbsolutePath()));
       }
     }
   }

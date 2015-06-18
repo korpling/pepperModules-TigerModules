@@ -18,6 +18,7 @@
 package de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules;
 
 import com.google.common.base.Preconditions;
+import com.google.common.io.Files;
 import java.io.IOException;
 
 import org.eclipse.emf.common.util.URI;
@@ -39,6 +40,7 @@ import de.hu_berlin.german.korpling.tiger2.resources.TigerResourceFactory;
 
 import static de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.Tiger2ImporterProperties.PROP_SEGMENT_AS_DOC;
 import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.mappers.TigerSegmentMapper;
+import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sCorpusStructure.SCorpus;
 import java.io.File;
 
 /**
@@ -113,18 +115,41 @@ public class Tiger2Importer extends PepperImporterImpl implements PepperImporter
     {
       // parse the file once and add a document for each segment
       URI fileURI = getCorpusDesc().getCorpusPath();
-      Preconditions.checkArgument(fileURI.isFile(), "Corpus path must be a single file when treating segments as documents");
       File corpusFile = new File(fileURI.toFileString());
-      Preconditions.checkArgument(corpusFile.isFile(),"Corpus path must be a single file when treating segments as documents");
-      
-      TigerXMLSegmentFinder segmentFinder = new TigerXMLSegmentFinder(corpusFile, corpusGraph);
-      segmentFinder.parse();
-      
+      importSegmentCorpusStructure(corpusGraph, null, corpusFile);
     }
     else
     {
       // use default directory and file based corpus structure
       super.importCorpusStructure(corpusGraph);
+    }
+  }
+  
+  private void importSegmentCorpusStructure(SCorpusGraph corpusGraph, SCorpus parent, File f)
+  {
+    if(f.isDirectory())
+    {
+      SCorpus subCorpus = corpusGraph.createSCorpus(parent, f.getName());
+      getSElementId2ResourceTable().put(subCorpus.getSElementId(), URI.createFileURI(f.getAbsolutePath()));
+      for(File child : f.listFiles())
+      {
+        importSegmentCorpusStructure(corpusGraph, subCorpus, child);
+      }
+    }
+    else if(f.isFile())
+    {
+      if(getSDocumentEndings() == null || getSDocumentEndings().contains(Files.getFileExtension(f.getName())))
+      {
+        // create a corpus for the single file
+        SCorpus subCorpus = corpusGraph.createSCorpus(parent, Files.getNameWithoutExtension(f.getName()));
+        getSElementId2ResourceTable().put(subCorpus.getSElementId(), URI.createFileURI(f.getAbsolutePath()));
+        
+        // create the documents
+        TigerXMLSegmentFinder segmentFinder = new TigerXMLSegmentFinder(
+          f, corpusGraph, subCorpus);
+        segmentFinder.parse();
+        getSElementId2ResourceTable().putAll(segmentFinder.getResourceMap());
+      }
     }
   }
   
@@ -139,9 +164,7 @@ public class Tiger2Importer extends PepperImporterImpl implements PepperImporter
     
     if((Boolean) getProperties().getProperty(PROP_SEGMENT_AS_DOC).getValue()) {
     
-      TigerSegmentMapper mapper = new TigerSegmentMapper();
-      mapper.setResourceURI(getCorpusDesc().getCorpusPath());
-      
+      TigerSegmentMapper mapper = new TigerSegmentMapper();      
       return mapper;
       
     } else {
