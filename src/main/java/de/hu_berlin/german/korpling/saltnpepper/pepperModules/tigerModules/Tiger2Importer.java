@@ -147,7 +147,7 @@ public class Tiger2Importer extends PepperImporterImpl implements PepperImporter
         // create the documents
         TigerXMLSegmentFinder segmentFinder = new TigerXMLSegmentFinder(
           f, corpusGraph, subCorpus);
-        segmentFinder.parse();
+        readXMLResource(segmentFinder, URI.createFileURI(f.getAbsolutePath()));
         getSElementId2ResourceTable().putAll(segmentFinder.getResourceMap());
       }
     }

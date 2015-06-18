@@ -16,6 +16,7 @@
 package de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.mappers;
 
 import de.hu_berlin.german.korpling.saltnpepper.pepper.common.DOCUMENT_STATUS;
+import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.exceptions.PepperModuleXMLResourceException;
 import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.impl.PepperMapperImpl;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sCorpusStructure.SCorpus;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sCorpusStructure.SDocument;
@@ -26,6 +27,7 @@ import de.hu_berlin.german.korpling.tiger2.resources.tigerXML.TigerXMLReader;
 import de.hu_berlin.german.korpling.tiger2.resources.util.EndOfProcessingException;
 import de.hu_berlin.german.korpling.tiger2.resources.util.XMLHelper;
 import java.io.File;
+import org.eclipse.emf.common.util.URI;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.ext.DefaultHandler2;
@@ -55,8 +57,22 @@ public class TigerSegmentMapper extends PepperMapperImpl
     Handler handler = new Handler();
     handler.setRootCorpus(rootCorpus);
 
-    XMLHelper.readXml(f, handler);
-    
+    try
+    {
+      readXMLResource(handler, URI.createFileURI(f.getAbsolutePath()));
+    }
+    catch(PepperModuleXMLResourceException ex)
+    {
+      if(ex.getCause() instanceof EndOfProcessingException)
+      {
+        // totally valid
+      }
+      else
+      {
+        // re-throw
+        throw ex;
+      }
+    }
     Tiger22SaltMapper docMapper = new Tiger22SaltMapper();
     docMapper.setCorpus(rootCorpus);
     docMapper.setSDocument(getSDocument());
@@ -83,11 +99,20 @@ public class TigerSegmentMapper extends PepperMapperImpl
     return result;
   }
 
+  @Override
+  public DOCUMENT_STATUS mapSCorpus()
+  {
+    // TODO: map the whole corpus at once and not each document
+    return DOCUMENT_STATUS.COMPLETED;
+  }
+  
+  
+
   public class Handler extends TigerXMLReader
   {
     private boolean headFinished = false;
     private boolean inCorrectSegment = false;
-
+   
     @Override
     public void startElement(String uri, String localName, String qName,
       Attributes attributes) throws SAXException

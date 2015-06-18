@@ -15,8 +15,6 @@
  */
 package de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules;
 
-import com.google.common.io.Files;
-import de.hu_berlin.german.korpling.saltnpepper.salt.SaltFactory;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sCorpusStructure.SCorpus;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sCorpusStructure.SCorpusGraph;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sCorpusStructure.SDocument;
@@ -24,7 +22,6 @@ import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SElementId;
 import de.hu_berlin.german.korpling.tiger2.resources.tigerXML.TigerXMLDictionary;
 import java.io.File;
 
-import de.hu_berlin.german.korpling.tiger2.resources.util.XMLHelper;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.emf.common.util.URI;
@@ -55,11 +52,6 @@ public class TigerXMLSegmentFinder extends DefaultHandler2
     this.corpusGraph = corpusGraph;
     
     this.parent = parent;    
-  }
-
-  public void parse()
-  {
-    XMLHelper.readXml(file, this);
   }
 
   public Map<SElementId, URI> getResourceMap()
