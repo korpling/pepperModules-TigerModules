@@ -17,6 +17,8 @@ package de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.mapp
 
 import de.hu_berlin.german.korpling.saltnpepper.pepper.common.DOCUMENT_STATUS;
 import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.impl.PepperMapperImpl;
+import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sCorpusStructure.SCorpus;
+import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sCorpusStructure.SDocument;
 import de.hu_berlin.german.korpling.tiger2.Corpus;
 import de.hu_berlin.german.korpling.tiger2.Tiger2Factory;
 import de.hu_berlin.german.korpling.tiger2.resources.tigerXML.TigerXMLDictionary;
@@ -37,7 +39,7 @@ public class TigerSegmentMapper extends PepperMapperImpl
 
   private final Corpus rootCorpus;
   private String documentName;
-
+ 
   public TigerSegmentMapper()
   {
     this.rootCorpus = Tiger2Factory.eINSTANCE.createCorpus();
@@ -46,7 +48,8 @@ public class TigerSegmentMapper extends PepperMapperImpl
   @Override
   public DOCUMENT_STATUS mapSDocument()
   {
-    this.documentName = getSDocument().getSName();
+    SDocument doc = getSDocument();
+    this.documentName = doc.getSName();
     File f = new File(getResourceURI().toFileString());
 
     Handler handler = new Handler();
@@ -59,7 +62,25 @@ public class TigerSegmentMapper extends PepperMapperImpl
     docMapper.setSDocument(getSDocument());
     docMapper.setProperties(getProperties());
     
-    return docMapper.mapSDocument();
+    DOCUMENT_STATUS result = docMapper.mapSDocument();
+    
+    if(result == DOCUMENT_STATUS.COMPLETED)
+    {
+      // reset the document name to the original one, since the docMapper might overwrite it
+      getSDocument().setSName(documentName);
+      String corpusName = docMapper.getCorpus().getMeta().getName();
+      if(corpusName != null && !corpusName.isEmpty())
+      {
+        // instead assign the corpus name to the parent corpus
+        SCorpus parentCorpus = doc.getSCorpusGraph().getSCorpus(doc);
+        if(parentCorpus != null)
+        {
+          parentCorpus.setSName(corpusName);
+        }
+      }
+    }
+    
+    return result;
   }
 
   public class Handler extends TigerXMLReader
