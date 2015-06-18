@@ -140,6 +140,7 @@ public class Tiger2Importer extends PepperImporterImpl implements PepperImporter
     if((Boolean) getProperties().getProperty(PROP_SEGMENT_AS_DOC).getValue()) {
     
       TigerSegmentMapper mapper = new TigerSegmentMapper();
+      mapper.setResourceURI(getCorpusDesc().getCorpusPath());
       
       return mapper;
       
