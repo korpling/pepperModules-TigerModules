@@ -1,17 +1,17 @@
 /**
  * Copyright 2009 Humboldt-Universität zu Berlin, INRIA.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  *
  *
  */
@@ -42,12 +42,21 @@ import static de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModule
 import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.mappers.TigerSegmentMapper;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sCorpusStructure.SCorpus;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is a sample PepperImporter, which can be used for creating individual
  * Importers for the Pepper Framework. Therefore you have to take a look to
  * todo's and adapt the code.
- * 
+ *
  * <ul>
  * <li>the salt model to fill, manipulate or export can be accessed via
  * SaltProject::this.getSaltProject()</li>
@@ -59,59 +68,81 @@ import java.io.File;
  * URL::this.getResources()</li>
  * <li>a logService can be accessed via LogService::this.getLogService()</li>
  * </ul>
- * 
+ *
  * @author Florian Zipser
  * @version 1.0
  *
  */
-@Component(name = "Tiger2ImporterComponent", factory = "PepperImporterComponentFactory")
-public class Tiger2Importer extends PepperImporterImpl implements PepperImporter {
-	/**
-	 * Initializes an importer, importing data from a <tiger2/> model.
-	 */
-	public Tiger2Importer() {
-		super();
+@Component(name = "Tiger2ImporterComponent", factory
+  = "PepperImporterComponentFactory")
+public class Tiger2Importer extends PepperImporterImpl implements PepperImporter
+{
 
-		// start: setting name of module
-		setName("Tiger2Importer");
+  private final static Logger log = LoggerFactory.
+    getLogger(Tiger2Importer.class);
+
+  private final Map<SElementId, XMLStreamReader> xmlReaders
+    = new LinkedHashMap<>();
+
+  /**
+   * Initializes an importer, importing data from a <tiger2/> model.
+   */
+  public Tiger2Importer()
+  {
+    super();
+
+    // start: setting name of module
+    setName("Tiger2Importer");
 		// end: setting name of module
 
-		// set list of formats supported by this module
-		this.addSupportedFormat("tiger2", "2.0.5", null);
-		this.addSupportedFormat("tigerXML", "1.0", null);
-		getSDocumentEndings().add(TigerResourceFactory.FILE_ENDING_TIGER2);
-		getSDocumentEndings().add(TigerResourceFactory.FILE_ENDING_TIGER2_2);
-		getSDocumentEndings().add(TigerResourceFactory.FILE_ENDING_TIGERXML);
-		getSDocumentEndings().add(TigerResourceFactory.FILE_ENDING_TIGERXML_2);
-		setProperties(new Tiger2ImporterProperties());
-	}
+    // set list of formats supported by this module
+    this.addSupportedFormat("tiger2", "2.0.5", null);
+    this.addSupportedFormat("tigerXML", "1.0", null);
+    getSDocumentEndings().add(TigerResourceFactory.FILE_ENDING_TIGER2);
+    getSDocumentEndings().add(TigerResourceFactory.FILE_ENDING_TIGER2_2);
+    getSDocumentEndings().add(TigerResourceFactory.FILE_ENDING_TIGERXML);
+    getSDocumentEndings().add(TigerResourceFactory.FILE_ENDING_TIGERXML_2);
+    setProperties(new Tiger2ImporterProperties());
+  }
 
-	/**
-	 * {@link ResourceSet} object to load models via emf resource mechanism.
-	 */
-	private ResourceSet resourceSet = null;
+  /**
+   * {@link ResourceSet} object to load models via emf resource mechanism.
+   */
+  private ResourceSet resourceSet = null;
 
-	private ResourceSet getResourceSet() {
-		if (resourceSet == null) {
-			synchronized (this) {
-				if (resourceSet == null) {
-					resourceSet = new ResourceSetImpl();
-					resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put(TigerResourceFactory.FILE_ENDING_TIGER2, new TigerResourceFactory());
-					resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put(TigerResourceFactory.FILE_ENDING_TIGER2_2, new TigerResourceFactory());
-					resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put(TigerResourceFactory.FILE_ENDING_TIGERXML, new TigerResourceFactory());
-					resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put(TigerResourceFactory.FILE_ENDING_TIGERXML_2, new TigerResourceFactory());
-				}
-			}
-		}
-		return (resourceSet);
-	}
+  private ResourceSet getResourceSet()
+  {
+    if (resourceSet == null)
+    {
+      synchronized (this)
+      {
+        if (resourceSet == null)
+        {
+          resourceSet = new ResourceSetImpl();
+          resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().
+            put(TigerResourceFactory.FILE_ENDING_TIGER2,
+              new TigerResourceFactory());
+          resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().
+            put(TigerResourceFactory.FILE_ENDING_TIGER2_2,
+              new TigerResourceFactory());
+          resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().
+            put(TigerResourceFactory.FILE_ENDING_TIGERXML,
+              new TigerResourceFactory());
+          resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().
+            put(TigerResourceFactory.FILE_ENDING_TIGERXML_2,
+              new TigerResourceFactory());
+        }
+      }
+    }
+    return (resourceSet);
+  }
 
   @Override
   public void importCorpusStructure(SCorpusGraph corpusGraph) throws
     PepperModuleException
   {
-    
-    if((Boolean) getProperties().getProperty(PROP_SEGMENT_AS_DOC).getValue())
+
+    if ((Boolean) getProperties().getProperty(PROP_SEGMENT_AS_DOC).getValue())
     {
       // parse the file once and add a document for each segment
       URI fileURI = getCorpusDesc().getCorpusPath();
@@ -124,75 +155,121 @@ public class Tiger2Importer extends PepperImporterImpl implements PepperImporter
       super.importCorpusStructure(corpusGraph);
     }
   }
-  
-  private void importSegmentCorpusStructure(SCorpusGraph corpusGraph, SCorpus parent, File f)
+
+  private void importSegmentCorpusStructure(SCorpusGraph corpusGraph,
+    SCorpus parent, File f)
   {
-    if(f.isDirectory())
+    if (f.isDirectory())
     {
       SCorpus subCorpus = corpusGraph.createSCorpus(parent, f.getName());
-      getSElementId2ResourceTable().put(subCorpus.getSElementId(), URI.createFileURI(f.getAbsolutePath()));
-      for(File child : f.listFiles())
+      getSElementId2ResourceTable().put(subCorpus.getSElementId(), URI.
+        createFileURI(f.getAbsolutePath()));
+      for (File child : f.listFiles())
       {
         importSegmentCorpusStructure(corpusGraph, subCorpus, child);
       }
     }
-    else if(f.isFile())
+    else if (f.isFile())
     {
-      if(getSDocumentEndings() == null || getSDocumentEndings().contains(Files.getFileExtension(f.getName())))
+      if (getSDocumentEndings() == null || getSDocumentEndings().contains(Files.
+        getFileExtension(f.getName())))
       {
         // create a corpus for the single file
-        SCorpus subCorpus = corpusGraph.createSCorpus(parent, Files.getNameWithoutExtension(f.getName()));
-        getSElementId2ResourceTable().put(subCorpus.getSElementId(), URI.createFileURI(f.getAbsolutePath()));
-        
-        // create the documents
-        TigerXMLSegmentFinder segmentFinder = new TigerXMLSegmentFinder(
-          f, corpusGraph, subCorpus);
-        readXMLResource(segmentFinder, URI.createFileURI(f.getAbsolutePath()));
-        getSElementId2ResourceTable().putAll(segmentFinder.getResourceMap());
+        SCorpus subCorpus = corpusGraph.createSCorpus(parent, Files.
+          getNameWithoutExtension(f.getName()));
+        getSElementId2ResourceTable().put(subCorpus.getSElementId(), URI.
+          createFileURI(f.getAbsolutePath()));
+
+        // create the XML reader
+        try (InputStream iStream = new FileInputStream(f))
+        {
+          XMLInputFactory factory = XMLInputFactory.newFactory();
+          XMLStreamReader parser = factory.createXMLStreamReader(iStream);
+
+          // create the documents
+          TigerXMLSegmentFinder segmentFinder = new TigerXMLSegmentFinder(
+            parser, f, corpusGraph, subCorpus);
+          segmentFinder.parse(parser);
+          Map<SElementId, URI> localResMap = segmentFinder.getResourceMap();
+          getSElementId2ResourceTable().putAll(localResMap);
+
+          // remember the parser for the documents
+          for(SElementId elemID : localResMap.keySet())
+          {
+            xmlReaders.put(elemID, parser);
+          }
+          
+
+        }
+        catch (IOException | XMLStreamException ex)
+        {
+          throw new PepperModuleException("Could not load file " + f.
+            getAbsolutePath(), ex);
+        }
+
       }
     }
   }
-  
-  
-  
-	/**
-	 * Creates a mapper of type {@link Tiger22SaltMapper}. {@inheritDoc
-	 * PepperModule#createPepperMapper(SElementId)}
-	 */
-	@Override
-	public PepperMapper createPepperMapper(SElementId sElementId) {
-    
-    if((Boolean) getProperties().getProperty(PROP_SEGMENT_AS_DOC).getValue()) {
-      TigerSegmentMapper mapper = new TigerSegmentMapper();      
+
+  /**
+   * Creates a mapper of type {@link Tiger22SaltMapper}. {@inheritDoc
+   * PepperModule#createPepperMapper(SElementId)}
+   */
+  @Override
+  public PepperMapper createPepperMapper(SElementId sElementId)
+  {
+
+    if ((Boolean) getProperties().getProperty(PROP_SEGMENT_AS_DOC).getValue())
+    {
+      TigerSegmentMapper mapper = new TigerSegmentMapper(null);
       return mapper;
-      
-    } else {
+
+    }
+    else
+    {
       Tiger22SaltMapper mapper = new Tiger22SaltMapper();
 
-      if (sElementId.getSIdentifiableElement() instanceof SDocument) {
+      if (sElementId.getSIdentifiableElement() instanceof SDocument)
+      {
         URI inputUri = this.getSElementId2ResourceTable().get(sElementId);
 
         if (inputUri == null)
-          throw new PepperModuleException(this, "There was no matching uri found corresponding to document '" + sElementId + "'.");
+        {
+          throw new PepperModuleException(this,
+            "There was no matching uri found corresponding to document '"
+            + sElementId + "'.");
+        }
 
         // load resource
         Resource resourceLoad = getResourceSet().createResource(inputUri);
 
         if (resourceLoad == null)
-          throw new PepperModuleException(this, "Cannot map the data stored at given uri '" + inputUri + "', because no resource object could have been created to read these data.");
-        try {
+        {
+          throw new PepperModuleException(this,
+            "Cannot map the data stored at given uri '" + inputUri
+            + "', because no resource object could have been created to read these data.");
+        }
+        try
+        {
           resourceLoad.load(null);
-        } catch (IOException e) {
-          throw new PepperModuleException(this, "Cannot load <tiger2/> model from file '" + inputUri + "'.", e);
+        }
+        catch (IOException e)
+        {
+          throw new PepperModuleException(this,
+            "Cannot load <tiger2/> model from file '" + inputUri + "'.", e);
         }
         Object objCorpus = resourceLoad.getContents().get(0);
         if (!(objCorpus instanceof Corpus))
-          throw new PepperModuleException(this, "Cannot map the data stored at given uri '" + inputUri + "', because they could not have been mapped to a tiger2 corpus model object.");
+        {
+          throw new PepperModuleException(this,
+            "Cannot map the data stored at given uri '" + inputUri
+            + "', because they could not have been mapped to a tiger2 corpus model object.");
+        }
         Corpus corpus = (Corpus) resourceLoad.getContents().get(0);
         mapper.setCorpus(corpus);
       }
 
       return (mapper);
     }
-	}
+  }
 }

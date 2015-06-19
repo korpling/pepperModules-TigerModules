@@ -25,12 +25,11 @@ import de.hu_berlin.german.korpling.tiger2.Tiger2Factory;
 import de.hu_berlin.german.korpling.tiger2.resources.tigerXML.TigerXMLDictionary;
 import de.hu_berlin.german.korpling.tiger2.resources.tigerXML.TigerXMLReader;
 import de.hu_berlin.german.korpling.tiger2.resources.util.EndOfProcessingException;
-import de.hu_berlin.german.korpling.tiger2.resources.util.XMLHelper;
 import java.io.File;
+import javax.xml.stream.XMLStreamReader;
 import org.eclipse.emf.common.util.URI;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-import org.xml.sax.ext.DefaultHandler2;
 
 /**
  *
@@ -42,7 +41,7 @@ public class TigerSegmentMapper extends PepperMapperImpl
   private final Corpus rootCorpus;
   private String documentName;
  
-  public TigerSegmentMapper()
+  public TigerSegmentMapper(XMLStreamReader xmlReader)
   {
     this.rootCorpus = Tiger2Factory.eINSTANCE.createCorpus();
   }
@@ -135,7 +134,7 @@ public class TigerSegmentMapper extends PepperMapperImpl
         super.startElement(uri, localName, qName, attributes);
       }
     }
-
+    
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException
     {

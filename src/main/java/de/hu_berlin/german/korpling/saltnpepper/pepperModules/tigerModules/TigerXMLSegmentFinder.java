@@ -24,34 +24,48 @@ import java.io.File;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import org.eclipse.emf.common.util.URI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.ext.DefaultHandler2;
 
 /**
  *
  * @author Thomas Krause <krauseto@hu-berlin.de>
  */
-public class TigerXMLSegmentFinder extends DefaultHandler2
+public class TigerXMLSegmentFinder
 {
   
   private final static Logger log = LoggerFactory.getLogger(TigerXMLSegmentFinder.class);
 
   private final File file;
+  private final XMLStreamReader xmlReader;
   private final SCorpusGraph corpusGraph;
   private final SCorpus parent;
   
   private final Map<SElementId, URI> resourceMap = new LinkedHashMap<>();
   
-  public TigerXMLSegmentFinder(File file, SCorpusGraph corpusGraph, SCorpus parent)
+  public TigerXMLSegmentFinder(XMLStreamReader xmlReader, File file, SCorpusGraph corpusGraph, SCorpus parent)
   {
+    this.xmlReader = xmlReader;
     this.file = file;
     this.corpusGraph = corpusGraph;
     
     this.parent = parent;    
+  }
+  
+  public void parse(XMLStreamReader parser) throws XMLStreamException
+  {
+    while(parser.hasNext())
+    {
+      switch(parser.next()) {
+        case XMLStreamConstants.START_ELEMENT:
+          startElement(parser);
+          break;
+      }
+    }
   }
 
   public Map<SElementId, URI> getResourceMap()
@@ -60,13 +74,11 @@ public class TigerXMLSegmentFinder extends DefaultHandler2
   }
   
   
-  @Override
-  public void startElement(String uri, String localName, String qName,
-    Attributes attributes) throws SAXException
+  public void startElement(XMLStreamReader parser)
   {
-    if (TigerXMLDictionary.ELEMENT_SEGMENT.equals(qName))
+    if (TigerXMLDictionary.ELEMENT_SEGMENT.equals(parser.getLocalName()))
     {
-      String id = attributes.getValue(TigerXMLDictionary.ATTRIBUTE_ID);
+      String id = parser.getAttributeValue(null, TigerXMLDictionary.ATTRIBUTE_ID);
       if(id == null)
       {
         log.warn("Found a segment that has no ID. This segment will be ignored.");
