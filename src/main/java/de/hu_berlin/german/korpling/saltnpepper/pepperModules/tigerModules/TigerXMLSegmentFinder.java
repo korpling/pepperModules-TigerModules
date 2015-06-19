@@ -41,15 +41,13 @@ public class TigerXMLSegmentFinder
   private final static Logger log = LoggerFactory.getLogger(TigerXMLSegmentFinder.class);
 
   private final File file;
-  private final XMLStreamReader xmlReader;
   private final SCorpusGraph corpusGraph;
   private final SCorpus parent;
   
   private final Map<SElementId, URI> resourceMap = new LinkedHashMap<>();
   
-  public TigerXMLSegmentFinder(XMLStreamReader xmlReader, File file, SCorpusGraph corpusGraph, SCorpus parent)
+  public TigerXMLSegmentFinder(File file, SCorpusGraph corpusGraph, SCorpus parent)
   {
-    this.xmlReader = xmlReader;
     this.file = file;
     this.corpusGraph = corpusGraph;
     
@@ -60,11 +58,12 @@ public class TigerXMLSegmentFinder
   {
     while(parser.hasNext())
     {
-      switch(parser.next()) {
+      switch(parser.getEventType()) {
         case XMLStreamConstants.START_ELEMENT:
           startElement(parser);
           break;
       }
+      parser.next();
     }
   }
 

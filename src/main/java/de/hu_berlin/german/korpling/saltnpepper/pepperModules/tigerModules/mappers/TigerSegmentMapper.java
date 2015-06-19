@@ -15,6 +15,7 @@
  */
 package de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.mappers;
 
+import com.google.common.base.Preconditions;
 import de.hu_berlin.german.korpling.saltnpepper.pepper.common.DOCUMENT_STATUS;
 import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.exceptions.PepperModuleXMLResourceException;
 import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.impl.PepperMapperImpl;
@@ -22,14 +23,10 @@ import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sCorpusStructure
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sCorpusStructure.SDocument;
 import de.hu_berlin.german.korpling.tiger2.Corpus;
 import de.hu_berlin.german.korpling.tiger2.Tiger2Factory;
-import de.hu_berlin.german.korpling.tiger2.resources.tigerXML.TigerXMLDictionary;
-import de.hu_berlin.german.korpling.tiger2.resources.tigerXML.TigerXMLReader;
-import de.hu_berlin.german.korpling.tiger2.resources.util.EndOfProcessingException;
 import java.io.File;
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import org.eclipse.emf.common.util.URI;
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
 
 /**
  *
@@ -40,10 +37,12 @@ public class TigerSegmentMapper extends PepperMapperImpl
 
   private final Corpus rootCorpus;
   private String documentName;
- 
-  public TigerSegmentMapper(XMLStreamReader xmlReader)
+  private final TigerXMLSegmentReader tigerReader;
+
+  public TigerSegmentMapper(TigerXMLSegmentReader tigerReader)
   {
     this.rootCorpus = Tiger2Factory.eINSTANCE.createCorpus();
+    this.tigerReader = tigerReader;
   }
 
   @Override
@@ -52,121 +51,53 @@ public class TigerSegmentMapper extends PepperMapperImpl
     SDocument doc = getSDocument();
     this.documentName = doc.getSName();
     File f = new File(getResourceURI().toFileString());
-
-    Handler handler = new Handler();
-    handler.setRootCorpus(rootCorpus);
-
-    try
-    {
-      readXMLResource(handler, URI.createFileURI(f.getAbsolutePath()));
-    }
-    catch(PepperModuleXMLResourceException ex)
-    {
-      if(ex.getCause() instanceof EndOfProcessingException)
-      {
-        // totally valid
-      }
-      else
-      {
-        // re-throw
-        throw ex;
-      }
-    }
-    Tiger22SaltMapper docMapper = new Tiger22SaltMapper();
-    docMapper.setCorpus(rootCorpus);
-    docMapper.setSDocument(getSDocument());
-    docMapper.setProperties(getProperties());
     
-    DOCUMENT_STATUS result = docMapper.mapSDocument();
-    
-    if(result == DOCUMENT_STATUS.COMPLETED)
+    if (tigerReader != null)
     {
-      // reset the document name to the original one, since the docMapper might overwrite it
-      getSDocument().setSName(documentName);
-      String corpusName = docMapper.getCorpus().getMeta().getName();
-      if(corpusName != null && !corpusName.isEmpty())
+      tigerReader.setRootCorpus(rootCorpus);
+      try
       {
-        // instead assign the corpus name to the parent corpus
-        SCorpus parentCorpus = doc.getSCorpusGraph().getSCorpus(doc);
-        if(parentCorpus != null)
+        String segmentID = tigerReader.parseSegment();
+        Preconditions.checkNotNull(segmentID);
+        Preconditions.checkState(segmentID.equals(documentName),
+          "Wrong segment order, expected %s but got %s", documentName, segmentID);
+
+        Tiger22SaltMapper docMapper = new Tiger22SaltMapper();
+        docMapper.setCorpus(rootCorpus);
+        docMapper.setSDocument(getSDocument());
+        docMapper.setProperties(getProperties());
+
+        DOCUMENT_STATUS result = docMapper.mapSDocument();
+
+        if (result == DOCUMENT_STATUS.COMPLETED)
         {
-          parentCorpus.setSName(corpusName);
+          // reset the document name to the original one, since the docMapper might overwrite it
+          getSDocument().setSName(documentName);
+          if(docMapper.getCorpus() != null && docMapper.getCorpus().getMeta() != null)
+           {
+            String corpusName = docMapper.getCorpus().getMeta().getName();
+            if (corpusName != null && !corpusName.isEmpty())
+            {
+              // instead assign the corpus name to the parent corpus
+              SCorpus parentCorpus = doc.getSCorpusGraph().getSCorpus(doc);
+              if (parentCorpus != null)
+              {
+                parentCorpus.setSName(corpusName);
+              }
+            }
+          }
         }
+        return result;
+
+      }
+      catch (XMLStreamException ex)
+      {
+        throw new PepperModuleXMLResourceException("Could not read XML file "
+          + f.getAbsolutePath(), ex);
       }
     }
-    
-    return result;
+
+    return DOCUMENT_STATUS.FAILED;
   }
 
-  @Override
-  public DOCUMENT_STATUS mapSCorpus()
-  {
-    // TODO: map the whole corpus at once and not each document
-    return DOCUMENT_STATUS.COMPLETED;
-  }
-  
-  
-
-  public class Handler extends TigerXMLReader
-  {
-    private boolean headFinished = false;
-    private boolean inCorrectSegment = false;
-   
-    @Override
-    public void startElement(String uri, String localName, String qName,
-      Attributes attributes) throws SAXException
-    {
-      
-      if(!headFinished)
-      {
-        // map everything until head element was closed
-        super.startElement(uri, localName, qName, attributes);
-      }
-      else if(inCorrectSegment)
-      {
-        super.startElement(uri, localName, qName, attributes);
-      }
-      else if(TigerXMLDictionary.ELEMENT_SEGMENT.equals(qName)
-            && documentName.equals(attributes.getValue(
-                TigerXMLDictionary.ATTRIBUTE_ID)))
-      {
-        inCorrectSegment = true;
-        super.startElement(uri, localName, qName, attributes);
-      }
-    }
-    
-    @Override
-    public void characters(char[] ch, int start, int length) throws SAXException
-    {
-      if(!headFinished || inCorrectSegment)
-      {
-        super.characters(ch, start, length);
-      }
-    }
-    
-    @Override
-    public void endElement(String uri, String localName, String qName) throws
-      SAXException
-    {
-      if (!headFinished)
-      {
-        // map everything until head element was closed
-        super.endElement(qName, localName, qName);
-        if (TigerXMLDictionary.ELEMENT_HEAD.equals(qName))
-        {
-          headFinished = true;
-        }
-      }
-      else if (inCorrectSegment)
-      {
-        super.endElement(qName, localName, qName);
-        if (TigerXMLDictionary.ELEMENT_SEGMENT.equals(qName))
-        {
-          // we are finished
-          throw new EndOfProcessingException();
-        }
-      }
-    }
-  }
-
-  }
+}

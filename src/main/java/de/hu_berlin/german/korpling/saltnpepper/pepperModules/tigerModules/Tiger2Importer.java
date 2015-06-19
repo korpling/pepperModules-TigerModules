@@ -17,7 +17,6 @@
  */
 package de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules;
 
-import com.google.common.base.Preconditions;
 import com.google.common.io.Files;
 import java.io.IOException;
 
@@ -40,9 +39,11 @@ import de.hu_berlin.german.korpling.tiger2.resources.TigerResourceFactory;
 
 import static de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.Tiger2ImporterProperties.PROP_SEGMENT_AS_DOC;
 import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.mappers.TigerSegmentMapper;
+import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.mappers.TigerXMLSegmentReader;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sCorpusStructure.SCorpus;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -81,7 +82,7 @@ public class Tiger2Importer extends PepperImporterImpl implements PepperImporter
   private final static Logger log = LoggerFactory.
     getLogger(Tiger2Importer.class);
 
-  private final Map<SElementId, XMLStreamReader> xmlReaders
+  private final Map<SElementId, TigerXMLSegmentReader> tigerReaders
     = new LinkedHashMap<>();
 
   /**
@@ -103,6 +104,8 @@ public class Tiger2Importer extends PepperImporterImpl implements PepperImporter
     getSDocumentEndings().add(TigerResourceFactory.FILE_ENDING_TIGERXML);
     getSDocumentEndings().add(TigerResourceFactory.FILE_ENDING_TIGERXML_2);
     setProperties(new Tiger2ImporterProperties());
+    
+    setIsMultithreaded(false);
   }
 
   /**
@@ -181,31 +184,43 @@ public class Tiger2Importer extends PepperImporterImpl implements PepperImporter
           createFileURI(f.getAbsolutePath()));
 
         // create the XML reader
+        XMLInputFactory factory = XMLInputFactory.newFactory();
+        Map<SElementId, URI> localResMap = new LinkedHashMap<>();
         try (InputStream iStream = new FileInputStream(f))
         {
-          XMLInputFactory factory = XMLInputFactory.newFactory();
           XMLStreamReader parser = factory.createXMLStreamReader(iStream);
 
           // create the documents
-          TigerXMLSegmentFinder segmentFinder = new TigerXMLSegmentFinder(
-            parser, f, corpusGraph, subCorpus);
+          TigerXMLSegmentFinder segmentFinder = new TigerXMLSegmentFinder(f, corpusGraph, subCorpus);
           segmentFinder.parse(parser);
-          Map<SElementId, URI> localResMap = segmentFinder.getResourceMap();
+          localResMap = segmentFinder.getResourceMap();
           getSElementId2ResourceTable().putAll(localResMap);
-
-          // remember the parser for the documents
-          for(SElementId elemID : localResMap.keySet())
-          {
-            xmlReaders.put(elemID, parser);
-          }
-          
-
         }
         catch (IOException | XMLStreamException ex)
         {
           throw new PepperModuleException("Could not load file " + f.
             getAbsolutePath(), ex);
         }
+        try
+        {
+          XMLStreamReader parser2 = factory.createXMLStreamReader(
+            new FileInputStream(f));
+          TigerXMLSegmentReader tigerReader = new TigerXMLSegmentReader(parser2);
+          
+          // remember the parser for the documents
+          for (SElementId elemID : localResMap.keySet())
+          {
+            tigerReaders.put(elemID, tigerReader);
+          }
+
+        }
+        catch(FileNotFoundException | XMLStreamException ex)
+        {
+          throw new PepperModuleException("Could not load file for second parse " + f.
+            getAbsolutePath(), ex);
+        }
+
+
 
       }
     }
@@ -221,7 +236,8 @@ public class Tiger2Importer extends PepperImporterImpl implements PepperImporter
 
     if ((Boolean) getProperties().getProperty(PROP_SEGMENT_AS_DOC).getValue())
     {
-      TigerSegmentMapper mapper = new TigerSegmentMapper(null);
+      TigerXMLSegmentReader tigerReader = tigerReaders.get(sElementId);
+      TigerSegmentMapper mapper = new TigerSegmentMapper(tigerReader);
       return mapper;
 
     }
