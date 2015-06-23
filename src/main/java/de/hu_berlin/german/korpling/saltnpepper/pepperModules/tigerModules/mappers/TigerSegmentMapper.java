@@ -24,9 +24,7 @@ import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sCorpusStructure
 import de.hu_berlin.german.korpling.tiger2.Corpus;
 import de.hu_berlin.german.korpling.tiger2.Tiger2Factory;
 import java.io.File;
-import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 
 /**
  *

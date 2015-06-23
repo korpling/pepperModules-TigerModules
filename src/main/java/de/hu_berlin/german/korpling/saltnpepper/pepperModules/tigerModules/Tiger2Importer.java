@@ -29,6 +29,7 @@ import org.osgi.service.component.annotations.Component;
 import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.PepperImporter;
 import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.PepperMapper;
 import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.exceptions.PepperModuleException;
+import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.exceptions.PepperModuleNotReadyException;
 import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.impl.PepperImporterImpl;
 import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.mappers.Tiger22SaltMapper;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sCorpusStructure.SCorpusGraph;
@@ -82,7 +83,7 @@ public class Tiger2Importer extends PepperImporterImpl implements PepperImporter
   private final static Logger log = LoggerFactory.
     getLogger(Tiger2Importer.class);
 
-  private final Map<SElementId, TigerXMLSegmentReader> tigerReaders
+  private final Map<SElementId, XMLStreamReader> tigerParsers
     = new LinkedHashMap<>();
 
   /**
@@ -104,9 +105,19 @@ public class Tiger2Importer extends PepperImporterImpl implements PepperImporter
     getSDocumentEndings().add(TigerResourceFactory.FILE_ENDING_TIGERXML);
     getSDocumentEndings().add(TigerResourceFactory.FILE_ENDING_TIGERXML_2);
     setProperties(new Tiger2ImporterProperties());
-    
-    setIsMultithreaded(false);
   }
+
+  @Override
+  public boolean isReadyToStart() throws PepperModuleNotReadyException
+  {
+    if ((Boolean) getProperties().getProperty(PROP_SEGMENT_AS_DOC).getValue())
+    {
+      setIsMultithreaded(false);
+    }
+    return super.isReadyToStart();
+  }
+  
+  
 
   /**
    * {@link ResourceSet} object to load models via emf resource mechanism.
@@ -205,12 +216,11 @@ public class Tiger2Importer extends PepperImporterImpl implements PepperImporter
         {
           XMLStreamReader parser2 = factory.createXMLStreamReader(
             new FileInputStream(f));
-          TigerXMLSegmentReader tigerReader = new TigerXMLSegmentReader(parser2);
           
           // remember the parser for the documents
           for (SElementId elemID : localResMap.keySet())
           {
-            tigerReaders.put(elemID, tigerReader);
+            tigerParsers.put(elemID, parser2);
           }
 
         }
@@ -236,7 +246,9 @@ public class Tiger2Importer extends PepperImporterImpl implements PepperImporter
 
     if ((Boolean) getProperties().getProperty(PROP_SEGMENT_AS_DOC).getValue())
     {
-      TigerXMLSegmentReader tigerReader = tigerReaders.get(sElementId);
+      XMLStreamReader parser = tigerParsers.get(sElementId);
+      tigerParsers.remove(sElementId);
+      TigerXMLSegmentReader tigerReader = new TigerXMLSegmentReader(parser);
       TigerSegmentMapper mapper = new TigerSegmentMapper(tigerReader);
       return mapper;
 
