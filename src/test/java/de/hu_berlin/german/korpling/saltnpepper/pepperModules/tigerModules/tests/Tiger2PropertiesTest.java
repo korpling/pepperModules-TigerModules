@@ -127,5 +127,31 @@ public class Tiger2PropertiesTest {
 		assertEquals("b", renamingMapping.get("a"));
 		assertEquals("d", renamingMapping.get("c"));
 	}
+  
+  @Test
+	public void testEdgeReverse() {
+		PepperModuleProperty<String> prop = 
+      (PepperModuleProperty<String>) this.getFixture().getProperty(Tiger2ImporterProperties.PROP_EDGE_REVERSE);
+		// test default mappings
+		assertEquals(2, getFixture().getEdgeReversed().size());
+    assertTrue(getFixture().getEdgeReversed().contains("sec"));
+    assertTrue(getFixture().getEdgeReversed().contains("secedge"));
+
+		getFixture().reset();
+
+		prop.setValue("a,,b,c,d  ,  e");
+		assertEquals(5, getFixture().getEdgeReversed().size());
+    assertTrue(getFixture().getEdgeReversed().contains("a"));
+    assertTrue(getFixture().getEdgeReversed().contains("b"));
+    assertTrue(getFixture().getEdgeReversed().contains("c"));
+    assertTrue(getFixture().getEdgeReversed().contains("d"));
+    assertTrue(getFixture().getEdgeReversed().contains("e"));
+
+		getFixture().reset();
+
+		prop.setValue("a");
+		assertEquals(1, getFixture().getEdgeReversed().size());
+    assertTrue(getFixture().getEdgeReversed().contains("a"));
+	}
 
 }

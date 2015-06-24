@@ -30,6 +30,10 @@ import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SAnnotation;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SRelation;
 import de.hu_berlin.german.korpling.tiger2.Edge;
 import de.hu_berlin.german.korpling.tiger2.Segment;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * This class provides simple methods to access properties to customize a
@@ -91,6 +95,11 @@ public class Tiger2ImporterProperties extends PepperModuleProperties {
 	 * to secedge.
 	 */
 	public static final String PROP_RENAME_ANNOTATION_NAME = "annotation.name";
+  
+  /**
+	 * Property to determine, which edge types should be reversed.
+	 */
+  public static final String PROP_EDGE_REVERSE = "edge.reverse";
 
 	public Tiger2ImporterProperties() {
 		this.addProperty(new PepperModuleProperty<>(PROP_CREATE_SSPAN, Boolean.class, "This flag determines if a SSpan object shall be created for each segment. Must be mappable to a Boolean value.", false, false));
@@ -99,7 +108,16 @@ public class Tiger2ImporterProperties extends PepperModuleProperties {
 		this.addProperty(new PepperModuleProperty<>(PROP_RENAME_EDGE_TYPE, String.class, "Gives a renaming table for the sType of a SRelation. The syntax of defining such a table is 'OLDNAME=NEWNAME (,OLDNAME=NEWNAME)*', for instance the property value prim=edge, sec=secedge, will rename all sType values from 'prim' to edge and 'sec' to secedge.", false));
 		this.addProperty(new PepperModuleProperty<>(PROP_RENAME_ANNOTATION_NAME, String.class, "Gives a renaming table for the name of an annotation, or more specific, which value the sName of the SAnnotation object shall get. The syntax of defining such a table is 'OLDNAME=NEWNAME (,OLDNAME=NEWNAME)*', for instance the property value prim=edge, sec=secedge, will rename all sType values from 'prim' to edge and 'sec' to secedge.", false));
     this.addProperty(new PepperModuleProperty<>(PROP_SEGMENT_AS_DOC, Boolean.class, "If true treat each segment as separate document.", false, Boolean.FALSE));
-	}
+    this.addProperty(new PepperModuleProperty<>(PROP_EDGE_REVERSE,
+      String.class,
+      "If true this will reverse the direction of edges having the given types.\n"
+      + "Thus the source node becomes the target node and the target node\n"
+      + "becomes the source node. This is useful when secondary edges are mapped to dominance\n"
+      + "edges and the annotation scheme would introduce cycles. \n"
+      + "By inverting the edges, cycles are avoided.\n"
+      + "This must be a list of type names, seperated by comma.", "secedge,sec",
+      false));
+  }
 
 	public void reset() {
 		renamingEdgeType = null;
@@ -236,4 +254,17 @@ public class Tiger2ImporterProperties extends PepperModuleProperties {
 		}
 		return (renamingAnnotationName);
 	}
+  
+  public Set<String> getEdgeReversed() {
+    Set<String> result = new LinkedHashSet<>();
+    String raw = ((String) getProperty(PROP_EDGE_REVERSE).getValue());
+    for(String t : raw.split(",")) {
+      String trimmed = t.trim();
+      if(!trimmed.isEmpty()) {
+        result.add(trimmed);
+      }
+    }
+    return result;
+  }
+  
 }

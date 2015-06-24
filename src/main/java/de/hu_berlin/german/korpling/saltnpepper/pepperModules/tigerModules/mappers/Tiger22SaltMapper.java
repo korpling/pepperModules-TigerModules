@@ -55,6 +55,8 @@ import de.hu_berlin.german.korpling.tiger2.NonTerminal;
 import de.hu_berlin.german.korpling.tiger2.Segment;
 import de.hu_berlin.german.korpling.tiger2.SyntacticNode;
 import de.hu_berlin.german.korpling.tiger2.Terminal;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Maps a &lt;tiger2/&gt; model given by the tiger-api to a Salt model.
@@ -63,6 +65,9 @@ import de.hu_berlin.german.korpling.tiger2.Terminal;
  *
  */
 public class Tiger22SaltMapper extends PepperMapperImpl {
+  
+  private final Logger log = LoggerFactory.getLogger(Tiger22SaltMapper.class);
+  
 	/**
 	 * The main object of the &lt;tiger2/&gt; model.
 	 */
@@ -264,10 +269,24 @@ public class Tiger22SaltMapper extends PepperMapperImpl {
 						Map<String, STYPE_NAME> saltTypes = getProps().getPropEdge2SRelation();
 						saltType = saltTypes.get(edge.getType());
 					}
+          
+          if (getProps() != null
+            && getProps().getEdgeReversed().contains(edge.getType())) {
+            // reverse secondary edges
+            SNode tmpNode = sourceSNode;
+            sourceSNode = targetSNode;
+            targetSNode = tmpNode;
+
+          }
 
 					// start: mapping rules
 					if (sourceSNode instanceof SToken) {
 						if ((saltType != null) && (STYPE_NAME.SDOMINANCE_RELATION.equals(saltType))) {
+              
+              log.warn("Had to reverse the order of the edge between {} and {} "
+                + "since the source node can't be a token.", sourceSNode.getSId(),
+                targetSNode.getSId());
+              
 							sRelation= SaltFactory.eINSTANCE.createSDominanceRelation();
 							SNode tmpNode= sourceSNode;
 							sourceSNode= targetSNode;
@@ -307,13 +326,15 @@ public class Tiger22SaltMapper extends PepperMapperImpl {
 							sRelation.addSType(edge.getType());
 						}
 					}
-					sRelation.setSSource(sourceSNode);
-					sRelation.setSTarget(targetSNode);
+          
+          sRelation.setSSource(sourceSNode);
+          sRelation.setSTarget(targetSNode);
+          
 					this.mapAnnotations(edge, sRelation);
 					getSDocument().getSDocumentGraph().addSRelation(sRelation);
 					this.edge2sRelation.put(edge, sRelation);
 				}
-			}
+			} // end for each edge
 		}
 	}
 
