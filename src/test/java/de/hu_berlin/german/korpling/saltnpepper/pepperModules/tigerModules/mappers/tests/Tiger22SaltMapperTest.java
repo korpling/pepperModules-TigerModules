@@ -30,7 +30,13 @@ import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.mappe
 import de.hu_berlin.german.korpling.saltnpepper.salt.SaltFactory;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.SDominanceRelation;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.SToken;
+import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SNode;
+import de.hu_berlin.german.korpling.tiger2.Edge;
+import de.hu_berlin.german.korpling.tiger2.Graph;
+import de.hu_berlin.german.korpling.tiger2.NonTerminal;
+import de.hu_berlin.german.korpling.tiger2.Tiger2Factory;
 import de.hu_berlin.german.korpling.tiger2.samples.Tiger2Sample;
+import org.eclipse.emf.common.util.EList;
 
 public class Tiger22SaltMapperTest {
 
@@ -64,6 +70,55 @@ public class Tiger22SaltMapperTest {
 			assertEquals(1, sDomRel.getSTypes().size());
 			assertEquals("edge", sDomRel.getSTypes().get(0));
 		}
+	}
+  
+  
+  @Test
+	public void testReverseSecedgesEnabled() {
+		// use default properties
+    
+    Graph g = getFixture().getCorpus().getSegments().get(0).getGraphs().get(0);
+    NonTerminal n1 = g.getNonTerminals().get(0);
+    NonTerminal n2 = g.getNonTerminals().get(1);
+    
+    Edge secedge = Tiger2Factory.eINSTANCE.createEdge();
+    secedge.setSource(n1);
+    secedge.setTarget(n2);
+    secedge.setType("sec");
+    g.getEdges().add(secedge);
+    
+    getFixture().mapSDocument();
+
+    EList<de.hu_berlin.german.korpling.saltnpepper.salt.graph.Edge> edgeList = 
+      getFixture().getSDocument().getSDocumentGraph()
+        .getEdges("null/sampleCorpus1_graph#structure2", "null/sampleCorpus1_graph#structure1");
+    assertNotNull(edgeList);
+    assertEquals(1, edgeList.size());
+	}
+  
+  @Test
+	public void testReverseSecedgesDisabled() {
+		PepperModuleProperty<String> prop = (PepperModuleProperty<String>) getFixture().getProps().getProperty(Tiger2ImporterProperties.PROP_EDGE_REVERSE);
+		// reverse nothing
+    prop.setValue("");
+
+    Graph g = getFixture().getCorpus().getSegments().get(0).getGraphs().get(0);
+    NonTerminal n1 = g.getNonTerminals().get(0);
+    NonTerminal n2 = g.getNonTerminals().get(1);
+    
+    Edge secedge = Tiger2Factory.eINSTANCE.createEdge();
+    secedge.setSource(n1);
+    secedge.setTarget(n2);
+    secedge.setType("sec");
+    g.getEdges().add(secedge);
+    
+    getFixture().mapSDocument();
+
+    EList<de.hu_berlin.german.korpling.saltnpepper.salt.graph.Edge> edgeList = 
+      getFixture().getSDocument().getSDocumentGraph()
+        .getEdges("null/sampleCorpus1_graph#structure1", "null/sampleCorpus1_graph#structure2");
+    assertNotNull(edgeList);
+    assertEquals(1, edgeList.size());
 	}
 
 	@Test

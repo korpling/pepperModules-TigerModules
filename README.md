@@ -125,6 +125,7 @@ properties to customize importer behavior
 |map				|	String			|	optional		 |whitespace		|
 |separator			|	String			|	optional		 |--				|
 |edge.type			|	String			|	optional		 |--				|
+|edge.reverse | String    | optional      | secedge,sec    |
 |annotation.name	|	String			|	optional		 |--				|
 	
 ### createSSpan4Segment
@@ -138,6 +139,14 @@ Determines the separator between terminal nodes. The default separator is ' '.
 
 ### edge.type
 Gives a renaming table for the sType of a SRelation. The syntax of defining such a table is 'OLDNAME=NEWNAME (,OLDNAME=NEWNAME)*', for instance the property value prim=edge, sec=secedge, will rename all sType values from 'prim' to edge and 'sec' to secedge.
+
+### edge.reverse
+If true this will reverse the direction of edges having the given types.
+Thus the source node becomes the target node and the target node
+becomes the source node. This is useful when secondary edges are mapped to dominance
+edges and the annotation scheme would introduce cycles. 
+By inverting the edges, cycles are avoided.
+This must be a list of type names, seperated by comma.
 
 ### annotation.name
 Gives a renaming table for the name of an annotation, or more specific, which value the sName of the SAnnotation object shall get. The syntax of defining such a table is 'OLDNAME=NEWNAME (,OLDNAME=NEWNAME)*', for instance the property value label=func, will rename all sName values from 'label' to 'func'."
