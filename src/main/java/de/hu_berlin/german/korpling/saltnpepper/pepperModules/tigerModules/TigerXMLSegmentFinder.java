@@ -44,7 +44,7 @@ public class TigerXMLSegmentFinder
   private final SCorpusGraph corpusGraph;
   private final SCorpus parent;
   
-  private final Map<SElementId, URI> resourceMap = new LinkedHashMap<>();
+  private final LinkedHashMap<SElementId, URI> resourceMap = new LinkedHashMap<>();
   
   public TigerXMLSegmentFinder(File file, SCorpusGraph corpusGraph, SCorpus parent)
   {
@@ -67,7 +67,7 @@ public class TigerXMLSegmentFinder
     }
   }
 
-  public Map<SElementId, URI> getResourceMap()
+  public LinkedHashMap<SElementId, URI> getResourceMap()
   {
     return resourceMap;
   }

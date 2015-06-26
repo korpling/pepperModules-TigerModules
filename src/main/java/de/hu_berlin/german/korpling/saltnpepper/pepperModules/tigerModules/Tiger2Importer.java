@@ -46,7 +46,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -85,6 +87,9 @@ public class Tiger2Importer extends PepperImporterImpl implements PepperImporter
 
   private final Map<SElementId, XMLStreamReader> tigerParsers
     = new LinkedHashMap<>();
+  
+  private final Map<SElementId, List<SElementId>> proposedImportOrder = 
+    new LinkedHashMap<>();
 
   /**
    * Initializes an importer, importing data from a <tiger2/> model.
@@ -110,12 +115,22 @@ public class Tiger2Importer extends PepperImporterImpl implements PepperImporter
   @Override
   public boolean isReadyToStart() throws PepperModuleNotReadyException
   {
+    proposedImportOrder.clear();
+    
     if ((Boolean) getProperties().getProperty(PROP_SEGMENT_AS_DOC).getValue())
     {
       setIsMultithreaded(false);
     }
     return super.isReadyToStart();
   }
+
+  @Override
+  public void end() throws PepperModuleException
+  {
+    super.end();
+    proposedImportOrder.clear();
+  }
+  
   
   
 
@@ -170,6 +185,14 @@ public class Tiger2Importer extends PepperImporterImpl implements PepperImporter
     }
   }
 
+  @Override
+  public List<SElementId> proposeImportOrder(SCorpusGraph sCorpusGraph)
+  {
+    return proposedImportOrder.get(sCorpusGraph.getSElementId());
+  }
+  
+  
+
   private void importSegmentCorpusStructure(SCorpusGraph corpusGraph,
     SCorpus parent, File f)
   {
@@ -196,7 +219,7 @@ public class Tiger2Importer extends PepperImporterImpl implements PepperImporter
 
         // create the XML reader
         XMLInputFactory factory = XMLInputFactory.newFactory();
-        Map<SElementId, URI> localResMap = new LinkedHashMap<>();
+        LinkedHashMap<SElementId, URI> localResMap = new LinkedHashMap<>();
         try (InputStream iStream = new FileInputStream(f))
         {
           XMLStreamReader parser = factory.createXMLStreamReader(iStream);
@@ -217,10 +240,18 @@ public class Tiger2Importer extends PepperImporterImpl implements PepperImporter
           XMLStreamReader parser2 = factory.createXMLStreamReader(
             new FileInputStream(f));
           
+          List<SElementId> importOrderForCorpusGraph = 
+            proposedImportOrder.get(corpusGraph.getSElementId());
+          if(importOrderForCorpusGraph == null) {
+            importOrderForCorpusGraph = new ArrayList<>();
+            proposedImportOrder.put(corpusGraph.getSElementId(), 
+              importOrderForCorpusGraph);
+          }
           // remember the parser for the documents
           for (SElementId elemID : localResMap.keySet())
           {
             tigerParsers.put(elemID, parser2);
+            importOrderForCorpusGraph.add(elemID);
           }
 
         }
