@@ -21,9 +21,12 @@ import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.exceptions.Pepper
 import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.impl.PepperMapperImpl;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sCorpusStructure.SCorpus;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sCorpusStructure.SDocument;
+import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SMetaAnnotation;
 import de.hu_berlin.german.korpling.tiger2.Corpus;
 import de.hu_berlin.german.korpling.tiger2.Tiger2Factory;
 import java.io.File;
+import java.util.LinkedList;
+import java.util.List;
 import javax.xml.stream.XMLStreamException;
 
 /**
@@ -33,13 +36,13 @@ import javax.xml.stream.XMLStreamException;
 public class TigerSegmentMapper extends PepperMapperImpl
 {
 
-  private final Corpus rootCorpus;
+  private final Corpus docCorpus;
   private String documentName;
   private final TigerXMLSegmentReader tigerReader;
 
   public TigerSegmentMapper(TigerXMLSegmentReader tigerReader)
   {
-    this.rootCorpus = Tiger2Factory.eINSTANCE.createCorpus();
+    this.docCorpus = Tiger2Factory.eINSTANCE.createCorpus();
     this.tigerReader = tigerReader;
   }
 
@@ -52,7 +55,7 @@ public class TigerSegmentMapper extends PepperMapperImpl
     
     if (tigerReader != null)
     {
-      tigerReader.setRootCorpus(rootCorpus);
+      tigerReader.setRootCorpus(docCorpus);
       try
       {
         String segmentID = tigerReader.parseSegment();
@@ -60,30 +63,44 @@ public class TigerSegmentMapper extends PepperMapperImpl
         Preconditions.checkState(segmentID.equals(documentName),
           "Wrong segment order, expected %s but got %s", documentName, segmentID);
 
+     
         Tiger22SaltMapper docMapper = new Tiger22SaltMapper();
-        docMapper.setCorpus(rootCorpus);
+        docMapper.setCorpus(docCorpus);
         docMapper.setSDocument(getSDocument());
         docMapper.setProperties(getProperties());
 
         DOCUMENT_STATUS result = docMapper.mapSDocument();
-
+        
         if (result == DOCUMENT_STATUS.COMPLETED)
         {
           // reset the document name to the original one, since the docMapper might overwrite it
           getSDocument().setSName(documentName);
-          if(docMapper.getCorpus() != null && docMapper.getCorpus().getMeta() != null)
-           {
-            String corpusName = docMapper.getCorpus().getMeta().getName();
-            if (corpusName != null && !corpusName.isEmpty())
+          SCorpus parentCorpus = doc.getSCorpusGraph().getSCorpus(doc);
+          if(parentCorpus != null)
+          {
+            if (docMapper.getCorpus() != null && docMapper.getCorpus().getMeta()
+              != null)
             {
-              // instead assign the corpus name to the parent corpus
-              SCorpus parentCorpus = doc.getSCorpusGraph().getSCorpus(doc);
-              if (parentCorpus != null)
+              String corpusName = docMapper.getCorpus().getMeta().getName();
+              if (corpusName != null && !corpusName.isEmpty())
               {
+                // instead assign the corpus name to the parent corpus
                 parentCorpus.setSName(corpusName);
               }
             }
+            // segments can't have meta-data but if any meta-data was set this actually belonged to the parent corpus
+            if(getSDocument().getSMetaAnnotations() != null)
+            {
+              List<SMetaAnnotation> metaData = new LinkedList<>(getSDocument().getSMetaAnnotations());
+              for(SMetaAnnotation singleMeta : metaData) {
+                getSDocument().removeLabel(singleMeta.getQName());
+                parentCorpus.createSMetaAnnotation(singleMeta.getSNS(), 
+                  singleMeta.getSName(), singleMeta.getSValue(), 
+                  singleMeta.getSValueType());
+              }
+            }
           }
+
         }
         return result;
 
