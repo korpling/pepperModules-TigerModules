@@ -66,6 +66,9 @@ public class Tiger2Importer extends PepperImporterImpl implements PepperImporter
 
 		// start: setting name of module
 		setName("Tiger2Importer");
+	    setSupplierContact(URI.createURI("saltnpepper@lists.hu-berlin.de"));
+		setSupplierHomepage(URI.createURI("https://github.com/korpling/pepperModules-TigerModules"));
+		setDesc("This importer transforms data in TigerXML and tiger2 format to a Salt model. ");
 		// end: setting name of module
 
 		// set list of formats supported by this module
