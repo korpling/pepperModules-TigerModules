@@ -77,11 +77,9 @@ import org.slf4j.LoggerFactory;
  * @version 1.0
  *
  */
-@Component(name = "Tiger2ImporterComponent", factory
-  = "PepperImporterComponentFactory")
-public class Tiger2Importer extends PepperImporterImpl implements PepperImporter
-{
-
+@Component(name = "Tiger2ImporterComponent", factory = "PepperImporterComponentFactory")
+public class Tiger2Importer extends PepperImporterImpl implements PepperImporter {
+  
   private final static Logger log = LoggerFactory.
     getLogger(Tiger2Importer.class);
 
@@ -90,16 +88,18 @@ public class Tiger2Importer extends PepperImporterImpl implements PepperImporter
   
   private final Map<SElementId, List<SElementId>> proposedImportOrder = 
     new LinkedHashMap<>();
+  
+	/**
+	 * Initializes an importer, importing data from a <tiger2/> model.
+	 */
+	public Tiger2Importer() {
+		super();
 
-  /**
-   * Initializes an importer, importing data from a <tiger2/> model.
-   */
-  public Tiger2Importer()
-  {
-    super();
-
-    // start: setting name of module
-    setName("Tiger2Importer");
+		// start: setting name of module
+		setName("Tiger2Importer");
+	    setSupplierContact(URI.createURI("saltnpepper@lists.hu-berlin.de"));
+		setSupplierHomepage(URI.createURI("https://github.com/korpling/pepperModules-TigerModules"));
+		setDesc("This importer transforms data in TigerXML and tiger2 format to a Salt model. ");
 		// end: setting name of module
 
     // set list of formats supported by this module
