@@ -15,7 +15,7 @@
  *
  *
  */
-package de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.mappers;
+package org.corpus_tools.peppermodules.tigerModules.mappers;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,6 +27,7 @@ import java.util.Map;
 import org.corpus_tools.pepper.common.DOCUMENT_STATUS;
 import org.corpus_tools.pepper.impl.PepperMapperImpl;
 import org.corpus_tools.pepper.modules.exceptions.PepperModuleException;
+import org.corpus_tools.peppermodules.tigerModules.Tiger2ImporterProperties;
 import org.corpus_tools.salt.SALT_TYPE;
 import org.corpus_tools.salt.SaltFactory;
 import org.corpus_tools.salt.common.SDocument;
@@ -48,7 +49,6 @@ import org.corpus_tools.salt.graph.Relation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.Tiger2ImporterProperties;
 import de.hu_berlin.german.korpling.tiger2.AnnotatableElement;
 import de.hu_berlin.german.korpling.tiger2.Annotation;
 import de.hu_berlin.german.korpling.tiger2.Corpus;

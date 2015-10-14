@@ -15,7 +15,7 @@
  *
  *
  */
-package de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules;
+package org.corpus_tools.peppermodules.tigerModules;
 
 import java.util.Hashtable;
 import java.util.LinkedHashSet;

@@ -15,7 +15,7 @@
  *
  *
  */
-package de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.tests;
+package org.corpus_tools.peppermodules.tigerModules.tests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -24,11 +24,10 @@ import static org.junit.Assert.assertTrue;
 import java.util.Map;
 
 import org.corpus_tools.pepper.modules.PepperModuleProperty;
+import org.corpus_tools.peppermodules.tigerModules.Tiger2ImporterProperties;
 import org.corpus_tools.salt.SALT_TYPE;
 import org.junit.Before;
 import org.junit.Test;
-
-import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.Tiger2ImporterProperties;
 
 public class Tiger2PropertiesTest {
 	private Tiger2ImporterProperties fixture = null;

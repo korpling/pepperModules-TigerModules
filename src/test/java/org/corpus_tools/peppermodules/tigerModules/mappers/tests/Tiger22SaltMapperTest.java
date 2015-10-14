@@ -15,7 +15,7 @@
  *
  *
  */
-package de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.mappers.tests;
+package org.corpus_tools.peppermodules.tigerModules.mappers.tests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -23,11 +23,9 @@ import static org.junit.Assert.assertNull;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.Tiger2ImporterProperties;
-import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.mappers.Tiger22SaltMapper;
-
 import org.corpus_tools.pepper.modules.PepperModuleProperty;
+import org.corpus_tools.peppermodules.tigerModules.Tiger2ImporterProperties;
+import org.corpus_tools.peppermodules.tigerModules.mappers.Tiger22SaltMapper;
 import org.corpus_tools.salt.SaltFactory;
 import org.corpus_tools.salt.common.SDominanceRelation;
 import org.corpus_tools.salt.common.SToken;
