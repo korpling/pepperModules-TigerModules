@@ -19,19 +19,20 @@ package de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules;
 
 import java.io.IOException;
 
+import org.corpus_tools.pepper.common.PepperConfiguration;
+import org.corpus_tools.pepper.impl.PepperImporterImpl;
+import org.corpus_tools.pepper.modules.PepperImporter;
+import org.corpus_tools.pepper.modules.PepperMapper;
+import org.corpus_tools.pepper.modules.exceptions.PepperModuleException;
+import org.corpus_tools.salt.common.SDocument;
+import org.corpus_tools.salt.graph.Identifier;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.osgi.service.component.annotations.Component;
 
-import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.PepperImporter;
-import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.PepperMapper;
-import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.exceptions.PepperModuleException;
-import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.impl.PepperImporterImpl;
 import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.mappers.Tiger22SaltMapper;
-import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sCorpusStructure.SDocument;
-import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SElementId;
 import de.hu_berlin.german.korpling.tiger2.Corpus;
 import de.hu_berlin.german.korpling.tiger2.resources.TigerResourceFactory;
 
@@ -66,7 +67,7 @@ public class Tiger2Importer extends PepperImporterImpl implements PepperImporter
 
 		// start: setting name of module
 		setName("Tiger2Importer");
-	    setSupplierContact(URI.createURI("saltnpepper@lists.hu-berlin.de"));
+	    setSupplierContact(URI.createURI(PepperConfiguration.EMAIL));
 		setSupplierHomepage(URI.createURI("https://github.com/korpling/pepperModules-TigerModules"));
 		setDesc("This importer transforms data in TigerXML and tiger2 format to a Salt model. ");
 		// end: setting name of module
@@ -74,10 +75,10 @@ public class Tiger2Importer extends PepperImporterImpl implements PepperImporter
 		// set list of formats supported by this module
 		this.addSupportedFormat("tiger2", "2.0.5", null);
 		this.addSupportedFormat("tigerXML", "1.0", null);
-		getSDocumentEndings().add(TigerResourceFactory.FILE_ENDING_TIGER2);
-		getSDocumentEndings().add(TigerResourceFactory.FILE_ENDING_TIGER2_2);
-		getSDocumentEndings().add(TigerResourceFactory.FILE_ENDING_TIGERXML);
-		getSDocumentEndings().add(TigerResourceFactory.FILE_ENDING_TIGERXML_2);
+		getDocumentEndings().add(TigerResourceFactory.FILE_ENDING_TIGER2);
+		getDocumentEndings().add(TigerResourceFactory.FILE_ENDING_TIGER2_2);
+		getDocumentEndings().add(TigerResourceFactory.FILE_ENDING_TIGERXML);
+		getDocumentEndings().add(TigerResourceFactory.FILE_ENDING_TIGERXML_2);
 		setProperties(new Tiger2ImporterProperties());
 	}
 
@@ -103,14 +104,14 @@ public class Tiger2Importer extends PepperImporterImpl implements PepperImporter
 
 	/**
 	 * Creates a mapper of type {@link Tiger22SaltMapper}. {@inheritDoc
-	 * PepperModule#createPepperMapper(SElementId)}
+	 * PepperModule#createPepperMapper(Identifier)}
 	 */
 	@Override
-	public PepperMapper createPepperMapper(SElementId sElementId) {
+	public PepperMapper createPepperMapper(Identifier sElementId) {
 		Tiger22SaltMapper mapper = new Tiger22SaltMapper();
 
-		if (sElementId.getSIdentifiableElement() instanceof SDocument) {
-			URI inputUri = this.getSElementId2ResourceTable().get(sElementId);
+		if (sElementId.getIdentifiableElement() instanceof SDocument) {
+			URI inputUri = this.getIdentifier2ResourceTable().get(sElementId);
 
 			if (inputUri == null)
 				throw new PepperModuleException(this, "There was no matching uri found corresponding to document '" + sElementId + "'.");

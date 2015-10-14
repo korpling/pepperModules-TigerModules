@@ -24,19 +24,23 @@ import static org.junit.Assert.assertNull;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.PepperModuleProperty;
 import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.Tiger2ImporterProperties;
 import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.mappers.Tiger22SaltMapper;
-import de.hu_berlin.german.korpling.saltnpepper.salt.SaltFactory;
-import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.SDominanceRelation;
-import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.SToken;
-import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SNode;
+
+import org.corpus_tools.pepper.modules.PepperModuleProperty;
+import org.corpus_tools.salt.SaltFactory;
+import org.corpus_tools.salt.common.SDominanceRelation;
+import org.corpus_tools.salt.common.SToken;
+import org.corpus_tools.salt.core.SNode;
+import org.corpus_tools.salt.core.SRelation;
+
 import de.hu_berlin.german.korpling.tiger2.Edge;
 import de.hu_berlin.german.korpling.tiger2.Graph;
 import de.hu_berlin.german.korpling.tiger2.NonTerminal;
 import de.hu_berlin.german.korpling.tiger2.Tiger2Factory;
 import de.hu_berlin.german.korpling.tiger2.samples.Tiger2Sample;
-import org.eclipse.emf.common.util.EList;
+
+import java.util.List;
 
 public class Tiger22SaltMapperTest {
 
@@ -53,22 +57,21 @@ public class Tiger22SaltMapperTest {
 	@Before
 	public void setUp() {
 		setFixture(new Tiger22SaltMapper());
-		getFixture().setSDocument(SaltFactory.eINSTANCE.createSDocument());
+		getFixture().setDocument(SaltFactory.createSDocument());
 		getFixture().setProperties(new Tiger2ImporterProperties());
 		getFixture().setCorpus(Tiger2Sample.createSampleCorpus1());
 	}
 
 	@Test
-	public void testRenameEdgeType() {
+	public void testRenameRelationType() {
 		PepperModuleProperty<String> prop = (PepperModuleProperty<String>) getFixture().getProps().getProperty(Tiger2ImporterProperties.PROP_RENAME_EDGE_TYPE);
 		prop.setValue("prim=edge");
 
 		getFixture().mapSDocument();
 
-		for (SDominanceRelation sDomRel : getFixture().getSDocument().getSDocumentGraph().getSDominanceRelations()) {
-			assertNotNull(sDomRel.getSTypes());
-			assertEquals(1, sDomRel.getSTypes().size());
-			assertEquals("edge", sDomRel.getSTypes().get(0));
+		for (SDominanceRelation sDomRel : getFixture().getDocument().getDocumentGraph().getDominanceRelations()) {
+			assertNotNull(sDomRel.getType());
+			assertEquals("edge", sDomRel.getType());
 		}
 	}
   
@@ -77,7 +80,7 @@ public class Tiger22SaltMapperTest {
 	public void testReverseSecedgesEnabled() {
 		// use default properties
     
-    Graph g = getFixture().getCorpus().getSegments().get(0).getGraphs().get(0);
+    Graph g = getFixture().getTigerCorpus().getSegments().get(0).getGraphs().get(0);
     NonTerminal n1 = g.getNonTerminals().get(0);
     NonTerminal n2 = g.getNonTerminals().get(1);
     
@@ -88,10 +91,9 @@ public class Tiger22SaltMapperTest {
     g.getEdges().add(secedge);
     
     getFixture().mapSDocument();
-
-    EList<de.hu_berlin.german.korpling.saltnpepper.salt.graph.Edge> edgeList = 
-      getFixture().getSDocument().getSDocumentGraph()
-        .getEdges("null/sampleCorpus1_graph#structure2", "null/sampleCorpus1_graph#structure1");
+    List<SRelation<SNode, SNode>> edgeList = 
+      getFixture().getDocument().getDocumentGraph()
+        .getRelations("doc#structure2", "doc#structure1");
     assertNotNull(edgeList);
     assertEquals(1, edgeList.size());
 	}
@@ -102,7 +104,7 @@ public class Tiger22SaltMapperTest {
 		// reverse nothing
     prop.setValue("");
 
-    Graph g = getFixture().getCorpus().getSegments().get(0).getGraphs().get(0);
+    Graph g = getFixture().getTigerCorpus().getSegments().get(0).getGraphs().get(0);
     NonTerminal n1 = g.getNonTerminals().get(0);
     NonTerminal n2 = g.getNonTerminals().get(1);
     
@@ -114,9 +116,9 @@ public class Tiger22SaltMapperTest {
     
     getFixture().mapSDocument();
 
-    EList<de.hu_berlin.german.korpling.saltnpepper.salt.graph.Edge> edgeList = 
-      getFixture().getSDocument().getSDocumentGraph()
-        .getEdges("null/sampleCorpus1_graph#structure1", "null/sampleCorpus1_graph#structure2");
+    List<SRelation<SNode, SNode>> edgeList = 
+      getFixture().getDocument().getDocumentGraph()
+        .getRelations("doc#structure1", "doc#structure2");
     assertNotNull(edgeList);
     assertEquals(1, edgeList.size());
 	}
@@ -128,12 +130,12 @@ public class Tiger22SaltMapperTest {
 
 		getFixture().mapSDocument();
 
-		for (SToken sTok : getFixture().getSDocument().getSDocumentGraph().getSTokens()) {
-			if (sTok.getSName().equals("sTok1"))
-				assertNotNull(sTok.getSAnnotation("A"));
-			else if (sTok.getSName().equals("sTok2"))
-				assertNotNull(sTok.getSAnnotation("A"));
-			assertNull(sTok.getSAnnotation("lemma"));
+		for (SToken sTok : getFixture().getDocument().getDocumentGraph().getTokens()) {
+			if (sTok.getName().equals("sTok1"))
+				assertNotNull(sTok.getAnnotation("A"));
+			else if (sTok.getName().equals("sTok2"))
+				assertNotNull(sTok.getAnnotation("A"));
+			assertNull(sTok.getAnnotation("lemma"));
 		}
 
 	}

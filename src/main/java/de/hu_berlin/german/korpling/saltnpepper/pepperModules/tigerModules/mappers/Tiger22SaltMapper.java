@@ -17,35 +17,38 @@
  */
 package de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.mappers;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 
-import org.eclipse.emf.common.util.BasicEList;
-import org.eclipse.emf.common.util.EList;
+import org.corpus_tools.pepper.common.DOCUMENT_STATUS;
+import org.corpus_tools.pepper.impl.PepperMapperImpl;
+import org.corpus_tools.pepper.modules.exceptions.PepperModuleException;
+import org.corpus_tools.salt.SALT_TYPE;
+import org.corpus_tools.salt.SaltFactory;
+import org.corpus_tools.salt.common.SDocument;
+import org.corpus_tools.salt.common.SDocumentGraph;
+import org.corpus_tools.salt.common.SDominanceRelation;
+import org.corpus_tools.salt.common.SPointingRelation;
+import org.corpus_tools.salt.common.SSpan;
+import org.corpus_tools.salt.common.SSpanningRelation;
+import org.corpus_tools.salt.common.SStructure;
+import org.corpus_tools.salt.common.STextualDS;
+import org.corpus_tools.salt.common.SToken;
+import org.corpus_tools.salt.core.SAnnotation;
+import org.corpus_tools.salt.core.SAnnotationContainer;
+import org.corpus_tools.salt.core.SMetaAnnotation;
+import org.corpus_tools.salt.core.SNamedElement;
+import org.corpus_tools.salt.core.SNode;
+import org.corpus_tools.salt.core.SRelation;
+import org.corpus_tools.salt.graph.Relation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import de.hu_berlin.german.korpling.saltnpepper.pepper.common.DOCUMENT_STATUS;
-import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.exceptions.PepperModuleException;
-import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.impl.PepperMapperImpl;
 import de.hu_berlin.german.korpling.saltnpepper.pepperModules.tigerModules.Tiger2ImporterProperties;
-import de.hu_berlin.german.korpling.saltnpepper.salt.SaltFactory;
-import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sCorpusStructure.SDocument;
-import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.SDocumentGraph;
-import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.SDominanceRelation;
-import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.SPointingRelation;
-import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.SSpan;
-import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.SSpanningRelation;
-import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.SStructure;
-import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.STYPE_NAME;
-import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.STextualDS;
-import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.SToken;
-import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SAnnotatableElement;
-import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SAnnotation;
-import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SMetaAnnotatableElement;
-import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SMetaAnnotation;
-import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SNamedElement;
-import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SNode;
-import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SRelation;
 import de.hu_berlin.german.korpling.tiger2.AnnotatableElement;
 import de.hu_berlin.german.korpling.tiger2.Annotation;
 import de.hu_berlin.german.korpling.tiger2.Corpus;
@@ -55,8 +58,6 @@ import de.hu_berlin.german.korpling.tiger2.NonTerminal;
 import de.hu_berlin.german.korpling.tiger2.Segment;
 import de.hu_berlin.german.korpling.tiger2.SyntacticNode;
 import de.hu_berlin.german.korpling.tiger2.Terminal;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Maps a &lt;tiger2/&gt; model given by the tiger-api to a Salt model.
@@ -65,9 +66,9 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class Tiger22SaltMapper extends PepperMapperImpl {
-  
-  private final Logger log = LoggerFactory.getLogger(Tiger22SaltMapper.class);
-  
+
+	private final Logger log = LoggerFactory.getLogger(Tiger22SaltMapper.class);
+
 	/**
 	 * The main object of the &lt;tiger2/&gt; model.
 	 */
@@ -76,7 +77,7 @@ public class Tiger22SaltMapper extends PepperMapperImpl {
 	/**
 	 * Sets the main object of the &lt;tiger2/&gt; model.
 	 */
-	public Corpus getCorpus() {
+	public Corpus getTigerCorpus() {
 		return corpus;
 	}
 
@@ -88,8 +89,8 @@ public class Tiger22SaltMapper extends PepperMapperImpl {
 	}
 
 	/**
-	 * Returns the {@link Tiger2ImporterProperties} object containing properties to
-	 * customize the mapping from data coming from a tiger2 model to a Salt
+	 * Returns the {@link Tiger2ImporterProperties} object containing properties
+	 * to customize the mapping from data coming from a tiger2 model to a Salt
 	 * model.
 	 * 
 	 * @return the mappingProperties
@@ -105,8 +106,8 @@ public class Tiger22SaltMapper extends PepperMapperImpl {
 	protected Map<SyntacticNode, SNode> synNode2sNode = null;
 
 	/**
-	 * Maps a {@link Edge} object to the corresponding mapped {@link SRelation}
-	 * object.
+	 * Maps a {@link Relation} object to the corresponding mapped
+	 * {@link SRelation} object.
 	 */
 	protected Map<Edge, SRelation> edge2sRelation = null;
 
@@ -117,29 +118,27 @@ public class Tiger22SaltMapper extends PepperMapperImpl {
 	 */
 	@Override
 	public DOCUMENT_STATUS mapSDocument() {
-		if (getSDocument().getSDocumentGraph() == null)
-			getSDocument().setSDocumentGraph(SaltFactory.eINSTANCE.createSDocumentGraph());
-		synNode2sNode = Collections.synchronizedMap(new HashMap<SyntacticNode, SNode>());
-		edge2sRelation = Collections.synchronizedMap(new HashMap<Edge, SRelation>());
+		if (getDocument().getDocumentGraph() == null)
+			getDocument().setDocumentGraph(SaltFactory.createSDocumentGraph());
+		synNode2sNode = Collections.synchronizedMap(new Hashtable<SyntacticNode, SNode>());
+		edge2sRelation = Collections.synchronizedMap(new Hashtable<Edge, SRelation>());
 
 		// start: map document meta data
-		this.mapMetaAnnotations(corpus, getSDocument());
+		this.mapMetaAnnotations(corpus, getDocument());
 		// end: map document meta data
 
 		// init internal string buffer to store entire text
 		entireTextBuffer = new StringBuffer();
-		STextualDS sTextualDs = SaltFactory.eINSTANCE.createSTextualDS();
-		getSDocument().getSDocumentGraph().addSNode(sTextualDs);
+		STextualDS sTextualDs = SaltFactory.createSTextualDS();
+		getDocument().getDocumentGraph().addNode(sTextualDs);
 
-		if (this.getCorpus().getSegments() != null) {
-			for (Segment segment : this.getCorpus().getSegments()) {// walk
-																	// through
-																	// all
-																	// segments
+		if (this.getTigerCorpus().getSegments() != null) {
+			for (Segment segment : this.getTigerCorpus().getSegments()) {
+				// walk through all segments
 				if (segment != null) {// map segments
-					EList<SToken> sTokens = null;
+					List<SToken> sTokens = null;
 					if (segment.getGraphs().size() > 1)
-						sTokens = new BasicEList<SToken>();
+						sTokens = new ArrayList<SToken>();
 					if (segment.getGraphs() != null) {// walk through all graphs
 						for (Graph graph : segment.getGraphs()) {
 							if (graph != null) {
@@ -153,20 +152,20 @@ public class Tiger22SaltMapper extends PepperMapperImpl {
 								this.mapNonTerminals(graph.getNonTerminals());
 								// end: map non-terminals
 								// start: map edges
-								this.mapEdges(graph.getEdges());
+								this.mapRelations(graph.getEdges());
 								// end: map edges
 							}
 						}
 					}// walk through all graphs
 					if ((getProps() != null) && (getProps().propCreateSSpan4Segment())) {
 						// start: create span for segment
-						getSDocument().getSDocumentGraph().createSSpan(sTokens);
+						getDocument().getDocumentGraph().createSpan(sTokens);
 					}// end: create span for segment
 				}// map segments
 			}// walk through all segments
 		}
 		// set SText to value of internal string buffer
-		sTextualDs.setSText(entireTextBuffer.toString());
+		sTextualDs.setText(entireTextBuffer.toString());
 		return (DOCUMENT_STATUS.COMPLETED);
 	}
 
@@ -180,12 +179,13 @@ public class Tiger22SaltMapper extends PepperMapperImpl {
 	 * @param sTextualDs
 	 * @return
 	 */
-	protected EList<SToken> mapTerminals(EList<Terminal> terminals, STextualDS sTextualDs) {
-		EList<SToken> sTokens = null;
-		if (terminals == null)
+	protected List<SToken> mapTerminals(List<Terminal> terminals, STextualDS sTextualDs) {
+		List<SToken> sTokens = null;
+		if (terminals == null) {
 			throw new PepperModuleException(this, "Cannot map terminals, because the given list is empty.");
+		}
 		if (terminals.size() > 0) {
-			sTokens = new BasicEList<SToken>();
+			sTokens = new ArrayList<SToken>();
 			for (Terminal terminal : terminals) {
 				sTokens.add(this.mapTerminal(terminal, sTextualDs));
 			}
@@ -207,25 +207,30 @@ public class Tiger22SaltMapper extends PepperMapperImpl {
 	 * @return
 	 */
 	protected SToken mapTerminal(Terminal terminal, STextualDS sTextualDs) {
-		if (terminal == null)
+		if (terminal == null) {
 			throw new PepperModuleException(this, "Cannot map a terminal to salt, because the terminal is empty.");
-		if (sTextualDs == null)
+		}
+		if (sTextualDs == null) {
 			throw new PepperModuleException(this, "Cannot map the terminal '" + terminal + "' to salt, because the given sTextualDs is empty.");
+		}
 
 		// start: adding the overlapped text to the data source
 		int startPos = 0;
 		int endPos = 0;
-		if (entireTextBuffer.length() != 0)
+		if (entireTextBuffer.length() != 0) {
 			entireTextBuffer.append(getProps().getSeparator());
-		if ((entireTextBuffer != null) && (entireTextBuffer.length() != 0))
+		}
+		if ((entireTextBuffer != null) && (entireTextBuffer.length() != 0)) {
 			startPos = entireTextBuffer.length();
-		// sTextualDs.setSText(sTextualDs.getSText()+getSeparator()+terminal.getWord());
+		}
+		// sTextualDs.setText(sTextualDs.getText()+getSeparator()+terminal.getWord());
 
 		entireTextBuffer.append(terminal.getWord());
-		if ((entireTextBuffer != null) && (entireTextBuffer.length() != 0))
+		if ((entireTextBuffer != null) && (entireTextBuffer.length() != 0)) {
 			endPos = entireTextBuffer.length();
+		}
 		// end: adding the overlapped text to the data source
-		SToken sToken = getSDocument().getSDocumentGraph().createSToken(sTextualDs, startPos, endPos);
+		SToken sToken = getDocument().getDocumentGraph().createToken(sTextualDs, startPos, endPos);
 		this.synNode2sNode.put(terminal, sToken);
 		// maps all annotations
 		this.mapAnnotations(terminal, sToken);
@@ -234,104 +239,105 @@ public class Tiger22SaltMapper extends PepperMapperImpl {
 	}
 
 	/**
-	 * Maps the elements of the given list of {@link Edge} objects to
+	 * Maps the elements of the given list of {@link Relation} objects to
 	 * {@link SRelation} objects. The mapping follows the following rules:
 	 * <ol>
-	 * <li>object corresponding to source of {@link Edge} object is a
+	 * <li>object corresponding to source of {@link Relation} object is a
 	 * {@link SToken} object --> {@link SPointingRelation}</li>
-	 * <li>object corresponding to source of {@link Edge} object is a
-	 * {@link SSpan} object and target of {@link Edge} object is a
+	 * <li>object corresponding to source of {@link Relation} object is a
+	 * {@link SSpan} object and target of {@link Relation} object is a
 	 * {@link SToken} object--> {@link SSpanningRelation}</li>
-	 * <li>object corresponding to source of {@link Edge} object is a
+	 * <li>object corresponding to source of {@link Relation} object is a
 	 * {@link SStructure} object --> {@link SDominanceRelation}</li>
 	 * <li>otherwise --> {@link SPointingRelation}</li>
 	 * </ol>
 	 * 
 	 * @param edges
 	 */
-	protected void mapEdges(EList<Edge> edges) {
+	protected void mapRelations(List<Edge> edges) {
 		if (edges != null) {
 			for (Edge edge : edges) {
 				if (edge != null) {
 					SRelation sRelation = null;
-					if (edge.getSource() == null)
+					if (edge.getSource() == null) {
 						throw new PepperModuleException(this, "Cannot map the edge '" + edge + "', because its source is empty");
+					}
 					SNode sourceSNode = this.synNode2sNode.get(edge.getSource());
-					if (sourceSNode == null)
+					if (sourceSNode == null) {
 						throw new PepperModuleException(this, "Cannot map the edge '" + edge + "', because its source '" + edge.getSource() + "' has no corresponding SNode object.");
-					if (edge.getTarget() == null)
+					}
+					if (edge.getTarget() == null) {
 						throw new PepperModuleException(this, "Cannot map the edge '" + edge + "', because its target is empty");
-					SNode targetSNode = this.synNode2sNode.get(edge.getTarget());
-					if (targetSNode == null)
+					}
+					SNode targetNode = this.synNode2sNode.get(edge.getTarget());
+					if (targetNode == null) {
 						throw new PepperModuleException(this, "Cannot map the edge '" + edge + "', because its source '" + edge.getTarget() + "' has no corresponding SNode object.");
-					STYPE_NAME saltType = null;
+					}
+					SALT_TYPE saltType = null;
 					if ((getProps() != null) && (edge.getType() != null)) {
-						Map<String, STYPE_NAME> saltTypes = getProps().getPropEdge2SRelation();
+						Map<String, SALT_TYPE> saltTypes = getProps().getPropRelation2SRelation();
 						saltType = saltTypes.get(edge.getType());
 					}
-          
-          if (getProps() != null
-            && getProps().getEdgeReversed().contains(edge.getType())) {
-            // reverse secondary edges
-            SNode tmpNode = sourceSNode;
-            sourceSNode = targetSNode;
-            targetSNode = tmpNode;
 
-          }
+					if (getProps() != null && getProps().getRelationReversed().contains(edge.getType())) {
+						// reverse secondary edges
+						SNode tmpNode = sourceSNode;
+						sourceSNode = targetNode;
+						targetNode = tmpNode;
+
+					}
 
 					// start: mapping rules
 					if (sourceSNode instanceof SToken) {
-						if ((saltType != null) && (STYPE_NAME.SDOMINANCE_RELATION.equals(saltType))) {
-              
-              log.warn("Had to reverse the order of the edge between {} and {} "
-                + "since the source node can't be a token.", sourceSNode.getSId(),
-                targetSNode.getSId());
-              
-							sRelation= SaltFactory.eINSTANCE.createSDominanceRelation();
-							SNode tmpNode= sourceSNode;
-							sourceSNode= targetSNode;
-							targetSNode= tmpNode;		
-						}else{
-							sRelation = SaltFactory.eINSTANCE.createSPointingRelation();
+						if ((saltType != null) && (SALT_TYPE.SDOMINANCE_RELATION.equals(saltType))) {
+
+							log.warn("Had to reverse the order of the edge between {} and {} " + "since the source node can't be a token.", sourceSNode.getId(), targetNode.getId());
+
+							sRelation = SaltFactory.createSDominanceRelation();
+							SNode tmpNode = sourceSNode;
+							sourceSNode = targetNode;
+							targetNode = tmpNode;
+						} else {
+							sRelation = SaltFactory.createSPointingRelation();
 						}
-					} else if ((sourceSNode instanceof SSpan) && (targetSNode instanceof SToken)) {
-						if ((saltType != null) && (STYPE_NAME.SPOINTING_RELATION.equals(saltType))) {
+					} else if ((sourceSNode instanceof SSpan) && (targetNode instanceof SToken)) {
+						if ((saltType != null) && (SALT_TYPE.SPOINTING_RELATION.equals(saltType))) {
 							// also SPointingRelation is possible, when using
 							// customization
-							sRelation = SaltFactory.eINSTANCE.createSPointingRelation();
+							sRelation = SaltFactory.createSPointingRelation();
 						} else {
-							sRelation = SaltFactory.eINSTANCE.createSSpanningRelation();
+							sRelation = SaltFactory.createSSpanningRelation();
 						}
 					} else if (sourceSNode instanceof SStructure) {
-						if ((saltType != null) && (STYPE_NAME.SPOINTING_RELATION.equals(saltType))) {
+						if ((saltType != null) && (SALT_TYPE.SPOINTING_RELATION.equals(saltType))) {
 							// also SPointingRelation is possible, when using
 							// customization
-							sRelation = SaltFactory.eINSTANCE.createSPointingRelation();
+							sRelation = SaltFactory.createSPointingRelation();
 						} else {
-							sRelation = SaltFactory.eINSTANCE.createSDominanceRelation();
+							sRelation = SaltFactory.createSDominanceRelation();
 						}
 					} else {
-						sRelation = SaltFactory.eINSTANCE.createSPointingRelation();
+						sRelation = SaltFactory.createSPointingRelation();
 					}
 					// end: mapping rules
 
 					if ((edge.getType() != null) && (!edge.getType().isEmpty())) {
 						String newType = null;
-						if (getProps().getRenamingMap_EdgeType() != null){
-							newType = getProps().getRenamingMap_EdgeType().get(edge.getType());
+						if (getProps().getRenamingMap_RelationType() != null) {
+							newType = getProps().getRenamingMap_RelationType().get(edge.getType());
 						}
-						if (newType != null){
-							sRelation.addSType(newType);
-						}else{
-							sRelation.addSType(edge.getType());
+						if (newType != null) {
+							sRelation.setType(newType);
+						} else {
+							sRelation.setType(edge.getType());
 						}
 					}
-          
-          sRelation.setSSource(sourceSNode);
-          sRelation.setSTarget(targetSNode);
-          
+
+					sRelation.setSource(sourceSNode);
+					sRelation.setTarget(targetNode);
+
 					this.mapAnnotations(edge, sRelation);
-					getSDocument().getSDocumentGraph().addSRelation(sRelation);
+					getDocument().getDocumentGraph().addRelation(sRelation);
 					this.edge2sRelation.put(edge, sRelation);
 				}
 			} // end for each edge
@@ -345,13 +351,13 @@ public class Tiger22SaltMapper extends PepperMapperImpl {
 	 * 
 	 * @param nonTerminals
 	 */
-	protected void mapNonTerminals(EList<NonTerminal> nonTerminals) {
+	protected void mapNonTerminals(List<NonTerminal> nonTerminals) {
 		if (nonTerminals != null) {
 			for (NonTerminal nonTerminal : nonTerminals) {
 				if (nonTerminal != null) {
-					SStructure sStructure = SaltFactory.eINSTANCE.createSStructure();
+					SStructure sStructure = SaltFactory.createSStructure();
 					this.mapAnnotations(nonTerminal, sStructure);
-					getSDocument().getSDocumentGraph().addSNode(sStructure);
+					getDocument().getDocumentGraph().addNode(sStructure);
 					this.synNode2sNode.put(nonTerminal, sStructure);
 				}
 			}
@@ -362,22 +368,26 @@ public class Tiger22SaltMapper extends PepperMapperImpl {
 	 * Maps all annotations of the given object to {@link SAnnotation} objects
 	 * and adds them to the corresponding object.
 	 */
-	protected void mapAnnotations(AnnotatableElement annotatableElement, SAnnotatableElement sAnnotatableElement) {
-		if (annotatableElement == null)
+	protected void mapAnnotations(AnnotatableElement annotatableElement, SAnnotationContainer sAnnotatableElement) {
+		if (annotatableElement == null) {
 			throw new PepperModuleException(this, "Cannot map annotations, because the source element is empty.");
-		if (sAnnotatableElement == null)
+		}
+		if (sAnnotatableElement == null) {
 			throw new PepperModuleException(this, "Cannot map annotations, because the target element is empty.");
+		}
 		for (Annotation annotation : annotatableElement.getAnnotations()) {
 			String newName = null;
 			String annoName = "";
-			if (getProps().getRenamingMap_AnnotationName() != null)
+			if (getProps().getRenamingMap_AnnotationName() != null) {
 				newName = getProps().getRenamingMap_AnnotationName().get(annotation.getName());
-			if (newName != null)
+			}
+			if (newName != null) {
 				annoName = newName;
-			else
+			} else {
 				annoName = annotation.getName();
+			}
 
-			sAnnotatableElement.createSAnnotation(null, annoName, annotation.getValue());
+			sAnnotatableElement.createAnnotation(null, annoName, annotation.getValue());
 		}
 	}
 
@@ -385,25 +395,33 @@ public class Tiger22SaltMapper extends PepperMapperImpl {
 	 * Maps all annotations of the given object to {@link SMetaAnnotation}
 	 * objects and adds them to the corresponding object.
 	 */
-	protected void mapMetaAnnotations(Corpus corpus, SMetaAnnotatableElement sMetaAnnotatableElement) {
-		if (corpus == null)
+	protected void mapMetaAnnotations(Corpus corpus, SAnnotationContainer sMetaAnnotatableElement) {
+		if (corpus == null) {
 			throw new PepperModuleException(this, "Cannot map annotations, because the source element is empty.");
-		if (sMetaAnnotatableElement == null)
+		}
+		if (sMetaAnnotatableElement == null) {
 			throw new PepperModuleException(this, "Cannot map annotations, because the target element is empty.");
+		}
 
 		if (corpus.getMeta() != null) {
-			if (corpus.getMeta().getAuthor() != null)
-				sMetaAnnotatableElement.createSMetaAnnotation(null, "author", corpus.getMeta().getAuthor());
-			if (corpus.getMeta().getDate() != null)
-				sMetaAnnotatableElement.createSMetaAnnotation(null, "date", corpus.getMeta().getDate());
-			if (corpus.getMeta().getDescription() != null)
-				sMetaAnnotatableElement.createSMetaAnnotation(null, "description", corpus.getMeta().getDescription());
-			if (corpus.getMeta().getFormat() != null)
-				sMetaAnnotatableElement.createSMetaAnnotation(null, "format", corpus.getMeta().getFormat());
-			if (corpus.getMeta().getHistory() != null)
-				sMetaAnnotatableElement.createSMetaAnnotation(null, "history", corpus.getMeta().getHistory());
-			if (sMetaAnnotatableElement instanceof SNamedElement)
-				((SNamedElement) sMetaAnnotatableElement).setSName(corpus.getMeta().getName());
+			if (corpus.getMeta().getAuthor() != null) {
+				sMetaAnnotatableElement.createMetaAnnotation(null, "author", corpus.getMeta().getAuthor());
+			}
+			if (corpus.getMeta().getDate() != null) {
+				sMetaAnnotatableElement.createMetaAnnotation(null, "date", corpus.getMeta().getDate());
+			}
+			if (corpus.getMeta().getDescription() != null) {
+				sMetaAnnotatableElement.createMetaAnnotation(null, "description", corpus.getMeta().getDescription());
+			}
+			if (corpus.getMeta().getFormat() != null) {
+				sMetaAnnotatableElement.createMetaAnnotation(null, "format", corpus.getMeta().getFormat());
+			}
+			if (corpus.getMeta().getHistory() != null) {
+				sMetaAnnotatableElement.createMetaAnnotation(null, "history", corpus.getMeta().getHistory());
+			}
+			if (sMetaAnnotatableElement instanceof SNamedElement) {
+				((SNamedElement) sMetaAnnotatableElement).setName(corpus.getMeta().getName());
+			}
 		}
 	}
 }
