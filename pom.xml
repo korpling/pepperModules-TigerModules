@@ -1,5 +1,11 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.corpus-tools</groupId>
+		<artifactId>pepper-parentModule</artifactId>
+		<version>3.0.0-SNAPSHOT</version>
+	</parent>
 	<artifactId>pepperModules-TigerModules</artifactId>
 	<name>${project.groupId}.${project.artifactId}</name>
 	<version>2.0.6-SNAPSHOT</version>
@@ -18,11 +24,6 @@
 			<url>http://korpling.german.hu-berlin.de/maven2</url>
 		</repository>
 	</repositories>
-	<parent>
-		<groupId>de.hu_berlin.german.korpling.saltnpepper</groupId>
-		<artifactId>pepper-parentModule</artifactId>
-		<version>3.0.0-SNAPSHOT</version>
-	</parent>
 	<description>This version is a completly new begining and does not continue the build of older versions. In this version, the tiger-api was replaced by a new one, which is able to read and write TiGer xml and &lt;tiger2/&gt; data as well.</description>
 	<url>https://github.com/korpling/pepperModules-TigerModules</url>
 	<issueManagement>
@@ -48,13 +49,13 @@
 	<organization>
 		<name>Humboldt-Universität zu Berlin, INRIA</name>
 	</organization>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.15</version>
-            </plugin>
-        </plugins>
-    </build>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.15</version>
+			</plugin>
+		</plugins>
+	</build>
 </project>
