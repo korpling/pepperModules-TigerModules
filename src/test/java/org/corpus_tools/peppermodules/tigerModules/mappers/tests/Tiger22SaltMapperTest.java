@@ -21,8 +21,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import org.junit.Before;
-import org.junit.Test;
+import java.util.List;
+
 import org.corpus_tools.pepper.modules.PepperModuleProperty;
 import org.corpus_tools.peppermodules.tigerModules.Tiger2ImporterProperties;
 import org.corpus_tools.peppermodules.tigerModules.mappers.Tiger22SaltMapper;
@@ -31,14 +31,14 @@ import org.corpus_tools.salt.common.SDominanceRelation;
 import org.corpus_tools.salt.common.SToken;
 import org.corpus_tools.salt.core.SNode;
 import org.corpus_tools.salt.core.SRelation;
+import org.junit.Before;
+import org.junit.Test;
 
 import de.hu_berlin.german.korpling.tiger2.Edge;
 import de.hu_berlin.german.korpling.tiger2.Graph;
 import de.hu_berlin.german.korpling.tiger2.NonTerminal;
 import de.hu_berlin.german.korpling.tiger2.Tiger2Factory;
 import de.hu_berlin.german.korpling.tiger2.samples.Tiger2Sample;
-
-import java.util.List;
 
 public class Tiger22SaltMapperTest {
 
