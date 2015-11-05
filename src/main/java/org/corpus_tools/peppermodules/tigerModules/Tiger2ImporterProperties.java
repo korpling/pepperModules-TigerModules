@@ -136,7 +136,6 @@ public class Tiger2ImporterProperties extends PepperModuleProperties {
 			edge2Relation = new Hashtable<String, SALT_TYPE>();
 			if (getProperty(PROP_EDGE_2_SRELATION).getValue() != null) {
 				String edgeTypes = getProperty(PROP_EDGE_2_SRELATION).getValue().toString();
-				System.out.println("edgeTypes: " + edgeTypes);
 				if ((edgeTypes != null) && (!edgeTypes.isEmpty())) {
 					String[] mappings = edgeTypes.split(",");
 					for (String mapping : mappings) {
