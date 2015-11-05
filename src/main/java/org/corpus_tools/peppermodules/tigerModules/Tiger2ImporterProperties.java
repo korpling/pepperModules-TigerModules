@@ -51,8 +51,8 @@ public class Tiger2ImporterProperties extends PepperModuleProperties {
 	public static final String PROP_CREATE_SSPAN = "createSSpan4Segment";
 
 	/**
-	 * Property to determine, which {@link Relation} type shall be mapped to which
-	 * kind of {@link SRelation}.
+	 * Property to determine, which {@link Relation} type shall be mapped to
+	 * which kind of {@link SRelation}.
 	 */
 	public static final String PROP_EDGE_2_SRELATION = "map";
 
@@ -83,28 +83,20 @@ public class Tiger2ImporterProperties extends PepperModuleProperties {
 	 * to secedge.
 	 */
 	public static final String PROP_RENAME_ANNOTATION_NAME = "annotation.name";
-  
-  /**
+
+	/**
 	 * Property to determine, which edge types should be reversed.
 	 */
-  public static final String PROP_EDGE_REVERSE = "edge.reverse";
+	public static final String PROP_EDGE_REVERSE = "edge.reverse";
 
 	public Tiger2ImporterProperties() {
 		this.addProperty(new PepperModuleProperty<>(PROP_CREATE_SSPAN, Boolean.class, "This flag determines if a SSpan object shall be created for each segment. Must be mappable to a Boolean value.", false, false));
-		this.addProperty(new PepperModuleProperty<>(PROP_EDGE_2_SRELATION, String.class, "Property to determine, which Egde type shall be mapped to which kind of SRelation. A mapping has the syntax type=SALT_TYPE(, type=SALT_TYPE)*. For instance 'dep=" + SALT_TYPE.SPOINTING_RELATION + ", prim=" + SALT_TYPE.SDOMINANCE_RELATION + "'.", "secedge:"+SALT_TYPE.SDOMINANCE_RELATION, false));
+		this.addProperty(new PepperModuleProperty<>(PROP_EDGE_2_SRELATION, String.class, "Property to determine, which Egde type shall be mapped to which kind of SRelation. A mapping has the syntax type=SALT_TYPE(, type=SALT_TYPE)*. For instance 'dep=" + SALT_TYPE.SPOINTING_RELATION + ", prim=" + SALT_TYPE.SDOMINANCE_RELATION + "'.", "secedge:" + SALT_TYPE.SDOMINANCE_RELATION, false));
 		this.addProperty(new PepperModuleProperty<>(PROP_TERMINAL_SEPARATOR, String.class, "Determines the separator between terminal nodes. The default separator is '" + DEFAULT_SEPARATOR + "'.", DEFAULT_SEPARATOR, false));
 		this.addProperty(new PepperModuleProperty<>(PROP_RENAME_EDGE_TYPE, String.class, "Gives a renaming table for the sType of a SRelation. The syntax of defining such a table is 'OLDNAME=NEWNAME (,OLDNAME=NEWNAME)*', for instance the property value prim=edge, sec=secedge, will rename all sType values from 'prim' to edge and 'sec' to secedge.", false));
 		this.addProperty(new PepperModuleProperty<>(PROP_RENAME_ANNOTATION_NAME, String.class, "Gives a renaming table for the name of an annotation, or more specific, which value the sName of the SAnnotation object shall get. The syntax of defining such a table is 'OLDNAME=NEWNAME (,OLDNAME=NEWNAME)*', for instance the property value prim=edge, sec=secedge, will rename all sType values from 'prim' to edge and 'sec' to secedge.", false));
-    this.addProperty(new PepperModuleProperty<>(PROP_EDGE_REVERSE,
-      String.class,
-      "If true this will reverse the direction of edges having the given types.\n"
-      + "Thus the source node becomes the target node and the target node\n"
-      + "becomes the source node. This is useful when secondary edges are mapped to dominance\n"
-      + "edges and the annotation scheme would introduce cycles. \n"
-      + "By inverting the edges, cycles are avoided.\n"
-      + "This must be a list of type names, seperated by comma.", "secedge,sec",
-      false));
-  }
+		this.addProperty(new PepperModuleProperty<>(PROP_EDGE_REVERSE, String.class, "If true this will reverse the direction of edges having the given types.\n" + "Thus the source node becomes the target node and the target node\n" + "becomes the source node. This is useful when secondary edges are mapped to dominance\n" + "edges and the annotation scheme would introduce cycles. \n" + "By inverting the edges, cycles are avoided.\n" + "This must be a list of type names, seperated by comma.", "secedge,sec", false));
+	}
 
 	public void reset() {
 		renamingRelationType = null;
@@ -179,8 +171,9 @@ public class Tiger2ImporterProperties extends PepperModuleProperties {
 	public Map<String, String> getRenamingMap_RelationType() {
 		if (renamingRelationType == null) {
 			synchronized (this) {
-				if (renamingRelationType == null) {// double check if STyperenaming
-												// isn't set.
+				if (renamingRelationType == null) {// double check if
+													// STyperenaming
+													// isn't set.
 					Map<String, String> renamingTable = new Hashtable<String, String>();
 					String renamingString = (String) getProperty(PROP_RENAME_EDGE_TYPE).getValue();
 					if (renamingString != null) {
@@ -241,17 +234,17 @@ public class Tiger2ImporterProperties extends PepperModuleProperties {
 		}
 		return (renamingAnnotationName);
 	}
-  
-  public Set<String> getRelationReversed() {
-    Set<String> result = new LinkedHashSet<>();
-    String raw = ((String) getProperty(PROP_EDGE_REVERSE).getValue());
-    for(String t : raw.split(",")) {
-      String trimmed = t.trim();
-      if(!trimmed.isEmpty()) {
-        result.add(trimmed);
-      }
-    }
-    return result;
-  }
-  
+
+	public Set<String> getRelationReversed() {
+		Set<String> result = new LinkedHashSet<>();
+		String raw = ((String) getProperty(PROP_EDGE_REVERSE).getValue());
+		for (String t : raw.split(",")) {
+			String trimmed = t.trim();
+			if (!trimmed.isEmpty()) {
+				result.add(trimmed);
+			}
+		}
+		return result;
+	}
+
 }

@@ -72,53 +72,48 @@ public class Tiger22SaltMapperTest {
 			assertEquals("edge", sDomRel.getType());
 		}
 	}
-  
-  
-  @Test
+
+	@Test
 	public void testReverseSecedgesEnabled() {
 		// use default properties
-    
-    Graph g = getFixture().getTigerCorpus().getSegments().get(0).getGraphs().get(0);
-    NonTerminal n1 = g.getNonTerminals().get(0);
-    NonTerminal n2 = g.getNonTerminals().get(1);
-    
-    Edge secedge = Tiger2Factory.eINSTANCE.createEdge();
-    secedge.setSource(n1);
-    secedge.setTarget(n2);
-    secedge.setType("sec");
-    g.getEdges().add(secedge);
-    
-    getFixture().mapSDocument();
-    List<SRelation<SNode, SNode>> edgeList = 
-      getFixture().getDocument().getDocumentGraph()
-        .getRelations("doc#structure2", "doc#structure1");
-    assertNotNull(edgeList);
-    assertEquals(1, edgeList.size());
+
+		Graph g = getFixture().getTigerCorpus().getSegments().get(0).getGraphs().get(0);
+		NonTerminal n1 = g.getNonTerminals().get(0);
+		NonTerminal n2 = g.getNonTerminals().get(1);
+
+		Edge secedge = Tiger2Factory.eINSTANCE.createEdge();
+		secedge.setSource(n1);
+		secedge.setTarget(n2);
+		secedge.setType("sec");
+		g.getEdges().add(secedge);
+
+		getFixture().mapSDocument();
+		List<SRelation<SNode, SNode>> edgeList = getFixture().getDocument().getDocumentGraph().getRelations("doc#structure2", "doc#structure1");
+		assertNotNull(edgeList);
+		assertEquals(1, edgeList.size());
 	}
-  
-  @Test
+
+	@Test
 	public void testReverseSecedgesDisabled() {
 		PepperModuleProperty<String> prop = (PepperModuleProperty<String>) getFixture().getProps().getProperty(Tiger2ImporterProperties.PROP_EDGE_REVERSE);
 		// reverse nothing
-    prop.setValue("");
+		prop.setValue("");
 
-    Graph g = getFixture().getTigerCorpus().getSegments().get(0).getGraphs().get(0);
-    NonTerminal n1 = g.getNonTerminals().get(0);
-    NonTerminal n2 = g.getNonTerminals().get(1);
-    
-    Edge secedge = Tiger2Factory.eINSTANCE.createEdge();
-    secedge.setSource(n1);
-    secedge.setTarget(n2);
-    secedge.setType("sec");
-    g.getEdges().add(secedge);
-    
-    getFixture().mapSDocument();
+		Graph g = getFixture().getTigerCorpus().getSegments().get(0).getGraphs().get(0);
+		NonTerminal n1 = g.getNonTerminals().get(0);
+		NonTerminal n2 = g.getNonTerminals().get(1);
 
-    List<SRelation<SNode, SNode>> edgeList = 
-      getFixture().getDocument().getDocumentGraph()
-        .getRelations("doc#structure1", "doc#structure2");
-    assertNotNull(edgeList);
-    assertEquals(1, edgeList.size());
+		Edge secedge = Tiger2Factory.eINSTANCE.createEdge();
+		secedge.setSource(n1);
+		secedge.setTarget(n2);
+		secedge.setType("sec");
+		g.getEdges().add(secedge);
+
+		getFixture().mapSDocument();
+
+		List<SRelation<SNode, SNode>> edgeList = getFixture().getDocument().getDocumentGraph().getRelations("doc#structure1", "doc#structure2");
+		assertNotNull(edgeList);
+		assertEquals(1, edgeList.size());
 	}
 
 	@Test

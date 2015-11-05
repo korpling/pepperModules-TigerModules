@@ -46,8 +46,9 @@ public class Tiger2PropertiesTest {
 	}
 
 	/**
-	 * Tests whether the property {@link Tiger2ImporterProperties#PROP_EDGE_2_SRELATION}
-	 * is retrieved as defined.
+	 * Tests whether the property
+	 * {@link Tiger2ImporterProperties#PROP_EDGE_2_SRELATION} is retrieved as
+	 * defined.
 	 */
 	@Test
 	public void testGetPropRelation2SRelation() {
@@ -128,31 +129,30 @@ public class Tiger2PropertiesTest {
 		assertEquals("b", renamingMapping.get("a"));
 		assertEquals("d", renamingMapping.get("c"));
 	}
-  
-  @Test
+
+	@Test
 	public void testRelationReverse() {
-		PepperModuleProperty<String> prop = 
-      (PepperModuleProperty<String>) getFixture().getProperty(Tiger2ImporterProperties.PROP_EDGE_REVERSE);
+		PepperModuleProperty<String> prop = (PepperModuleProperty<String>) getFixture().getProperty(Tiger2ImporterProperties.PROP_EDGE_REVERSE);
 		// test default mappings
 		assertEquals(2, getFixture().getRelationReversed().size());
-    assertTrue(getFixture().getRelationReversed().contains("sec"));
-    assertTrue(getFixture().getRelationReversed().contains("secedge"));
+		assertTrue(getFixture().getRelationReversed().contains("sec"));
+		assertTrue(getFixture().getRelationReversed().contains("secedge"));
 
 		getFixture().reset();
 
 		prop.setValue("a,,b,c,d  ,  e");
 		assertEquals(5, getFixture().getRelationReversed().size());
-    assertTrue(getFixture().getRelationReversed().contains("a"));
-    assertTrue(getFixture().getRelationReversed().contains("b"));
-    assertTrue(getFixture().getRelationReversed().contains("c"));
-    assertTrue(getFixture().getRelationReversed().contains("d"));
-    assertTrue(getFixture().getRelationReversed().contains("e"));
+		assertTrue(getFixture().getRelationReversed().contains("a"));
+		assertTrue(getFixture().getRelationReversed().contains("b"));
+		assertTrue(getFixture().getRelationReversed().contains("c"));
+		assertTrue(getFixture().getRelationReversed().contains("d"));
+		assertTrue(getFixture().getRelationReversed().contains("e"));
 
 		getFixture().reset();
 
 		prop.setValue("a");
 		assertEquals(1, getFixture().getRelationReversed().size());
-    assertTrue(getFixture().getRelationReversed().contains("a"));
+		assertTrue(getFixture().getRelationReversed().contains("a"));
 	}
 
 }
