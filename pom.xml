@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.corpus-tools</groupId>
@@ -8,7 +7,7 @@
 	</parent>
 	<artifactId>pepperModules-TigerModules</artifactId>
 	<name>${project.groupId}.${project.artifactId}</name>
-	<version>2.0.6-SNAPSHOT</version>
+	<version>2.0.6</version>
 	<packaging>bundle</packaging>
 	<description>&lt;tiger2/&gt; is a standard conformant XML format modeled to express syntactic structures for a wide variety of theoretical formalisms and corpus architectures.</description>
 	<url>https://github.com/korpling/pepperModules-TigerModules</url>
@@ -22,7 +21,8 @@
 		<connection>scm:git:git://github.com/korpling/pepperModules-TigerModules.git</connection>
 		<developerConnection>scm:git:git@github.com:korpling/pepperModules-TigerModules.git</developerConnection>
 		<url>https://github.com/korpling/pepperModules-TigerModules</url>
-	</scm>
+	  <tag>pepperModules-TigerModules-2.0.6</tag>
+  </scm>
 	<dependencies>
 		<dependency>
 			<groupId>org.corpus-tools</groupId>
