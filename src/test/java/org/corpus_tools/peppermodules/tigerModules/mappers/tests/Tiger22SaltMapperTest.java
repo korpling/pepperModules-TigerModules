@@ -88,7 +88,7 @@ public class Tiger22SaltMapperTest {
 		g.getEdges().add(secedge);
 
 		getFixture().mapSDocument();
-		List<SRelation<SNode, SNode>> edgeList = getFixture().getDocument().getDocumentGraph().getRelations("doc#structure2", "doc#structure1");
+		List<SRelation<?, ?>> edgeList = getFixture().getDocument().getDocumentGraph().getRelations("doc#structure2", "doc#structure1");
 		assertNotNull(edgeList);
 		assertEquals(1, edgeList.size());
 	}
@@ -111,7 +111,7 @@ public class Tiger22SaltMapperTest {
 
 		getFixture().mapSDocument();
 
-		List<SRelation<SNode, SNode>> edgeList = getFixture().getDocument().getDocumentGraph().getRelations("doc#structure1", "doc#structure2");
+		List<SRelation<?, ?>> edgeList = getFixture().getDocument().getDocumentGraph().getRelations("doc#structure1", "doc#structure2");
 		assertNotNull(edgeList);
 		assertEquals(1, edgeList.size());
 	}
