@@ -96,6 +96,23 @@ The mapping of the document-structure of a Document in ISOTiger to a SDocument i
 ### metadata
 Metadata in the ISOTiger-model are all fields of the object Meta. These are for instance name, author and date. Each of these fields is mapped to an own metadata objects in Salt called SMetaAnnotation. The name of the metadate in the ISOTiger-model is mapped to the field SMetadata.sName and its value values is mapped to the SMetadata.sValue. All SMetaAnnotation objects are added to the SDocument object representing the Corpus object in the ISOTiger-model
 
+Metadata in TigerXML (version 1) is restricted to the built-in types appearing in the document `<head>` element, e.g.:
+
+```
+  <head>
+    <meta>
+      <name>my_doc_name</name>
+      <author>Amir</author>
+      <date>2016-12-31</date>
+      <description>My corpus, see http://mycorpus.com/</description>
+      <format>TigerXML</format>
+      <history/>
+    </meta>
+
+```
+
+Note especially that the `<name>` tag in Tiger XML determins the name of the document in the imported Salt model, and will subsequently determine the name of exported output files.
+
 ### text, token and terminal
 A terminal node (Terminal) is mapped to a SToken node. The overlaped text is mapped to a STextualDS object. During the mapping, only one STextualDS object is created for the entire document. Neither in the TigerXML format nor in the ISOTiger format the primary text can not be recreated, since only tokens are kept, but no information about separators like whitespaces. Therefore the importer provides a property () to customize a separator between tokens. The default separator is the blank character.
 Imagine two terminals covering the text "a" and "sample", the default mapping will produce the sText value "a sample".
