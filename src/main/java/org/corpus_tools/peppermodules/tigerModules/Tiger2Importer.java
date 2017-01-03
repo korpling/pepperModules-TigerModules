@@ -35,6 +35,11 @@ import org.osgi.service.component.annotations.Component;
 
 import de.hu_berlin.german.korpling.tiger2.Corpus;
 import de.hu_berlin.german.korpling.tiger2.resources.TigerResourceFactory;
+import java.io.File;
+import java.nio.file.Files;
+import static org.corpus_tools.peppermodules.tigerModules.Tiger2ImporterProperties.PROP_SEGMENT_AS_DOC;
+import org.corpus_tools.salt.common.SCorpus;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is a sample PepperImporter, which can be used for creating individual
@@ -59,7 +64,10 @@ import de.hu_berlin.german.korpling.tiger2.resources.TigerResourceFactory;
  */
 @Component(name = "Tiger2ImporterComponent", factory = "PepperImporterComponentFactory")
 public class Tiger2Importer extends PepperImporterImpl implements PepperImporter {
-	/**
+	
+   private final static org.slf4j.Logger log = LoggerFactory.getLogger(TigerXMLSegmentSplitter.class);
+  
+  /**
 	 * Initializes an importer, importing data from a <tiger2/> model.
 	 */
 	public Tiger2Importer() {
@@ -102,37 +110,65 @@ public class Tiger2Importer extends PepperImporterImpl implements PepperImporter
 		return (resourceSet);
 	}
 
+  @Override
+  protected Boolean importCorpusStructureRec(URI currURI, SCorpus parent)
+  {
+    File f = new File(currURI.toFileString());
+    if (f.isFile() && (Boolean) getProperties().getProperty(PROP_SEGMENT_AS_DOC).getValue())
+    {
+      try
+      {
+        TigerXMLSegmentSplitter segmentFinder = new TigerXMLSegmentSplitter(f, sCorpusGraph, parent,
+          Files.createTempDirectory("Tiger2Importer").toFile());
+        this.getIdentifier2ResourceTable().putAll(segmentFinder.getResourceMap());
+        return true;
+      }
+      catch (IOException ex)
+      {
+        log.error(null, ex);
+        return false;
+      }
+    }
+    else
+    {
+      return super.importCorpusStructureRec(currURI, parent);
+    }
+  }
+
+  
+
 	/**
 	 * Creates a mapper of type {@link Tiger22SaltMapper}. {@inheritDoc
 	 * PepperModule#createPepperMapper(Identifier)}
 	 */
 	@Override
 	public PepperMapper createPepperMapper(Identifier sElementId) {
-		Tiger22SaltMapper mapper = new Tiger22SaltMapper();
+    Tiger22SaltMapper mapper = new Tiger22SaltMapper();
 
-		if (sElementId.getIdentifiableElement() instanceof SDocument) {
-			URI inputUri = this.getIdentifier2ResourceTable().get(sElementId);
+    if (sElementId.getIdentifiableElement() instanceof SDocument) {
+      URI inputUri = this.getIdentifier2ResourceTable().get(sElementId);
 
-			if (inputUri == null)
-				throw new PepperModuleException(this, "There was no matching uri found corresponding to document '" + sElementId + "'.");
+      if (inputUri == null)
+        throw new PepperModuleException(this, "There was no matching uri found corresponding to document '" + sElementId + "'.");
 
-			// load resource
-			Resource resourceLoad = getResourceSet().createResource(inputUri);
+      // load resource
+      Resource resourceLoad = getResourceSet().createResource(inputUri);
 
-			if (resourceLoad == null)
-				throw new PepperModuleException(this, "Cannot map the data stored at given uri '" + inputUri + "', because no resource object could have been created to read these data.");
-			try {
-				resourceLoad.load(null);
-			} catch (IOException e) {
-				throw new PepperModuleException(this, "Cannot load <tiger2/> model from file '" + inputUri + "'.", e);
-			}
-			Object objCorpus = resourceLoad.getContents().get(0);
-			if (!(objCorpus instanceof Corpus))
-				throw new PepperModuleException(this, "Cannot map the data stored at given uri '" + inputUri + "', because they could not have been mapped to a tiger2 corpus model object.");
-			Corpus corpus = (Corpus) resourceLoad.getContents().get(0);
-			mapper.setCorpus(corpus);
-		}
+      if (resourceLoad == null)
+        throw new PepperModuleException(this, "Cannot map the data stored at given uri '" + inputUri + "', because no resource object could have been created to read these data.");
+      try {
+        resourceLoad.load(null);
+      } catch (IOException e) {
+        throw new PepperModuleException(this, "Cannot load <tiger2/> model from file '" + inputUri + "'.", e);
+      }
+      Object objCorpus = resourceLoad.getContents().get(0);
+      if (!(objCorpus instanceof Corpus))
+        throw new PepperModuleException(this, "Cannot map the data stored at given uri '" + inputUri + "', because they could not have been mapped to a tiger2 corpus model object.");
+      Corpus corpus = (Corpus) resourceLoad.getContents().get(0);
+      mapper.setCorpus(corpus);
+    }
 
-		return (mapper);
-	}
+    return (mapper);
+  }
+	
 }

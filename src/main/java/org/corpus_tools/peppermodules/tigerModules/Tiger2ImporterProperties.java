@@ -88,6 +88,12 @@ public class Tiger2ImporterProperties extends PepperModuleProperties {
 	 * Property to determine, which edge types should be reversed.
 	 */
 	public static final String PROP_EDGE_REVERSE = "edge.reverse";
+  
+   /**
+   * Name of the property that sets whether segments should be treated
+   * as documents.
+   */
+  public static final String PROP_SEGMENT_AS_DOC = "segmentAsDoc";
 
 	public Tiger2ImporterProperties() {
 		this.addProperty(new PepperModuleProperty<>(PROP_CREATE_SSPAN, Boolean.class, "This flag determines if a SSpan object shall be created for each segment. Must be mappable to a Boolean value.", false, false));
@@ -96,6 +102,7 @@ public class Tiger2ImporterProperties extends PepperModuleProperties {
 		this.addProperty(new PepperModuleProperty<>(PROP_RENAME_EDGE_TYPE, String.class, "Gives a renaming table for the sType of a SRelation. The syntax of defining such a table is 'OLDNAME=NEWNAME (,OLDNAME=NEWNAME)*', for instance the property value prim=edge, sec=secedge, will rename all sType values from 'prim' to edge and 'sec' to secedge.", false));
 		this.addProperty(new PepperModuleProperty<>(PROP_RENAME_ANNOTATION_NAME, String.class, "Gives a renaming table for the name of an annotation, or more specific, which value the sName of the SAnnotation object shall get. The syntax of defining such a table is 'OLDNAME=NEWNAME (,OLDNAME=NEWNAME)*', for instance the property value prim=edge, sec=secedge, will rename all sType values from 'prim' to edge and 'sec' to secedge.", false));
 		this.addProperty(new PepperModuleProperty<>(PROP_EDGE_REVERSE, String.class, "If true this will reverse the direction of edges having the given types.\n" + "Thus the source node becomes the target node and the target node\n" + "becomes the source node. This is useful when secondary edges are mapped to dominance\n" + "edges and the annotation scheme would introduce cycles. \n" + "By inverting the edges, cycles are avoided.\n" + "This must be a list of type names, seperated by comma.", "secedge,sec", false));
+    this.addProperty(new PepperModuleProperty<>(PROP_SEGMENT_AS_DOC, Boolean.class, "If true treat each segment as separate document.", false, Boolean.FALSE));
 	}
 
 	public void reset() {
