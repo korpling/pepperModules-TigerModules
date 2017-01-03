@@ -63,7 +63,6 @@ public class TigerXMLSegmentSplitter
   private final File outputDirectory;
 
   private final XMLInputFactory xmlInFactory = XMLInputFactory.newFactory();
-  private final XMLOutputFactory xmlOutFactory = XMLOutputFactory.newFactory();
 
   private final LinkedHashMap<Identifier, URI> resourceMap = new LinkedHashMap<>();
   
@@ -78,10 +77,8 @@ public class TigerXMLSegmentSplitter
     this.outputDirectory = outputDirectory;
   }
 
-  public void split(File outputDirectory)
+  public void split()
   {
-    
-
     if (outputDirectory.isFile())
     {
       return;
@@ -137,30 +134,23 @@ public class TigerXMLSegmentSplitter
   
   private Element readHead()
   {
-    List<Content> fragments = new LinkedList<>();
+    Content fragment = null;
     try (FileInputStream iStream = new FileInputStream(file))
     {
       XMLStreamReader parser = xmlInFactory.createXMLStreamReader(iStream);
       StAXStreamBuilder builder = new StAXStreamBuilder();
-      fragments = builder.buildFragments(parser, new DefaultStAXFilter()
+      
+      // skip forward until head element
+      while(parser.hasNext())
       {
-        @Override
-        public boolean includeElement(int depth, String name, Namespace ns)
+        if(parser.getEventType() == XMLStreamConstants.START_ELEMENT
+          && TigerXMLDictionary.ELEMENT_HEAD.equals(parser.getLocalName()))
         {
-          if (depth > 1)
-          {
-            return true;
-          }
-          else if (TigerXMLDictionary.ELEMENT_HEAD.equals(name))
-          {
-            return true;
-          }
-          else
-          {
-            return false;
-          }
+          break;
         }
-      });
+        parser.next();
+      }
+      fragment = builder.fragment(parser);
     }
     catch (IOException | XMLStreamException | JDOMException ex)
     {
@@ -168,9 +158,9 @@ public class TigerXMLSegmentSplitter
     }
     
     
-    if(fragments.size() == 1 && fragments.get(0) instanceof Element)
+    if(fragment instanceof Element)
     {
-      return (Element) fragments.get(0);
+      return (Element) fragment;
     }
     else
     {
@@ -193,7 +183,7 @@ public class TigerXMLSegmentSplitter
             Element elem = new Element(parser.getLocalName());
             for(int i=0; i < parser.getAttributeCount(); i++)
             {
-              elem.setAttribute(parser.getAttributeLocalName(i), parser.getAttributeLocalName(i));
+              elem.setAttribute(parser.getAttributeLocalName(i), parser.getAttributeValue(i));
             }
             parent.addContent(elem);
             parent = elem;
@@ -245,15 +235,14 @@ public class TigerXMLSegmentSplitter
         // create a temporary file for this document
         try
         {
-          File tmpFileOut = File.createTempFile(id, ".xml", outputDirectory);
+          File tmpFileOut = File.createTempFile("segment_" + id + "_", ".xml", outputDirectory);
           tmpFileOut.deleteOnExit();
           URI tmpFileOutURI = URI.createFileURI(tmpFileOut.getAbsolutePath());
 
           Element corpus = corpusTemplate.clone();
-          Element bodyElem = corpus.addContent(TigerXMLDictionary.ELEMENT_BODY);
-          Element segment = bodyElem.addContent(TigerXMLDictionary.ELEMENT_SEGMENT);
-          segment.setAttribute(TigerXMLDictionary.ATTRIBUTE_ID, id);
-          readSegment(segment, parser);
+          Element bodyElem = new Element(TigerXMLDictionary.ELEMENT_BODY);
+          corpus.addContent(bodyElem);
+          readSegment(bodyElem, parser);
           
           try (FileOutputStream oStream = new FileOutputStream(tmpFileOut))
           {
