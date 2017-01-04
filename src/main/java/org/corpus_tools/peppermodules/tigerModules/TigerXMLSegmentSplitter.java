@@ -24,6 +24,7 @@ import java.util.ArrayList;
 
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
@@ -58,6 +59,8 @@ public class TigerXMLSegmentSplitter
   private final SCorpusGraph corpusGraph;
   private final SCorpus parent;
   private final File outputDirectory;
+  
+  private final Map<String,String> manualSplits;
 
   private final XMLInputFactory xmlInFactory = XMLInputFactory.newFactory();
 
@@ -65,15 +68,17 @@ public class TigerXMLSegmentSplitter
   
   private Element corpusTemplate = null;
 
-  public TigerXMLSegmentSplitter(SplitHeuristic heuristic, 
+  public TigerXMLSegmentSplitter(SplitHeuristic heuristic, Map<String,String> manualSplits,
     File file, SCorpusGraph corpusGraph, 
     SCorpus parent, File outputDirectory)
   {
     this.heuristic = heuristic;
+    this.manualSplits = manualSplits;
     this.file = file;
     this.corpusGraph = corpusGraph;
     this.parent = parent;
     this.outputDirectory = outputDirectory;
+    
   }
 
   public void split()
@@ -172,36 +177,53 @@ public class TigerXMLSegmentSplitter
   }
   
   
-  private boolean shouldSplitAtSegment(ArrayList<Element> segments)
+  private boolean shouldSplitAtLastSegment(ArrayList<Element> segments)
   {
-    if(heuristic == SplitHeuristic.segment)
+    // check if the segment is included in the manual list
+    if(!manualSplits.isEmpty())
     {
-      // always split at each segment
-      return true;
-    }
-    else if(heuristic == SplitHeuristic.vroot)
-    {
-      // check if the last segment does not contain a vroot but the one before does
-      if(segments.size() >= 2)
+      if(!segments.isEmpty())
       {
-        Element last = segments.get(segments.size()-1);
-        Element secondLast = segments.get(segments.size()-2);
-        
-        Element lastGraph = last.getChild(TigerXMLDictionary.ELEMENT_GRAPH);
-        Element secondLastGraph = secondLast.getChild(TigerXMLDictionary.ELEMENT_GRAPH);
-        
-        if(lastGraph != null && secondLastGraph != null)
+         Element last = segments.get(segments.size()-1);
+         String lastID = last.getAttributeValue(TigerXMLDictionary.ATTRIBUTE_ID, "");
+         if(manualSplits.containsKey(lastID))
+         {
+           return true;
+         }
+      }
+    }
+    else
+    {
+    
+      if(heuristic == SplitHeuristic.segment)
+      {
+        // always split at each segment
+        return true;
+      }
+      else if(heuristic == SplitHeuristic.vroot)
+      {
+        // check if the last segment does not contain a vroot but the one before does
+        if(segments.size() >= 2)
         {
-          boolean lastIsVROOT = lastGraph.getAttributeValue(TigerXMLDictionary.ATTRIBUTE_ROOT, "").endsWith("_VROOT");
-          boolean secondLastIsVROOT = secondLastGraph.getAttributeValue(TigerXMLDictionary.ATTRIBUTE_ROOT, "").endsWith("_VROOT");
-          
-          if(!lastIsVROOT && secondLastIsVROOT)
+          Element last = segments.get(segments.size()-1);
+          Element secondLast = segments.get(segments.size()-2);
+
+          Element lastGraph = last.getChild(TigerXMLDictionary.ELEMENT_GRAPH);
+          Element secondLastGraph = secondLast.getChild(TigerXMLDictionary.ELEMENT_GRAPH);
+
+          if(lastGraph != null && secondLastGraph != null)
           {
-            List<Element> terminals = secondLastGraph.getChild(TigerXMLDictionary.ELEMENT_TERMINALS).getChildren(TigerXMLDictionary.ELEMENT_TERMINAL);
-            if(terminals.size() >= 2 
-              && !("/".equals(terminals.get(terminals.size()-1).getAttributeValue(TigerXMLDictionary.ATTRIBUTE_WORD))))
+            boolean lastIsVROOT = lastGraph.getAttributeValue(TigerXMLDictionary.ATTRIBUTE_ROOT, "").endsWith("_VROOT");
+            boolean secondLastIsVROOT = secondLastGraph.getAttributeValue(TigerXMLDictionary.ATTRIBUTE_ROOT, "").endsWith("_VROOT");
+
+            if(!lastIsVROOT && secondLastIsVROOT)
             {
-              return true;
+              List<Element> secondLastTerminals = secondLastGraph.getChild(TigerXMLDictionary.ELEMENT_TERMINALS).getChildren(TigerXMLDictionary.ELEMENT_TERMINAL);
+              if(!secondLastTerminals.isEmpty()
+                && !("/".equals(secondLastTerminals.get(secondLastTerminals.size()-1).getAttributeValue(TigerXMLDictionary.ATTRIBUTE_WORD))))
+              {
+                return true;
+              }
             }
           }
         }
@@ -256,7 +278,7 @@ public class TigerXMLSegmentSplitter
         case XMLStreamConstants.END_ELEMENT:
           if(TigerXMLDictionary.ELEMENT_SEGMENT.equals(parser.getLocalName()))
           {
-            boolean doSplit = shouldSplitAtSegment(segments);
+            boolean doSplit = shouldSplitAtLastSegment(segments);
             if(doSplit)
             {
               // split the remaining element from the ones belonging to this document

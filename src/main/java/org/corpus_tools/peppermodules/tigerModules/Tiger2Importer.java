@@ -118,6 +118,7 @@ public class Tiger2Importer extends PepperImporterImpl implements PepperImporter
       try
       {
         TigerXMLSegmentSplitter segmentSplitter = new TigerXMLSegmentSplitter(getProperties().getSplitHeuristic(),
+          getProperties().getManualSplit(),
           f,  sCorpusGraph, parent, Files.createTempDirectory("Tiger2Importer").toFile());
         segmentSplitter.split();
         this.getIdentifier2ResourceTable().putAll(segmentSplitter.getResourceMap());

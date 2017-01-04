@@ -17,6 +17,7 @@
  */
 package org.corpus_tools.peppermodules.tigerModules;
 
+import com.google.common.base.Splitter;
 import java.util.Hashtable;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -33,7 +34,8 @@ import org.corpus_tools.salt.core.SRelation;
 import org.corpus_tools.salt.graph.Relation;
 
 import de.hu_berlin.german.korpling.tiger2.Segment;
-import sun.util.logging.resources.logging;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 /**
  * This class provides simple methods to access properties to customize a
@@ -95,6 +97,8 @@ public class Tiger2ImporterProperties extends PepperModuleProperties {
    * as documents.
    */
   public static final String PROP_SPLIT_HEURISITC = "splitHeuristic";
+  
+  public static final String PROP_MANUAL_SPLIT = "manualSplit";
 
   
 	public Tiger2ImporterProperties() {
@@ -105,6 +109,7 @@ public class Tiger2ImporterProperties extends PepperModuleProperties {
 		this.addProperty(new PepperModuleProperty<>(PROP_RENAME_ANNOTATION_NAME, String.class, "Gives a renaming table for the name of an annotation, or more specific, which value the sName of the SAnnotation object shall get. The syntax of defining such a table is 'OLDNAME=NEWNAME (,OLDNAME=NEWNAME)*', for instance the property value prim=edge, sec=secedge, will rename all sType values from 'prim' to edge and 'sec' to secedge.", false));
 		this.addProperty(new PepperModuleProperty<>(PROP_EDGE_REVERSE, String.class, "If true this will reverse the direction of edges having the given types.\n" + "Thus the source node becomes the target node and the target node\n" + "becomes the source node. This is useful when secondary edges are mapped to dominance\n" + "edges and the annotation scheme would introduce cycles. \n" + "By inverting the edges, cycles are avoided.\n" + "This must be a list of type names, seperated by comma.", "secedge,sec", false));
     this.addProperty(new PepperModuleProperty<>(PROP_SPLIT_HEURISITC, String.class, "Select a heuristic to split original treetagger files into smaller documents. Available are: \"segment\" -> each segment is its own document, \"virtualroot\" -> use non-existance of a VROOT annotation as split criteria, this works on the orginal Tiger2 corpus.", "none", Boolean.FALSE));
+    this.addProperty(new PepperModuleProperty<>(PROP_MANUAL_SPLIT, String.class, "TODO", "", Boolean.FALSE));
 	}
 
 	public void reset() {
@@ -263,6 +268,27 @@ public class Tiger2ImporterProperties extends PepperModuleProperties {
       try {
         result = SplitHeuristic.valueOf(raw.toLowerCase());
       } catch(IllegalArgumentException ex) {
+      }
+    }
+    
+    return result;
+  }
+  
+  public Map<String,String> getManualSplit() {
+    Map<String, String> result = new LinkedHashMap<>();
+    String raw = ((String) getProperty(PROP_MANUAL_SPLIT).getValue());
+    
+    if(raw != null && !raw.isEmpty()) {
+      for(String entry : Splitter.on(',').omitEmptyStrings().trimResults().split(raw)) {
+        List<String> keyValue = Splitter.on('=').trimResults().limit(2).splitToList(entry);
+        if(keyValue.size() == 2)
+        {
+          result.put(keyValue.get(0), keyValue.get(1));
+        }
+        else if(keyValue.size() == 1)
+        {
+          result.put(keyValue.get(0), "");
+        }
       }
     }
     
