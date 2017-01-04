@@ -98,7 +98,7 @@ public class Tiger2ImporterProperties extends PepperModuleProperties {
    */
   public static final String PROP_SPLIT_HEURISITC = "splitHeuristic";
   
-  public static final String PROP_MANUAL_SPLIT = "manualSplit";
+  public static final String PROP_MANUAL_SPLITS = "manualSplits";
 
   
 	public Tiger2ImporterProperties() {
@@ -109,7 +109,7 @@ public class Tiger2ImporterProperties extends PepperModuleProperties {
 		this.addProperty(new PepperModuleProperty<>(PROP_RENAME_ANNOTATION_NAME, String.class, "Gives a renaming table for the name of an annotation, or more specific, which value the sName of the SAnnotation object shall get. The syntax of defining such a table is 'OLDNAME=NEWNAME (,OLDNAME=NEWNAME)*', for instance the property value prim=edge, sec=secedge, will rename all sType values from 'prim' to edge and 'sec' to secedge.", false));
 		this.addProperty(new PepperModuleProperty<>(PROP_EDGE_REVERSE, String.class, "If true this will reverse the direction of edges having the given types.\n" + "Thus the source node becomes the target node and the target node\n" + "becomes the source node. This is useful when secondary edges are mapped to dominance\n" + "edges and the annotation scheme would introduce cycles. \n" + "By inverting the edges, cycles are avoided.\n" + "This must be a list of type names, seperated by comma.", "secedge,sec", false));
     this.addProperty(new PepperModuleProperty<>(PROP_SPLIT_HEURISITC, String.class, "Select a heuristic to split original treetagger files into smaller documents. Available are: \"segment\" -> each segment is its own document, \"virtualroot\" -> use non-existance of a VROOT annotation as split criteria, this works on the orginal Tiger2 corpus.", "none", Boolean.FALSE));
-    this.addProperty(new PepperModuleProperty<>(PROP_MANUAL_SPLIT, String.class, "TODO", "", Boolean.FALSE));
+    this.addProperty(new PepperModuleProperty<>(PROP_MANUAL_SPLITS, String.class, "TODO", "", Boolean.FALSE));
 	}
 
 	public void reset() {
@@ -274,9 +274,9 @@ public class Tiger2ImporterProperties extends PepperModuleProperties {
     return result;
   }
   
-  public Map<String,String> getManualSplit() {
+  public Map<String,String> getManualSplits() {
     Map<String, String> result = new LinkedHashMap<>();
-    String raw = ((String) getProperty(PROP_MANUAL_SPLIT).getValue());
+    String raw = ((String) getProperty(PROP_MANUAL_SPLITS).getValue());
     
     if(raw != null && !raw.isEmpty()) {
       for(String entry : Splitter.on(',').omitEmptyStrings().trimResults().split(raw)) {
