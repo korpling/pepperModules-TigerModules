@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
@@ -170,6 +171,7 @@ public class TigerXMLSegmentSplitter
 
   }
   
+  
   private boolean shouldSplitAtSegment(ArrayList<Element> segments)
   {
     if(heuristic == SplitHeuristic.segment)
@@ -188,12 +190,20 @@ public class TigerXMLSegmentSplitter
         Element lastGraph = last.getChild(TigerXMLDictionary.ELEMENT_GRAPH);
         Element secondLastGraph = secondLast.getChild(TigerXMLDictionary.ELEMENT_GRAPH);
         
-        
-        if(lastGraph != null && secondLastGraph != null
-          &&!lastGraph.getAttributeValue(TigerXMLDictionary.ATTRIBUTE_ROOT, "").endsWith("_VROOT")
-          && secondLastGraph.getAttributeValue(TigerXMLDictionary.ATTRIBUTE_ROOT, "").endsWith("_VROOT"))
+        if(lastGraph != null && secondLastGraph != null)
         {
-          return true;
+          boolean lastIsVROOT = lastGraph.getAttributeValue(TigerXMLDictionary.ATTRIBUTE_ROOT, "").endsWith("_VROOT");
+          boolean secondLastIsVROOT = secondLastGraph.getAttributeValue(TigerXMLDictionary.ATTRIBUTE_ROOT, "").endsWith("_VROOT");
+          
+          if(!lastIsVROOT && secondLastIsVROOT)
+          {
+            List<Element> terminals = secondLastGraph.getChild(TigerXMLDictionary.ELEMENT_TERMINALS).getChildren(TigerXMLDictionary.ELEMENT_TERMINAL);
+            if(terminals.size() >= 2 
+              && !("/".equals(terminals.get(terminals.size()-1).getAttributeValue(TigerXMLDictionary.ATTRIBUTE_WORD))))
+            {
+              return true;
+            }
+          }
         }
       }
     }
