@@ -33,6 +33,7 @@ import org.corpus_tools.salt.core.SRelation;
 import org.corpus_tools.salt.graph.Relation;
 
 import de.hu_berlin.german.korpling.tiger2.Segment;
+import sun.util.logging.resources.logging;
 
 /**
  * This class provides simple methods to access properties to customize a
@@ -93,8 +94,9 @@ public class Tiger2ImporterProperties extends PepperModuleProperties {
    * Name of the property that sets whether segments should be treated
    * as documents.
    */
-  public static final String PROP_SEGMENT_AS_DOC = "segmentAsDoc";
+  public static final String PROP_SPLIT_HEURISITC = "splitHeuristic";
 
+  
 	public Tiger2ImporterProperties() {
 		this.addProperty(new PepperModuleProperty<>(PROP_CREATE_SSPAN, Boolean.class, "This flag determines if a SSpan object shall be created for each segment. Must be mappable to a Boolean value.", false, false));
 		this.addProperty(new PepperModuleProperty<>(PROP_EDGE_2_SRELATION, String.class, "Property to determine, which Egde type shall be mapped to which kind of SRelation. A mapping has the syntax type=SALT_TYPE(, type=SALT_TYPE)*. For instance 'dep=" + SALT_TYPE.SPOINTING_RELATION + ", prim=" + SALT_TYPE.SDOMINANCE_RELATION + "'.", "secedge:" + SALT_TYPE.SDOMINANCE_RELATION, false));
@@ -102,7 +104,7 @@ public class Tiger2ImporterProperties extends PepperModuleProperties {
 		this.addProperty(new PepperModuleProperty<>(PROP_RENAME_EDGE_TYPE, String.class, "Gives a renaming table for the sType of a SRelation. The syntax of defining such a table is 'OLDNAME=NEWNAME (,OLDNAME=NEWNAME)*', for instance the property value prim=edge, sec=secedge, will rename all sType values from 'prim' to edge and 'sec' to secedge.", false));
 		this.addProperty(new PepperModuleProperty<>(PROP_RENAME_ANNOTATION_NAME, String.class, "Gives a renaming table for the name of an annotation, or more specific, which value the sName of the SAnnotation object shall get. The syntax of defining such a table is 'OLDNAME=NEWNAME (,OLDNAME=NEWNAME)*', for instance the property value prim=edge, sec=secedge, will rename all sType values from 'prim' to edge and 'sec' to secedge.", false));
 		this.addProperty(new PepperModuleProperty<>(PROP_EDGE_REVERSE, String.class, "If true this will reverse the direction of edges having the given types.\n" + "Thus the source node becomes the target node and the target node\n" + "becomes the source node. This is useful when secondary edges are mapped to dominance\n" + "edges and the annotation scheme would introduce cycles. \n" + "By inverting the edges, cycles are avoided.\n" + "This must be a list of type names, seperated by comma.", "secedge,sec", false));
-    this.addProperty(new PepperModuleProperty<>(PROP_SEGMENT_AS_DOC, Boolean.class, "If true treat each segment as separate document.", false, Boolean.FALSE));
+    this.addProperty(new PepperModuleProperty<>(PROP_SPLIT_HEURISITC, String.class, "Select a heuristic to split original treetagger files into smaller documents. Available are: \"segment\" -> each segment is its own document, \"virtualroot\" -> use non-existance of a VROOT annotation as split criteria, this works on the orginal Tiger2 corpus.", "none", Boolean.FALSE));
 	}
 
 	public void reset() {
@@ -252,5 +254,19 @@ public class Tiger2ImporterProperties extends PepperModuleProperties {
 		}
 		return result;
 	}
+  
+  public SplitHeuristic getSplitHeuristic() {
+    SplitHeuristic result = SplitHeuristic.none;
+    String raw = ((String) getProperty(PROP_SPLIT_HEURISITC).getValue());
+    
+    if(raw != null && !raw.isEmpty()) {
+      try {
+        result = SplitHeuristic.valueOf(raw.toLowerCase());
+      } catch(IllegalArgumentException ex) {
+      }
+    }
+    
+    return result;
+  }
 
 }

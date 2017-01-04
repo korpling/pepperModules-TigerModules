@@ -37,7 +37,6 @@ import de.hu_berlin.german.korpling.tiger2.Corpus;
 import de.hu_berlin.german.korpling.tiger2.resources.TigerResourceFactory;
 import java.io.File;
 import java.nio.file.Files;
-import static org.corpus_tools.peppermodules.tigerModules.Tiger2ImporterProperties.PROP_SEGMENT_AS_DOC;
 import org.corpus_tools.salt.common.SCorpus;
 import org.slf4j.LoggerFactory;
 
@@ -114,14 +113,14 @@ public class Tiger2Importer extends PepperImporterImpl implements PepperImporter
   protected Boolean importCorpusStructureRec(URI currURI, SCorpus parent)
   {
     File f = new File(currURI.toFileString());
-    if (f.isFile() && (Boolean) getProperties().getProperty(PROP_SEGMENT_AS_DOC).getValue())
+    if (f.isFile() && getProperties().getSplitHeuristic() != SplitHeuristic.none)
     {
       try
       {
-        TigerXMLSegmentSplitter segmentFinder = new TigerXMLSegmentSplitter(f, sCorpusGraph, parent,
-          Files.createTempDirectory("Tiger2Importer").toFile());
-        segmentFinder.split();
-        this.getIdentifier2ResourceTable().putAll(segmentFinder.getResourceMap());
+        TigerXMLSegmentSplitter segmentSplitter = new TigerXMLSegmentSplitter(getProperties().getSplitHeuristic(),
+          f,  sCorpusGraph, parent, Files.createTempDirectory("Tiger2Importer").toFile());
+        segmentSplitter.split();
+        this.getIdentifier2ResourceTable().putAll(segmentSplitter.getResourceMap());
         return true;
       }
       catch (IOException ex)
@@ -171,5 +170,13 @@ public class Tiger2Importer extends PepperImporterImpl implements PepperImporter
 
     return (mapper);
   }
+
+  @Override
+  public Tiger2ImporterProperties getProperties()
+  {
+    return (Tiger2ImporterProperties) super.getProperties();
+  }
+  
+  
 	
 }
