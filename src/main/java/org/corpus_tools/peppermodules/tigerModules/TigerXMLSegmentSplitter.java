@@ -278,17 +278,16 @@ public class TigerXMLSegmentSplitter
         case XMLStreamConstants.END_ELEMENT:
           if(TigerXMLDictionary.ELEMENT_SEGMENT.equals(parser.getLocalName()))
           {
-            boolean doSplit = shouldSplitAtLastSegment(segments);
-            if(doSplit)
+            if(segments.size() > 1)
             {
-              // split the remaining element from the ones belonging to this document
-              Element remainingElement = null;
-              if(segments.size() > 1)
+              boolean doSplit = shouldSplitAtLastSegment(segments);
+              if(doSplit)
               {
-                remainingElement = segments.remove(segments.size()-1);
+                // split the remaining element from the ones belonging to this document
+                Element remainingElement = segments.remove(segments.size()-1);
+                parent.addContent(segments);
+                return remainingElement;
               }
-              parent.addContent(segments);
-              return remainingElement;
             }
             current = null;
           }
