@@ -310,19 +310,18 @@ public class TigerXMLSegmentSplitter
     Element remainingSegment = null;
     if (TigerXMLDictionary.ELEMENT_SEGMENT.equals(parser.getLocalName()))
     {
-      String id = parser.getAttributeValue(null, TigerXMLDictionary.ATTRIBUTE_ID);
-      if (id == null)
+      String firstSegmentID = parser.getAttributeValue(null, TigerXMLDictionary.ATTRIBUTE_ID);
+      if (firstSegmentID == null)
       {
         log.warn("Found a segment that has no ID. This segment will be ignored.");
       }
       else if(corpusTemplate != null)
       {
-        SDocument doc = corpusGraph.createDocument(parent, id);
         
         // create a temporary file for this document
         try
         {
-          File tmpFileOut = File.createTempFile("segment_" + id + "_", ".xml", outputDirectory);
+          File tmpFileOut = File.createTempFile("segment_" + firstSegmentID + "_", ".xml", outputDirectory);
           tmpFileOut.deleteOnExit();
           URI tmpFileOutURI = URI.createFileURI(tmpFileOut.getAbsolutePath());
 
@@ -333,9 +332,21 @@ public class TigerXMLSegmentSplitter
           if(lastRemainingSegment != null)
           {
             bodyElem.addContent(lastRemainingSegment);
+            firstSegmentID = lastRemainingSegment.getAttributeValue(TigerXMLDictionary.ATTRIBUTE_ID, firstSegmentID);
           }
           
           remainingSegment = readSegments(bodyElem, parser);
+          
+          String docID = firstSegmentID;
+          if(!manualSplits.isEmpty())
+          {
+            // the splits also define the document name if given
+            String docIDBySplits = manualSplits.get(firstSegmentID);
+            if(docIDBySplits != null && !docIDBySplits.isEmpty())
+            {
+              docID = docIDBySplits;
+            }
+          }
           
           try (FileOutputStream oStream = new FileOutputStream(tmpFileOut))
           {
@@ -343,6 +354,8 @@ public class TigerXMLSegmentSplitter
             // we want to format the xml. This is used only for demonstration. pretty formatting adds extra spaces and is generally not required.
             xml.setFormat(Format.getPrettyFormat());
             xml.output(corpus, oStream);
+
+            SDocument doc = corpusGraph.createDocument(parent, docID);
             resourceMap.put(doc.getIdentifier(), tmpFileOutURI);
           }
         }
