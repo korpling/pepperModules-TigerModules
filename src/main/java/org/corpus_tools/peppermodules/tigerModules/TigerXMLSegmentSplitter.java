@@ -67,6 +67,7 @@ public class TigerXMLSegmentSplitter
   private final LinkedHashMap<Identifier, URI> resourceMap = new LinkedHashMap<>();
   
   private Element corpusTemplate = null;
+  private String lastManualSplittedDocName;
 
   public TigerXMLSegmentSplitter(SplitHeuristic heuristic, Map<String,String> manualSplits,
     File file, SCorpusGraph corpusGraph, 
@@ -177,50 +178,60 @@ public class TigerXMLSegmentSplitter
   }
   
   
-  private boolean shouldSplitAtLastSegment(ArrayList<Element> segments)
+  private boolean isManualSplit(ArrayList<Element> segments)
   {
-    // check if the segment is included in the manual list
-    if(!manualSplits.isEmpty())
+    if(segments.size() > 1)
     {
-      if(!segments.isEmpty())
+      Element last = segments.get(segments.size() - 1);
+      String lastID = last.getAttributeValue(TigerXMLDictionary.ATTRIBUTE_ID, "");
+      
+      // check if the segment is included in the manual list
+      if(!manualSplits.isEmpty())
       {
-         Element last = segments.get(segments.size()-1);
-         String lastID = last.getAttributeValue(TigerXMLDictionary.ATTRIBUTE_ID, "");
-         if(manualSplits.containsKey(lastID))
-         {
-           return true;
-         }
+        if(!segments.isEmpty())
+        {
+           if(manualSplits.containsKey(lastID))
+           {
+             return true;
+           }
+        }
       }
     }
-    else
+    return false;
+  }
+  
+  private boolean isHeuristicSplit(ArrayList<Element> segments)
+  {
+   
+    if (segments.size() > 1)
     {
-    
-      if(heuristic == SplitHeuristic.segment)
+      Element last = segments.get(segments.size() - 1);
+
+      if (heuristic == SplitHeuristic.segment)
       {
         // always split at each segment
         return true;
       }
-      else if(heuristic == SplitHeuristic.vroot)
+      else if (heuristic == SplitHeuristic.vroot)
       {
         // check if the last segment does not contain a vroot but the one before does
-        if(segments.size() >= 2)
+        if (segments.size() >= 2)
         {
-          Element last = segments.get(segments.size()-1);
-          Element secondLast = segments.get(segments.size()-2);
+          Element secondLast = segments.get(segments.size() - 2);
 
           Element lastGraph = last.getChild(TigerXMLDictionary.ELEMENT_GRAPH);
           Element secondLastGraph = secondLast.getChild(TigerXMLDictionary.ELEMENT_GRAPH);
 
-          if(lastGraph != null && secondLastGraph != null)
+          if (lastGraph != null && secondLastGraph != null)
           {
             boolean lastIsVROOT = lastGraph.getAttributeValue(TigerXMLDictionary.ATTRIBUTE_ROOT, "").endsWith("_VROOT");
             boolean secondLastIsVROOT = secondLastGraph.getAttributeValue(TigerXMLDictionary.ATTRIBUTE_ROOT, "").endsWith("_VROOT");
 
-            if(!lastIsVROOT && secondLastIsVROOT)
+            if (!lastIsVROOT && secondLastIsVROOT)
             {
               List<Element> secondLastTerminals = secondLastGraph.getChild(TigerXMLDictionary.ELEMENT_TERMINALS).getChildren(TigerXMLDictionary.ELEMENT_TERMINAL);
-              if(!secondLastTerminals.isEmpty()
-                && !("/".equals(secondLastTerminals.get(secondLastTerminals.size()-1).getAttributeValue(TigerXMLDictionary.ATTRIBUTE_WORD))))
+              if (!secondLastTerminals.isEmpty()
+                && !("/".equals(secondLastTerminals.get(secondLastTerminals.size() - 1).getAttributeValue(TigerXMLDictionary.ATTRIBUTE_WORD))))
               {
                 return true;
               }
@@ -233,7 +244,7 @@ public class TigerXMLSegmentSplitter
     return false;
   }
   
-  private Element readSegments(Element parent, XMLStreamReader parser) throws XMLStreamException
+  private Element readSegments(Element parent, String docID, XMLStreamReader parser) throws XMLStreamException
   {
     Element current = null;
     ArrayList<Element> segments = new ArrayList<>();
@@ -280,7 +291,22 @@ public class TigerXMLSegmentSplitter
           {
             if(segments.size() > 1)
             {
-              boolean doSplit = shouldSplitAtLastSegment(segments);
+              boolean doSplit = isManualSplit(segments);
+              if(doSplit)
+              {
+                lastManualSplittedDocName = docID;
+              }
+              else
+              {                
+                if(
+                  !manualSplits.isEmpty()
+                  || (lastManualSplittedDocName != null && lastManualSplittedDocName.startsWith("UNKNOWN_")))
+                {
+                  // apply heuristics if there are no manual definitions or if the current document is expclicitly marked
+                  doSplit = isHeuristicSplit(segments);
+                }
+              }
+              
               if(doSplit)
               {
                 // split the remaining element from the ones belonging to this document
@@ -335,8 +361,6 @@ public class TigerXMLSegmentSplitter
             firstSegmentID = lastRemainingSegment.getAttributeValue(TigerXMLDictionary.ATTRIBUTE_ID, firstSegmentID);
           }
           
-          remainingSegment = readSegments(bodyElem, parser);
-          
           String docID = firstSegmentID;
           if(!manualSplits.isEmpty())
           {
@@ -347,6 +371,8 @@ public class TigerXMLSegmentSplitter
               docID = docIDBySplits;
             }
           }
+          
+          remainingSegment = readSegments(bodyElem, docID, parser);
           
           try (FileOutputStream oStream = new FileOutputStream(tmpFileOut))
           {
