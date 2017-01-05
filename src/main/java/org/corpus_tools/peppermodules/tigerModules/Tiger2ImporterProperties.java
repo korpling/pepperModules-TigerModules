@@ -17,6 +17,7 @@
  */
 package org.corpus_tools.peppermodules.tigerModules;
 
+import com.google.common.base.CharMatcher;
 import com.google.common.base.Splitter;
 import java.util.Hashtable;
 import java.util.LinkedHashSet;
@@ -34,6 +35,7 @@ import org.corpus_tools.salt.core.SRelation;
 import org.corpus_tools.salt.graph.Relation;
 
 import de.hu_berlin.german.korpling.tiger2.Segment;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 

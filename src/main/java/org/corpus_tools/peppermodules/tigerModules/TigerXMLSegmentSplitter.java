@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
@@ -61,7 +62,7 @@ public class TigerXMLSegmentSplitter
   private final File outputDirectory;
   
   private final Map<String,String> manualSplits;
-
+  
   private final XMLInputFactory xmlInFactory = XMLInputFactory.newFactory();
 
   private final LinkedHashMap<Identifier, URI> resourceMap = new LinkedHashMap<>();
@@ -69,7 +70,8 @@ public class TigerXMLSegmentSplitter
   private Element corpusTemplate = null;
   private String lastManualSplittedDocName;
 
-  public TigerXMLSegmentSplitter(SplitHeuristic heuristic, Map<String,String> manualSplits,
+  public TigerXMLSegmentSplitter(SplitHeuristic heuristic,
+    Map<String,String> manualSplits,
     File file, SCorpusGraph corpusGraph, 
     SCorpus parent, File outputDirectory)
   {
@@ -177,29 +179,6 @@ public class TigerXMLSegmentSplitter
 
   }
   
-  
-  private boolean isManualSplit(ArrayList<Element> segments)
-  {
-    if(segments.size() > 1)
-    {
-      Element last = segments.get(segments.size() - 1);
-      String lastID = last.getAttributeValue(TigerXMLDictionary.ATTRIBUTE_ID, "");
-      
-      // check if the segment is included in the manual list
-      if(!manualSplits.isEmpty())
-      {
-        if(!segments.isEmpty())
-        {
-           if(manualSplits.containsKey(lastID))
-           {
-             return true;
-           }
-        }
-      }
-    }
-    return false;
-  }
-  
   private boolean isHeuristicSplit(ArrayList<Element> segments)
   {
    
@@ -244,7 +223,7 @@ public class TigerXMLSegmentSplitter
     return false;
   }
   
-  private Element readSegments(Element parent, String docID, XMLStreamReader parser) throws XMLStreamException
+  private Element readSegments(Element parent, XMLStreamReader parser) throws XMLStreamException
   {
     Element current = null;
     ArrayList<Element> segments = new ArrayList<>();
@@ -289,20 +268,30 @@ public class TigerXMLSegmentSplitter
         case XMLStreamConstants.END_ELEMENT:
           if(TigerXMLDictionary.ELEMENT_SEGMENT.equals(parser.getLocalName()))
           {
-            if(segments.size() > 1)
+            if(!segments.isEmpty())
             {
-              boolean doSplit = isManualSplit(segments);
-              if(doSplit)
+              boolean doSplit = false;
+              
+              Element last = segments.get(segments.size() - 1);
+              String lastID = last.getAttributeValue(TigerXMLDictionary.ATTRIBUTE_ID, "");
+              
+              // check if the segment is included in the manual list
+              if(!manualSplits.isEmpty())
               {
-                lastManualSplittedDocName = docID;
+                if(manualSplits.containsKey(lastID))
+                {
+                  doSplit = segments.size() > 1;
+                  lastManualSplittedDocName = manualSplits.get(lastID);
+                }
               }
-              else
+              
+              if(!doSplit)
               {                
                 if(
-                  !manualSplits.isEmpty()
-                  || (lastManualSplittedDocName != null && lastManualSplittedDocName.startsWith("UNKNOWN_")))
+                  manualSplits.isEmpty()
+                  || (lastManualSplittedDocName != null && lastManualSplittedDocName.endsWith("++")))
                 {
-                  // apply heuristics if there are no manual definitions or if the current document is expclicitly marked
+                  // apply heuristics on the selected documents or to all if non set
                   doSplit = isHeuristicSplit(segments);
                 }
               }
@@ -372,7 +361,7 @@ public class TigerXMLSegmentSplitter
             }
           }
           
-          remainingSegment = readSegments(bodyElem, docID, parser);
+          remainingSegment = readSegments(bodyElem, parser);
           
           try (FileOutputStream oStream = new FileOutputStream(tmpFileOut))
           {
@@ -381,7 +370,7 @@ public class TigerXMLSegmentSplitter
             xml.setFormat(Format.getPrettyFormat());
             xml.output(corpus, oStream);
 
-            SDocument doc = corpusGraph.createDocument(parent, docID);
+            SDocument doc = corpusGraph.createDocument(parent, docID.replaceAll("\\+\\+$", ""));
             resourceMap.put(doc.getIdentifier(), tmpFileOutURI);
           }
         }
