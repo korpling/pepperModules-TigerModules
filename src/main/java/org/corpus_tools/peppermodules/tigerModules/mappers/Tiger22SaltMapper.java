@@ -57,6 +57,7 @@ import de.hu_berlin.german.korpling.tiger2.NonTerminal;
 import de.hu_berlin.german.korpling.tiger2.Segment;
 import de.hu_berlin.german.korpling.tiger2.SyntacticNode;
 import de.hu_berlin.german.korpling.tiger2.Terminal;
+import org.corpus_tools.salt.util.SaltUtil;
 
 /**
  * Maps a &lt;tiger2/&gt; model given by the tiger-api to a Salt model.
@@ -158,7 +159,8 @@ public class Tiger22SaltMapper extends PepperMapperImpl {
 					}// walk through all graphs
 					if ((getProps() != null) && (getProps().propCreateSSpan4Segment())) {
 						// start: create span for segment
-						getDocument().getDocumentGraph().createSpan(sTokens);
+						SSpan segmentSpan = getDocument().getDocumentGraph().createSpan(sTokens);
+                        segmentSpan.createAnnotation(SaltUtil.SALT_NAMESPACE, SaltUtil.SEMANTICS_SENTENCE, SaltUtil.SEMANTICS_SENTENCE);
 					}// end: create span for segment
 				}// map segments
 			}// walk through all segments
