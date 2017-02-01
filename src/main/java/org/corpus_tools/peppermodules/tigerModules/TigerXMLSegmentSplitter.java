@@ -361,6 +361,18 @@ public class TigerXMLSegmentSplitter
             }
           }
           
+          if (corpus.getChild(TigerXMLDictionary.ELEMENT_HEAD) != null
+            && corpus.getChild(TigerXMLDictionary.ELEMENT_HEAD).getChild(TigerXMLDictionary.ELEMENT_META) != null)
+          {
+            Element nameElement
+              = corpus.getChild(TigerXMLDictionary.ELEMENT_HEAD).getChild(TigerXMLDictionary.ELEMENT_META)
+                .getChild(TigerXMLDictionary.ELEMENT_NAME);
+            if (nameElement != null)
+            {
+              nameElement.setText(docID.replaceAll("\\+\\+$", ""));
+            }
+          }
+
           remainingSegment = readSegments(bodyElem, parser);
           
           try (FileOutputStream oStream = new FileOutputStream(tmpFileOut))
