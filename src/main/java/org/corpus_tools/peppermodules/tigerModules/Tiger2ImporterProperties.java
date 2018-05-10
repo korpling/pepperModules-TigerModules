@@ -56,8 +56,8 @@ public class Tiger2ImporterProperties extends PepperModuleProperties {
 	public static final String PROP_CREATE_SSPAN = "createSSpan4Segment";
 
 	/**
-	 * Property to determine, which {@link Relation} type shall be mapped to
-	 * which kind of {@link SRelation}.
+	 * Property to determine, which {@link Relation} type shall be mapped to which
+	 * kind of {@link SRelation}.
 	 */
 	public static final String PROP_EDGE_2_SRELATION = "map";
 
@@ -72,20 +72,18 @@ public class Tiger2ImporterProperties extends PepperModuleProperties {
 	 */
 	public static final String PROP_TERMINAL_SEPARATOR = "separator";
 	/**
-	 * Name of the property to give a renaming table for the sType of a
-	 * SRelation. The syntax of defining such a table is 'OLDNAME=NEWNAME
-	 * (,OLDNAME=NEWNAME)*', for instance the property value prim=edge,
-	 * sec=secedge, will rename all sType values from 'prim' to edge and 'sec'
-	 * to secedge.
+	 * Name of the property to give a renaming table for the sType of a SRelation.
+	 * The syntax of defining such a table is 'OLDNAME=NEWNAME (,OLDNAME=NEWNAME)*',
+	 * for instance the property value prim=edge, sec=secedge, will rename all sType
+	 * values from 'prim' to edge and 'sec' to secedge.
 	 */
 	public static final String PROP_RENAME_EDGE_TYPE = "edge.type";
 
 	/**
-	 * Name of the property to give a renaming table for the sType of a
-	 * SRelation. The syntax of defining such a table is 'OLDNAME=NEWNAME
-	 * (,OLDNAME=NEWNAME)*', for instance the property value prim=edge,
-	 * sec=secedge, will rename all sType values from 'prim' to edge and 'sec'
-	 * to secedge.
+	 * Name of the property to give a renaming table for the sType of a SRelation.
+	 * The syntax of defining such a table is 'OLDNAME=NEWNAME (,OLDNAME=NEWNAME)*',
+	 * for instance the property value prim=edge, sec=secedge, will rename all sType
+	 * values from 'prim' to edge and 'sec' to secedge.
 	 */
 	public static final String PROP_RENAME_ANNOTATION_NAME = "annotation.name";
 
@@ -93,25 +91,45 @@ public class Tiger2ImporterProperties extends PepperModuleProperties {
 	 * Property to determine, which edge types should be reversed.
 	 */
 	public static final String PROP_EDGE_REVERSE = "edge.reverse";
-  
-   /**
-   * Name of the property that sets whether segments should be treated
-   * as documents.
-   */
-  public static final String PROP_SPLIT_HEURISITC = "splitHeuristic";
-  
-  public static final String PROP_MANUAL_SPLITS = "manualSplits";
 
-  
+	/**
+	 * Name of the property that sets whether segments should be treated as
+	 * documents.
+	 */
+	public static final String PROP_SPLIT_HEURISITC = "splitHeuristic";
+
+	public static final String PROP_MANUAL_SPLITS = "manualSplits";
+
 	public Tiger2ImporterProperties() {
-		this.addProperty(new PepperModuleProperty<>(PROP_CREATE_SSPAN, Boolean.class, "This flag determines if a SSpan object shall be created for each segment. Must be mappable to a Boolean value.", false, false));
-		this.addProperty(new PepperModuleProperty<>(PROP_EDGE_2_SRELATION, String.class, "Property to determine, which Egde type shall be mapped to which kind of SRelation. A mapping has the syntax type=SALT_TYPE(, type=SALT_TYPE)*. For instance 'dep=" + SALT_TYPE.SPOINTING_RELATION + ", prim=" + SALT_TYPE.SDOMINANCE_RELATION + "'.", "secedge:" + SALT_TYPE.SDOMINANCE_RELATION, false));
-		this.addProperty(new PepperModuleProperty<>(PROP_TERMINAL_SEPARATOR, String.class, "Determines the separator between terminal nodes. The default separator is '" + DEFAULT_SEPARATOR + "'.", DEFAULT_SEPARATOR, false));
-		this.addProperty(new PepperModuleProperty<>(PROP_RENAME_EDGE_TYPE, String.class, "Gives a renaming table for the sType of a SRelation. The syntax of defining such a table is 'OLDNAME=NEWNAME (,OLDNAME=NEWNAME)*', for instance the property value prim=edge, sec=secedge, will rename all sType values from 'prim' to edge and 'sec' to secedge.", false));
-		this.addProperty(new PepperModuleProperty<>(PROP_RENAME_ANNOTATION_NAME, String.class, "Gives a renaming table for the name of an annotation, or more specific, which value the sName of the SAnnotation object shall get. The syntax of defining such a table is 'OLDNAME=NEWNAME (,OLDNAME=NEWNAME)*', for instance the property value prim=edge, sec=secedge, will rename all sType values from 'prim' to edge and 'sec' to secedge.", false));
-		this.addProperty(new PepperModuleProperty<>(PROP_EDGE_REVERSE, String.class, "If true this will reverse the direction of edges having the given types.\n" + "Thus the source node becomes the target node and the target node\n" + "becomes the source node. This is useful when secondary edges are mapped to dominance\n" + "edges and the annotation scheme would introduce cycles. \n" + "By inverting the edges, cycles are avoided.\n" + "This must be a list of type names, seperated by comma.", "secedge,sec", false));
-    this.addProperty(new PepperModuleProperty<>(PROP_SPLIT_HEURISITC, String.class, "Select a heuristic to split original treetagger files into smaller documents. Available are: \"segment\" -> each segment is its own document, \"virtualroot\" -> use non-existance of a VROOT annotation as split criteria, this works on the orginal Tiger2 corpus.", "none", Boolean.FALSE));
-    this.addProperty(new PepperModuleProperty<>(PROP_MANUAL_SPLITS, String.class, "TODO", "", Boolean.FALSE));
+		this.addProperty(new PepperModuleProperty<>(PROP_CREATE_SSPAN, Boolean.class,
+				"This flag determines if a SSpan object shall be created for each segment. Must be mappable to a Boolean value.",
+				false, false));
+		this.addProperty(new PepperModuleProperty<>(PROP_EDGE_2_SRELATION, String.class,
+				"Property to determine, which Egde type shall be mapped to which kind of SRelation. A mapping has the syntax type=SALT_TYPE(, type=SALT_TYPE)*. For instance 'dep="
+						+ SALT_TYPE.SPOINTING_RELATION + ", prim=" + SALT_TYPE.SDOMINANCE_RELATION + "'.",
+				"secedge:" + SALT_TYPE.SDOMINANCE_RELATION, false));
+		this.addProperty(new PepperModuleProperty<>(PROP_TERMINAL_SEPARATOR, String.class,
+				"Determines the separator between terminal nodes. The default separator is '" + DEFAULT_SEPARATOR
+						+ "'.",
+				DEFAULT_SEPARATOR, false));
+		this.addProperty(new PepperModuleProperty<>(PROP_RENAME_EDGE_TYPE, String.class,
+				"Gives a renaming table for the sType of a SRelation. The syntax of defining such a table is 'OLDNAME=NEWNAME (,OLDNAME=NEWNAME)*', for instance the property value prim=edge, sec=secedge, will rename all sType values from 'prim' to edge and 'sec' to secedge.",
+				false));
+		this.addProperty(new PepperModuleProperty<>(PROP_RENAME_ANNOTATION_NAME, String.class,
+				"Gives a renaming table for the name of an annotation, or more specific, which value the sName of the SAnnotation object shall get. The syntax of defining such a table is 'OLDNAME=NEWNAME (,OLDNAME=NEWNAME)*', for instance the property value prim=edge, sec=secedge, will rename all sType values from 'prim' to edge and 'sec' to secedge.",
+				false));
+		this.addProperty(new PepperModuleProperty<>(PROP_EDGE_REVERSE, String.class,
+				"If true this will reverse the direction of edges having the given types.\n"
+						+ "Thus the source node becomes the target node and the target node\n"
+						+ "becomes the source node. This is useful when secondary edges are mapped to dominance\n"
+						+ "edges and the annotation scheme would introduce cycles. \n"
+						+ "By inverting the edges, cycles are avoided.\n"
+						+ "This must be a list of type names, seperated by comma.",
+				"secedge,sec", false));
+		this.addProperty(new PepperModuleProperty<>(PROP_SPLIT_HEURISITC, String.class,
+				"Select a heuristic to split original treetagger files into smaller documents. Available are: \"segment\" -> each segment is its own document, \"virtualroot\" -> use non-existance of a VROOT annotation as split criteria, this works on the orginal Tiger2 corpus.",
+				"none", Boolean.FALSE));
+		this.addProperty(new PepperModuleProperty<>(PROP_MANUAL_SPLITS, String.class, "TODO", "", Boolean.FALSE));
 	}
 
 	public void reset() {
@@ -121,8 +139,8 @@ public class Tiger2ImporterProperties extends PepperModuleProperties {
 
 	/**
 	 * Returns if all {@link Segment} objects shall be mapped to {@link SSpan}
-	 * objects. If the value {@value #PROP_CREATE_SSPAN} is not set, the default
-	 * is <code>true</code>.
+	 * objects. If the value {@value #PROP_CREATE_SSPAN} is not set, the default is
+	 * <code>true</code>.
 	 * 
 	 * @return
 	 */
@@ -136,8 +154,8 @@ public class Tiger2ImporterProperties extends PepperModuleProperties {
 	}
 
 	/**
-	 * Stores the mapping table for property {@link #PROP_EDGE_2_SRELATION},
-	 * storing the result is useful, because the extraction will take some time.
+	 * Stores the mapping table for property {@link #PROP_EDGE_2_SRELATION}, storing
+	 * the result is useful, because the extraction will take some time.
 	 */
 	private Map<String, SALT_TYPE> edge2Relation = null;
 
@@ -156,7 +174,8 @@ public class Tiger2ImporterProperties extends PepperModuleProperties {
 					String[] mappings = edgeTypes.split(",");
 					for (String mapping : mappings) {
 						String[] parts = mapping.split(":");
-						if ((parts[0] != null) && (!parts[0].isEmpty()) && (parts[1] != null) && (!parts[1].isEmpty())) {
+						if ((parts[0] != null) && (!parts[0].isEmpty()) && (parts[1] != null)
+								&& (!parts[1].isEmpty())) {
 							SALT_TYPE saltType = SALT_TYPE.valueOf(parts[1].trim());
 							if (saltType != null) {
 								edge2Relation.put(parts[0].trim(), saltType);
@@ -180,8 +199,8 @@ public class Tiger2ImporterProperties extends PepperModuleProperties {
 	private Map<String, String> renamingRelationType = null;
 
 	/**
-	 * Returns a map containing all renamings for SType of {@link SRelation},
-	 * with key= old value and value= new value.
+	 * Returns a map containing all renamings for SType of {@link SRelation}, with
+	 * key= old value and value= new value.
 	 */
 	public Map<String, String> getRenamingMap_RelationType() {
 		if (renamingRelationType == null) {
@@ -199,7 +218,11 @@ public class Tiger2ImporterProperties extends PepperModuleProperties {
 								for (String mapping : mappings) {
 									String[] parts = mapping.split("=");
 									if (parts.length != 2)
-										throw new PepperModulePropertyException("Cannot parse the given property value '" + (String) getProperty(PROP_RENAME_EDGE_TYPE).getValue() + "' for property '" + PROP_TERMINAL_SEPARATOR + "', because it does not follow the form OLDNAME=NEWNAME (,OLDNAME=NEWNAME)*. Note, that neither an empty String nor the whitespace is allowed as sType.");
+										throw new PepperModulePropertyException(
+												"Cannot parse the given property value '"
+														+ (String) getProperty(PROP_RENAME_EDGE_TYPE).getValue()
+														+ "' for property '" + PROP_TERMINAL_SEPARATOR
+														+ "', because it does not follow the form OLDNAME=NEWNAME (,OLDNAME=NEWNAME)*. Note, that neither an empty String nor the whitespace is allowed as sType.");
 									renamingTable.put(parts[0], parts[1]);
 								}
 							}
@@ -219,8 +242,8 @@ public class Tiger2ImporterProperties extends PepperModuleProperties {
 	private Map<String, String> renamingAnnotationName = null;
 
 	/**
-	 * Returns a map containing all renamings for SAnno , with key= old value
-	 * and value= new value.
+	 * Returns a map containing all renamings for SAnno , with key= old value and
+	 * value= new value.
 	 */
 	public Map<String, String> getRenamingMap_AnnotationName() {
 		if (renamingAnnotationName == null) {
@@ -236,7 +259,11 @@ public class Tiger2ImporterProperties extends PepperModuleProperties {
 								for (String mapping : mappings) {
 									String[] parts = mapping.split("=");
 									if (parts.length != 2) {
-										throw new PepperModulePropertyException("Cannot parse the given property value '" + (String) getProperty(PROP_RENAME_EDGE_TYPE).getValue() + "' for property '" + PROP_TERMINAL_SEPARATOR + "', because it does not follow the form OLDNAME=NEWNAME (,OLDNAME=NEWNAME)*. Note, that neither an empty String nor the whitespace is allowed as sName.");
+										throw new PepperModulePropertyException(
+												"Cannot parse the given property value '"
+														+ (String) getProperty(PROP_RENAME_EDGE_TYPE).getValue()
+														+ "' for property '" + PROP_TERMINAL_SEPARATOR
+														+ "', because it does not follow the form OLDNAME=NEWNAME (,OLDNAME=NEWNAME)*. Note, that neither an empty String nor the whitespace is allowed as sName.");
 									}
 									renamingTable.put(parts[0], parts[1]);
 								}
@@ -261,40 +288,37 @@ public class Tiger2ImporterProperties extends PepperModuleProperties {
 		}
 		return result;
 	}
-  
-  public SplitHeuristic getSplitHeuristic() {
-    SplitHeuristic result = SplitHeuristic.none;
-    String raw = ((String) getProperty(PROP_SPLIT_HEURISITC).getValue());
-    
-    if(raw != null && !raw.isEmpty()) {
-      try {
-        result = SplitHeuristic.valueOf(raw.toLowerCase());
-      } catch(IllegalArgumentException ex) {
-      }
-    }
-    
-    return result;
-  }
-  
-  public Map<String,String> getManualSplits() {
-    Map<String, String> result = new LinkedHashMap<>();
-    String raw = ((String) getProperty(PROP_MANUAL_SPLITS).getValue());
-    
-    if(raw != null && !raw.isEmpty()) {
-      for(String entry : Splitter.on(',').omitEmptyStrings().trimResults().split(raw)) {
-        List<String> keyValue = Splitter.on('=').trimResults().limit(2).splitToList(entry);
-        if(keyValue.size() == 2)
-        {
-          result.put(keyValue.get(0), keyValue.get(1));
-        }
-        else if(keyValue.size() == 1)
-        {
-          result.put(keyValue.get(0), "");
-        }
-      }
-    }
-    
-    return result;
-  }
+
+	public SplitHeuristic getSplitHeuristic() {
+		SplitHeuristic result = SplitHeuristic.none;
+		String raw = ((String) getProperty(PROP_SPLIT_HEURISITC).getValue());
+
+		if (raw != null && !raw.isEmpty()) {
+			try {
+				result = SplitHeuristic.valueOf(raw.toLowerCase());
+			} catch (IllegalArgumentException ex) {
+			}
+		}
+
+		return result;
+	}
+
+	public Map<String, String> getManualSplits() {
+		Map<String, String> result = new LinkedHashMap<>();
+		String raw = ((String) getProperty(PROP_MANUAL_SPLITS).getValue());
+
+		if (raw != null && !raw.isEmpty()) {
+			for (String entry : Splitter.on(',').omitEmptyStrings().trimResults().split(raw)) {
+				List<String> keyValue = Splitter.on('=').trimResults().limit(2).splitToList(entry);
+				if (keyValue.size() == 2) {
+					result.put(keyValue.get(0), keyValue.get(1));
+				} else if (keyValue.size() == 1) {
+					result.put(keyValue.get(0), "");
+				}
+			}
+		}
+
+		return result;
+	}
 
 }
