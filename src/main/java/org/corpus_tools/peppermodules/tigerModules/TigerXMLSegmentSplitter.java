@@ -63,7 +63,7 @@ public class TigerXMLSegmentSplitter
   
   private final Map<String,String> manualSplits;
   
-  private final XMLInputFactory xmlInFactory = XMLInputFactory.newFactory();
+  private final XMLInputFactory xmlInFactory = XMLInputFactory.newInstance();
 
   private final LinkedHashMap<Identifier, URI> resourceMap = new LinkedHashMap<>();
   
