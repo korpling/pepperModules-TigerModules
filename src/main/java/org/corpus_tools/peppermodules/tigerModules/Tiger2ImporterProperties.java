@@ -19,6 +19,9 @@ package org.corpus_tools.peppermodules.tigerModules;
 
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Splitter;
+
+import au.com.bytecode.opencsv.CSVReader;
+
 import java.util.Hashtable;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -33,8 +36,14 @@ import org.corpus_tools.salt.common.SSpan;
 import org.corpus_tools.salt.core.SAnnotation;
 import org.corpus_tools.salt.core.SRelation;
 import org.corpus_tools.salt.graph.Relation;
+import org.slf4j.LoggerFactory;
 
 import de.hu_berlin.german.korpling.tiger2.Segment;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -49,6 +58,9 @@ import java.util.List;
  */
 @SuppressWarnings("serial")
 public class Tiger2ImporterProperties extends PepperModuleProperties {
+	
+	private final static org.slf4j.Logger log = LoggerFactory.getLogger(Tiger2ImporterProperties.class);
+	
 	/**
 	 * This flag determines if a SSpan object shall be created for each segment.
 	 * Must be mappable to a {@link Boolean} value.
@@ -99,6 +111,8 @@ public class Tiger2ImporterProperties extends PepperModuleProperties {
 	public static final String PROP_SPLIT_HEURISITC = "splitHeuristic";
 
 	public static final String PROP_MANUAL_SPLITS = "manualSplits";
+	
+	public static final String PROP_DOCUMENT_MAPPING_FILE = "documentMappingFile";
 
 	public Tiger2ImporterProperties() {
 		this.addProperty(new PepperModuleProperty<>(PROP_CREATE_SSPAN, Boolean.class,
@@ -130,6 +144,7 @@ public class Tiger2ImporterProperties extends PepperModuleProperties {
 				"Select a heuristic to split original treetagger files into smaller documents. Available are: \"segment\" -> each segment is its own document, \"virtualroot\" -> use non-existance of a VROOT annotation as split criteria, this works on the orginal Tiger2 corpus.",
 				"none", Boolean.FALSE));
 		this.addProperty(new PepperModuleProperty<>(PROP_MANUAL_SPLITS, String.class, "TODO", "", Boolean.FALSE));
+		this.addProperty(new PepperModuleProperty<>(PROP_DOCUMENT_MAPPING_FILE, String.class, "TODO", "", Boolean.FALSE));
 	}
 
 	public void reset() {
@@ -318,6 +333,30 @@ public class Tiger2ImporterProperties extends PepperModuleProperties {
 			}
 		}
 
+		return result;
+	}
+	
+	public Map<String, String> getSentenceToDocumentMapping() {
+		Map<String, String> result = new LinkedHashMap<>();
+		
+		String mappingFile = ((String) getProperty(PROP_DOCUMENT_MAPPING_FILE).getValue());
+		if(mappingFile != null) {
+			try (CSVReader csvReader = new CSVReader(
+	                new InputStreamReader(new FileInputStream(mappingFile), StandardCharsets.UTF_8), '\t')) {
+
+	            for (String[] line = csvReader.readNext(); line != null; line = csvReader.readNext()) {
+	                if(line.length >= 2) {
+	                	result.put(line[0], line[1]);
+	                }
+	            }
+
+	        } catch (IOException | ArrayIndexOutOfBoundsException | NumberFormatException | NullPointerException ex) {
+	            log.error("Failed to read file {}", mappingFile, ex);
+	        }
+
+		}
+		
+		// TODO: read TSV file given as parameter
 		return result;
 	}
 

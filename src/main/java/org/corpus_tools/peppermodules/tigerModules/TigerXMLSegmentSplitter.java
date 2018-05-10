@@ -62,6 +62,7 @@ public class TigerXMLSegmentSplitter
   private final File outputDirectory;
   
   private final Map<String,String> manualSplits;
+  private final Map<String, String> sentence2doc;
   
   private final XMLInputFactory xmlInFactory = XMLInputFactory.newInstance();
 
@@ -72,11 +73,13 @@ public class TigerXMLSegmentSplitter
 
   public TigerXMLSegmentSplitter(SplitHeuristic heuristic,
     Map<String,String> manualSplits,
+    Map<String,String> sentence2doc,
     File file, SCorpusGraph corpusGraph, 
     SCorpus parent, File outputDirectory)
   {
     this.heuristic = heuristic;
     this.manualSplits = manualSplits;
+    this.sentence2doc = sentence2doc;
     this.file = file;
     this.corpusGraph = corpusGraph;
     this.parent = parent;
